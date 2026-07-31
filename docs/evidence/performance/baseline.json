@@ -1,0 +1,20 @@
+{
+  "date": "2026-07-31",
+  "milestone": "M1",
+  "build": {
+    "source_tag": "0.7.0.rc5",
+    "head": "9b28076281545a1e08dccee0b3f925febb8933ac",
+    "variant": "gitHubProdDebug",
+    "result": "PASS",
+    "duration": "9m 54s"
+  },
+  "runtime_smoke": {
+    "duration": "10m",
+    "result": "PASS",
+    "process_exit_records": 0,
+    "fatal_or_anr_lines": 0,
+    "total_pss_kib": 468597,
+    "total_rss_kib": 603436
+  },
+  "physical_display_acceptance": "DEFERRED_TO_M2"
+}

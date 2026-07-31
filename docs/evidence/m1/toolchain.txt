@@ -1,0 +1,17 @@
+M1 toolchain inventory
+Date: 2026-07-31
+
+Java:
+- OpenJDK 21.0.12
+- JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
+
+Android:
+- platform API 36 installed
+- NDK 28.0.13004108 installed
+- CMake 3.22.1 installed by Gradle
+
+Rust:
+- rustup default: stable-aarch64-apple-darwin
+- cargo 1.97.1
+
+Result: PASS. These versions satisfy the rc5 baseline build prerequisites.

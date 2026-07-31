@@ -1,0 +1,19 @@
+M1 ten-minute physical Thor smoke
+Date: 2026-07-31
+
+Result after ten minutes:
+- process: active
+- resumed activity: EmulatorActivity on the normal display
+- process exit records: none
+- FATAL/ANR log lines: none
+- memory snapshot: 468597 KiB total PSS, 603436 KiB total RSS
+- source ROM: unchanged; identity still matches the approved M0 record
+
+Renderer observation:
+- the app's lower-display Presentation rendered the ASMP title screen
+- the primary panel capture was black for this upstream layout
+- this is not treated as a completed two-panel acceptance result; it is
+  carried into M2 for role/layout, touch and lifecycle proof
+
+Result: PASS for runtime stability. M2 remains required for physical
+dual-panel acceptance.

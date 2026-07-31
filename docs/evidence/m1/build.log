@@ -1,0 +1,19 @@
+M1 baseline build
+Date: 2026-07-31
+Source: SapphireRhodonite/melonDS-android tag 0.7.0.rc5
+HEAD: 9b28076281545a1e08dccee0b3f925febb8933ac
+
+Command:
+  export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
+  export PATH="$JAVA_HOME/bin:/opt/homebrew/opt/rustup/bin:/opt/homebrew/bin:$PATH"
+  ./gradlew --no-daemon :app:assembleGitHubProdDebug
+
+Result:
+  BUILD SUCCESSFUL in 9m 54s
+  89 actionable tasks: 85 executed, 4 up-to-date
+
+Artifact:
+  app/build/outputs/apk/gitHubProd/debug/app-gitHub-prod-debug.apk
+
+Notes:
+  Upstream deprecation and C++ compiler warnings were emitted. No task failed.

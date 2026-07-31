@@ -1,0 +1,14 @@
+M1 APK identity
+Date: 2026-07-31
+
+Artifact:
+  app/build/outputs/apk/gitHubProd/debug/app-gitHub-prod-debug.apk
+Package:
+  me.magnum.melondualds.dev
+Version:
+  0.7.0.rc5 (versionCode 38)
+SHA-256:
+  b826657c69022a67d92b95d9e38cb73d1248abf384acb5d2cef64c9e8777cd54
+
+Result: PASS. The debug package is distinct from the existing stable
+me.magnum.melondualds package on the Thor.

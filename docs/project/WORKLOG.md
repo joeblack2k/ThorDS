@@ -52,5 +52,70 @@ artifact: docs/evidence/m0/rom-identity-redacted.json
 ### Safety
 
 - ROM excluded: yes
-- secret scan: pending before first commit
+- secret scan: no high-confidence secrets found before first commit
 - save backup: not applicable; no emulator run yet
+
+## 2026-07-31 - M0 completion
+
+### Changes
+
+- code: added `tools/thords/rom_identity.py`, a stdlib-only inspector that reads
+  the same header, ARM9, ARM7 and banner sections as rc5 `RomProcessor`
+- tests: synthetic parser self-test
+- docs: M0 self-test evidence and status update
+
+### Validation
+
+```text
+command: python3 tools/thords/rom_identity.py --self-test
+result: PASS
+artifact: docs/evidence/m0/rom-identity-self-test.txt
+```
+
+### Decision
+
+- chosen: a standalone stdlib tool instead of a new application abstraction
+- rationale: M0 needs reproducible local ROM inspection before Android app code changes
+
+### Next
+
+- next action: complete M1 runtime smoke on the physical Thor
+- remaining gate: ten-minute run and evidence summary
+
+## 2026-07-31 - M1
+
+### Changes
+
+- code: none; the product source remains exact rc5
+- environment: installed the missing local Java 21, Android API 36, NDK 28,
+  Rust and rustup prerequisites
+- docs: captured build, APK, installation and Thor runtime evidence
+
+### Validation
+
+```text
+command: ./gradlew --no-daemon :app:assembleGitHubProdDebug
+result: PASS; BUILD SUCCESSFUL, 89 actionable tasks
+artifact: docs/evidence/m1/build.log
+
+command: adb install -r -d app/build/outputs/apk/gitHubProd/debug/app-gitHub-prod-debug.apk
+result: PASS; separate debug package installed without replacing the existing stable package
+artifact: docs/evidence/m1/install.txt
+
+command: ten-minute physical Thor runtime smoke
+result: PASS; emulator process remained active, no process exit, no FATAL/ANR,
+and the original source ROM identity remained unchanged
+artifact: docs/evidence/m1/baseline-logcat.txt
+```
+
+### Finding
+
+- rc5 creates a visible `Presentation` on the Thor's lower display while the
+  primary 1920x1080 panel is black for the tested layout. This is an observed
+  baseline limitation, not a resolved ThorDS feature; M2 owns its diagnosis.
+
+### Next
+
+- next action: capture display roles, touch bounds, controller descriptors and
+  lifecycle behavior without hardcoding a display ID
+- remaining gate: M2 physical hardware proof

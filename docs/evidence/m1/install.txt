@@ -1,0 +1,18 @@
+M1 physical installation and launch
+Date: 2026-07-31
+
+Install command:
+  adb install -r -d app/build/outputs/apk/gitHubProd/debug/app-gitHub-prod-debug.apk
+
+Install result:
+  Success
+
+Launch result:
+- launcher activity opened successfully
+- a document-tree permission was granted only for the dedicated ThorDS ROM
+  test directory
+- ASMP appeared in the library and booted into EmulatorActivity
+- core log reported "Inserted cart with game code: ASMP" and "Game is now booting"
+- OpenGL initialized successfully
+
+Result: PASS for install, launcher, ROM discovery and core boot.
