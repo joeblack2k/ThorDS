@@ -1,0 +1,8 @@
+Milestone: M0
+Date: 2026-07-31
+Command: python3 tools/thords/rom_identity.py --self-test
+Result: self-test: PASS
+
+The self-test creates a synthetic NDS layout with ASMP, revision 0,
+valid ARM9/ARM7/banner ranges and a known RA-system-hash calculation.
+It uses no ROM bytes or Nintendo assets.
