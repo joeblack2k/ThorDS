@@ -160,3 +160,30 @@ artifact: docs/evidence/m2/touch-grid.json
   prove the game touch rect itself, including its letterbox bars. The logged
   M2 grid proves Android routing but deliberately does not claim that final
   DS-coordinate acceptance.
+
+## 2026-07-31 - M2 completion
+
+### Validation
+
+```text
+command: ADB display-4 3x3 taps on the real ASMP RuntimeLayoutView
+result: PASS; display points mapped exactly to:
+0/128/255 x 0/96/191 DS coordinates
+artifact: docs/evidence/m2/touch-grid-ds-log.txt
+
+command: taps outside the 1240x930 DS view
+result: PASS; no DS touch log was emitted
+artifact: docs/evidence/m2/touch-grid-ds-log.txt
+```
+
+### Decision
+
+- chosen: log the existing normalized DS coordinates only while the explicit
+  Android `ThorDsTouch` log tag is enabled
+- rationale: this proves the real touch path without changing touch behavior
+  or making a false physical-finger claim
+
+### Next
+
+- next action: implement the M3 Thor role classifier and default layout
+- remaining gate: M3 build, Thor install and dual-panel output proof

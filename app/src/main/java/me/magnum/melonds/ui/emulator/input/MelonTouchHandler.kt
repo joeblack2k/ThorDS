@@ -1,5 +1,6 @@
 package me.magnum.melonds.ui.emulator.input
 
+import android.util.Log
 import me.magnum.melonds.MelonEmulator
 import me.magnum.melonds.domain.model.Input
 import me.magnum.melonds.domain.model.Point
@@ -22,6 +23,9 @@ class MelonTouchHandler : IInputListener {
     }
 
     override fun onTouch(point: Point) {
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.i(TAG, "mapped_ds_touch x=${point.x} y=${point.y}")
+        }
         MelonEmulator.onScreenTouch(point.x, point.y)
     }
 
@@ -32,5 +36,9 @@ class MelonTouchHandler : IInputListener {
         } else {
             MelonEmulator.onInputUp(Input.HINGE)
         }
+    }
+
+    private companion object {
+        const val TAG = "ThorDsTouch"
     }
 }

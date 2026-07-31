@@ -1,0 +1,28 @@
+M2 exact DS touch mapping
+Date: 2026-07-31
+
+Runtime layout:
+- lower physical display: 1240x1080
+- lower DS touch view: x=0, y=75, width=1240, height=930
+- source: the current rc5 default built-in dual-display layout
+
+Command pattern:
+  adb shell input -d 4 tap <x> <y>
+
+Observed existing MelonTouchHandler values:
+  display (0,75)       -> DS (0,0)
+  display (620,75)     -> DS (128,0)
+  display (1239,75)    -> DS (255,0)
+  display (0,540)      -> DS (0,96)
+  display (620,540)    -> DS (128,96)
+  display (1239,540)   -> DS (255,96)
+  display (0,1004)     -> DS (0,191)
+  display (620,1004)   -> DS (128,191)
+  display (1239,1004)  -> DS (255,191)
+
+Negative checks:
+  display (10,20) and (10,1030) emitted no mapped_ds_touch event.
+
+Result: PASS. The actual lower RuntimeLayoutView maps the physical display
+touch rectangle to the complete DS 256x192 range, and excludes its bars and
+runtime controls.

@@ -12,13 +12,12 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Summary
 
-- Current milestone: M2
-- Current gate: physical display, touch, controller and lifecycle proof
+- Current milestone: M3
+- Current gate: Thor role classifier and default dual-panel layout
 - Overall status: IN_PROGRESS
 - Latest verified result: unmodified rc5 builds, installs, boots ASMP and remains
   running for ten minutes on the physical Thor
-- Active blocker: upstream rc5 leaves the primary Thor panel black while its
-  secondary Presentation renders on the lower panel
+- Active blocker: none; M3 implementation has not started
 
 ## Milestone status
 
@@ -26,8 +25,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 |---|---|---|---|---|
 | M0 | PASS | efddfac | docs/evidence/m0/ | rc5 pin, submodules, ROM protection and synthetic identity test verified |
 | M1 | PASS | pending | docs/evidence/m1/ | build/install/ASMP boot/10-minute smoke green; two-panel behavior is the M2 scope |
-| M2 | PARTIAL | pending | docs/evidence/m2/ | display roles, injected touch grid, controller and lifecycle pass; physical DS-coordinate touch remains |
-| M3 | NOT_STARTED | | | |
+| M2 | PASS | pending | docs/evidence/m2/ | physical roles, exact DS touch grid, controller and lifecycle pass |
+| M3 | IN_PROGRESS | pending | | Thor role classifier and default layout |
 | M4 | NOT_STARTED | | | |
 | M5 | NOT_STARTED | | | |
 | M6 | NOT_STARTED | | | |
@@ -52,5 +51,5 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Perform the nine-point physical-finger DS touch accuracy check before
-introducing a Thor-specific role classifier.
+Read the M3 specification and implement a role classifier without hardcoded
+display IDs.

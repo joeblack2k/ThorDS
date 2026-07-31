@@ -1,26 +1,43 @@
 {
   "date": "2026-07-31",
-  "target": "debug-only secondary Presentation",
+  "target": "ASMP RuntimeLayoutView secondary Presentation",
   "display_id": 4,
-  "app_window_px": {
+  "presentation_px": {
     "width": 1240,
-    "height": 969
+    "height": 1080
   },
-  "navigation_excluded_px": {
-    "bottom": 111
+  "ds_touch_rect_px": {
+    "x": 0,
+    "y": 75,
+    "width": 1240,
+    "height": 930
   },
-  "method": "adb input -d 4 tap; routed through Android's lower-display input pipeline",
-  "observed_points": [
-    [0, 0],
-    [620, 0],
-    [1239, 0],
-    [0, 484],
-    [620, 484],
-    [1239, 484],
-    [0, 968],
-    [620, 968],
-    [1239, 968]
+  "method": "adb input -d 4 tap through the physical lower display; existing MelonTouchHandler logged the normalized DS values",
+  "display_points_px": [
+    [0, 75],
+    [620, 75],
+    [1239, 75],
+    [0, 540],
+    [620, 540],
+    [1239, 540],
+    [0, 1004],
+    [620, 1004],
+    [1239, 1004]
   ],
-  "result": "PASS",
-  "limitation": "This proves panel routing and app-window coordinates, not physical-finger DS-coordinate accuracy for a final ThorDS layout."
+  "mapped_ds_points": [
+    [0, 0],
+    [128, 0],
+    [255, 0],
+    [0, 96],
+    [128, 96],
+    [255, 96],
+    [0, 191],
+    [128, 191],
+    [255, 191]
+  ],
+  "outside_rect_points_px": [
+    [10, 20],
+    [10, 1030]
+  ],
+  "result": "PASS"
 }
