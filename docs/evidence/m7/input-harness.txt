@@ -14,6 +14,15 @@ Physical Thor validation:
 - the sequence did not reach a valid BOB checkpoint, so no gameplay or
   True Widescreen acceptance result is claimed
 
+Execution note:
+- Android may reject an implicit debug broadcast while the receiver is not
+  foreground-eligible. The verified harness route targets
+  `DebugCommandReceiver` explicitly with `adb shell am broadcast -n`; it
+  returned `success=1` and emitted the corresponding DebugCommand log.
+- Accepted debug touch input alone did not provide a deterministic title-to-BOB
+  route. Physical controller gameplay remains required for the M6 and M7
+  gameplay gates.
+
 Temporary ROM copies, saves, frame images, metadata and log output were deleted
 after validation. No ROM path, ROM bytes, save, capture, device identifier or
 credential is retained here.

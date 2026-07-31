@@ -145,6 +145,22 @@ physical debug launch reported two curated codes and retained a stable
   temporary ROM copies, saves, frame images, metadata and log output were
   deleted after aggregation.
 
+### Final primary-surface probe
+
+- `adb exec-out screencap -p` captured the final primary surface at
+  1920x1080. The title fallback occupied the centered 1440x1080 rectangle,
+  leaving 240-pixel black sidebars on both sides.
+- In a structured 3D checkpoint, the primary presenter issued draw mode 7 for
+  the full-width world and draw mode 8 for the separately sampled 4:3-safe
+  overlay. Final visual inspection placed the pause dialog and text inside the
+  safe area.
+- This is final-surface presentation evidence only. It does not establish the
+  game projection, horizontal FOV, culling, BOB geometry, HUD ratios or
+  transition behavior needed to exit M7.
+- Evidence: `docs/evidence/m7/final-primary-probe.txt`. All temporary ROM
+  copies, saves, images, internal captures, metadata and logs were deleted
+  after aggregation.
+
 ### Decision
 
 - M7 is not green. The diagnostic does not yet prove extra horizontal FOV,

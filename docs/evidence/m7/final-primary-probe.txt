@@ -1,0 +1,31 @@
+M7 final primary-surface probe result, 2026-07-31
+
+Scope:
+- developer-only Vulkan widescreen probe on the physical Thor primary surface
+- final Android surface capture only; internal renderer captures were used only
+  for temporary navigation and are not final-surface evidence
+
+Method:
+- captured the primary output with adb exec-out screencap -p
+- correlated the final image with M7Probe and Vulkan presenter draw logs
+
+Aggregated results:
+- final primary image dimensions: 1920x1080
+- 2D title fallback: the DS image occupied x=240..1679, with black sidebars
+  x=0..239 and x=1680..1919; this matches M7Probe's centered 1440x1080
+  4:3 safe rectangle
+- structured 3D checkpoint: the primary presenter issued drawMode 7 for the
+  full-width world and drawMode 8 for the 4:3-safe structured 2D overlay
+- final primary visual inspection showed the world across the 1920-pixel width
+  while the pause dialog and text stayed within the centered safe area
+
+Result: PARTIAL_PASS
+
+This proves the debug spike reaches the final primary surface and distinguishes
+the fallback and dual-UV presentation paths. It does not prove a European
+gameplay projection patch, extra horizontal FOV, culling, BOB world geometry,
+HUD/glyph ratios, lower-panel geometry, or no-flash transitions.
+
+All ROM copies, saves, final images, internal captures, metadata and temporary
+logs used for this probe were deleted after aggregation. No private asset,
+device identifier, credential or temporary path is retained here.
