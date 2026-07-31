@@ -19,6 +19,12 @@ The mode is gated by both an app-debuggable build and the explicit
 `io.github.joeblack2k.thords.extra.WIDESCREEN_PROBE` activity extra. Normal
 presentation, release builds, OpenGL and safe mode remain native 4:3.
 
+The diagnostic applies only to the primary top presentation. It uses the
+current top structured-3D and capture-3D compositor inputs as a conservative
+classifier: no current top 3D or any capture-3D selects a centered 4:3
+composite fallback. The lower external presentation always keeps its ordinary
+aspect-correct configuration.
+
 ## Rejected
 
 - Stretching the final composited framebuffer: it cannot preserve HUD geometry.
@@ -29,9 +35,10 @@ presentation, release builds, OpenGL and safe mode remain native 4:3.
 
 The M7 diagnostic proves that the existing renderer exposes independent 3D and
 UI sources, but it is deliberately incomplete: it does not yet reproduce every
-blend, underlay, capture and HUD path. M8 must add a scene classifier,
-conditional validated runtime writes, safe fallback and the full physical
-matrix before using the True Widescreen product name.
+blend, underlay, capture and HUD path. M7 has a conservative diagnostic
+classifier and fallback, but M8 still requires conditional validated runtime
+writes, a fuller scene classifier and the full physical matrix before using
+the True Widescreen product name.
 
 Decision gate: `NO_GO_FOR_M8` until the M7 BOB/HUD/transition measurements are
 green.

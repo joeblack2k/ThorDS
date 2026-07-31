@@ -1306,7 +1306,6 @@ class EmulatorActivity : AppCompatActivity() {
                 display = secondaryDisplay,
                 frameRenderCoordinator = frameRenderCoordinator,
                 excludeTouchScreenFromSystemGestures = excludeTouchScreenFromSystemGestures,
-                developerWidescreenProbe = developerWidescreenProbe,
             ).apply {
                 layoutView.apply {
                     setLayoutComponentViewBuilderFactory(RuntimeLayoutComponentViewBuilderFactory())

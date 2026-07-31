@@ -1144,6 +1144,8 @@ bool VulkanSurfacePresenter::presentFrame(Frame* frame, VulkanOutput& output, co
                 surfaceState.background.imageView != VK_NULL_HANDLE ? &surfaceState.background : nullptr,
                 directPresent,
                 retroArchApplied,
+                inputs.topSourceHasHighres3d && !inputs.capture3dSourceValid,
+                inputs.capture3dSourceValid,
                 drawCalls))
         {
             vertexUpdateFailures++;
@@ -3157,11 +3159,15 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
     const BackgroundResource* backgroundResource,
     bool directPresent,
     bool retroArchApplied,
+    bool developerWidescreenWorldSafe,
+    bool developerWidescreenCapture3d,
     std::vector<DrawCall>& drawCalls)
 {
     if (!surfaceState.vertexBufferDirty
         && surfaceState.cachedDirectPresent == directPresent
-        && surfaceState.cachedRetroArchApplied == retroArchApplied)
+        && surfaceState.cachedRetroArchApplied == retroArchApplied
+        && surfaceState.cachedDeveloperWidescreenWorldSafe == developerWidescreenWorldSafe
+        && surfaceState.cachedDeveloperWidescreenCapture3d == developerWidescreenCapture3d)
     {
         drawCalls = surfaceState.cachedDrawCalls;
         return true;
@@ -3372,10 +3378,36 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
     enqueueScreen(config.hybridBottomScreen, false, config.hybridAlpha, config.hybridOnTop);
 
     const auto appendPendingScreen = [&](const PendingScreen& screen) {
-        if (surfaceState.config.developerWidescreenProbe && screen.topScreen)
-            appendWidescreenProbe(screen.rect, screen.alpha);
-        else
+        if (!screen.rect.enabled || screen.rect.width <= 0 || screen.rect.height <= 0)
+            return;
+
+        if (!surfaceState.config.developerWidescreenProbe || !screen.topScreen)
+        {
             appendScreen(screen.rect, screen.topScreen, screen.alpha);
+            return;
+        }
+
+        if (developerWidescreenWorldSafe)
+        {
+            appendWidescreenProbe(screen.rect, screen.alpha);
+            return;
+        }
+
+        VulkanPresenterRect safeRect = screen.rect;
+        safeRect.width = std::min(safeRect.width, (safeRect.height * 4) / 3);
+        safeRect.x += (screen.rect.width - safeRect.width) / 2;
+        melonDS::Platform::Log(
+            melonDS::Platform::LogLevel::Info,
+            "M7Probe: fallback direct=%d top3d=%d capture3d=%d rect=%dx%d safeX=%d safeWidth=%d",
+            directPresent ? 1 : 0,
+            developerWidescreenWorldSafe ? 1 : 0,
+            developerWidescreenCapture3d ? 1 : 0,
+            screen.rect.width,
+            screen.rect.height,
+            safeRect.x,
+            safeRect.width
+        );
+        appendScreen(safeRect, true, screen.alpha);
     };
     for (const PendingScreen& screen : underScreens)
         appendPendingScreen(screen);
@@ -3456,6 +3488,8 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
     surfaceState.cachedDrawCalls = drawCalls;
     surfaceState.cachedDirectPresent = directPresent;
     surfaceState.cachedRetroArchApplied = retroArchApplied;
+    surfaceState.cachedDeveloperWidescreenWorldSafe = developerWidescreenWorldSafe;
+    surfaceState.cachedDeveloperWidescreenCapture3d = developerWidescreenCapture3d;
     surfaceState.vertexBufferDirty = false;
 
     return true;

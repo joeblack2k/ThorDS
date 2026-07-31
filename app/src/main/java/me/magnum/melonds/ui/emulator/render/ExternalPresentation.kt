@@ -34,7 +34,6 @@ class ExternalPresentation(
     display: Display,
     private val frameRenderCoordinator: FrameRenderCoordinator,
     private var excludeTouchScreenFromSystemGestures: Boolean,
-    private val developerWidescreenProbe: Boolean,
 ) : Presentation(context, display) {
     private data class ScreenPresentationAreas(
         val topScreenRect: me.magnum.melonds.domain.model.Rect?,
@@ -271,7 +270,6 @@ class ExternalPresentation(
             retroShaderPassCount = rendererConfiguration.retroArchShader.passCount,
             retroShaderParameterOverrides = rendererConfiguration.retroArchShader.parameterOverrides,
             retroShaderClearHistory = rendererConfiguration.retroArchShader.clearHistory,
-            developerWidescreenProbe = developerWidescreenProbe,
         )
     }
 

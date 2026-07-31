@@ -271,6 +271,8 @@ private:
         DescriptorSetCacheState backgroundDescriptorCache{};
         bool cachedDirectPresent = false;
         bool cachedRetroArchApplied = false;
+        bool cachedDeveloperWidescreenWorldSafe = false;
+        bool cachedDeveloperWidescreenCapture3d = false;
         std::vector<DrawCall> cachedDrawCalls;
         VkQueryPool timestampQueryPool = VK_NULL_HANDLE;
         bool timestampPending = false;
@@ -316,6 +318,8 @@ private:
         const BackgroundResource* backgroundResource,
         bool directPresent,
         bool retroArchApplied,
+        bool developerWidescreenWorldSafe,
+        bool developerWidescreenCapture3d,
         std::vector<DrawCall>& drawCalls
     );
     bool recordSurfaceCommands(

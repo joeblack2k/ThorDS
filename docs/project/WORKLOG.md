@@ -48,6 +48,24 @@ Action Replay code. It is enabled only when the debuggable activity receives
 the M7 probe extra, and each write has an `IF original 0x1555` guard. The
 physical debug launch reported two curated codes and retained a stable
 1920x1080 world / 1440x1080 UI-safe presentation without a crash.
+
+### Safe fallback correction
+
+- The developer probe is now primary-presentation-only; the lower external
+  presentation keeps its normal aspect-correct configuration.
+- The primary presenter now uses the current top structured-3D and capture-3D
+  inputs as a conservative diagnostic classifier. A missing current top 3D
+  source, or any capture-3D source, selects a centered 4:3 composite instead
+  of the dual-UV world draw.
+- Physical Thor debug launch: PASS. The measured title composition reported
+  no current top structured 3D and no capture 3D, then selected
+  `x=240,width=1440,height=1080` on the 1920x1080 top target. No ThorDS
+  FATAL/ANR was observed.
+- Validation: `git diff --check`, `:app:checkVulkanSpirv`,
+  `:app:testGitHubProdReleaseUnitTest` and
+  `:app:assembleGitHubProdDebug` all passed after the correction.
+- Evidence: `docs/evidence/m7/fallback-probe.txt` and
+  `docs/evidence/m7/geometry-measurements.json`.
 ```
 
 ### Decision

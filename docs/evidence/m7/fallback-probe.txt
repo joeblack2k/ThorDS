@@ -1,0 +1,22 @@
+M7 safe-fallback probe result, 2026-07-31
+
+Scope:
+- GitHubProdDebug installed on the connected AYN Thor: PASS
+- exact ASMP developer launch reached ROM-ready: PASS
+- exact profile reported two curated runtime codes: PASS
+- filtered ThorDS FATAL EXCEPTION / ANR: none observed
+
+Classification result:
+- the title-flow composition reported current top structured 3D absent and
+  capture-3D absent
+- the primary 1920x1080 presentation selected the safe composite rectangle
+  x=240, width=1440, height=1080: PASS
+- the lower external presentation does not receive the developer-probe flag;
+  it retains its ordinary aspect-correct configuration: PASS by construction
+
+This proves the diagnostic's conservative 4:3 behavior for the measured
+unsafe title composition. It does not prove a 16:9 gameplay world, FOV,
+culling, HUD geometry or a full scene matrix.
+
+No ROM path, ROM bytes, save, capture, device identifier or credential is
+included in this file.
