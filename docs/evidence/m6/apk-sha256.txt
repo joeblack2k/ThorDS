@@ -1,0 +1,4 @@
+GitHub Prod Debug APK
+sha256: 6900a50f0f0659d8da246d63849aa1c1d2b0a6464c46fd01c74fddd6eecb3bb7
+package: io.github.joeblack2k.thords.dev
+physical install: PASS

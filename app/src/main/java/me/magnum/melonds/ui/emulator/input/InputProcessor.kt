@@ -9,6 +9,8 @@ import me.magnum.melonds.MelonEmulator
 import me.magnum.melonds.domain.model.ControllerConfiguration
 import me.magnum.melonds.domain.model.Input
 import me.magnum.melonds.domain.model.InputConfig
+import me.magnum.melonds.domain.model.enhancement.CameraDpadHysteresis
+import me.magnum.melonds.domain.model.enhancement.CameraDpadInputState
 import java.util.Locale
 import kotlin.math.absoluteValue
 
@@ -42,6 +44,8 @@ class InputProcessor(private val controllerConfiguration: ControllerConfiguratio
     private var slot2DigitalRightPressed = false
     private var slot2DigitalUpPressed = false
     private var slot2DigitalDownPressed = false
+    private val profileCamera = CameraDpadHysteresis()
+    private val profileCameraInputState = CameraDpadInputState()
 
     init {
         val axis = controllerConfiguration.inputMapper.flatMap { inputConfig ->
@@ -105,10 +109,23 @@ class InputProcessor(private val controllerConfiguration: ControllerConfiguratio
                 }
                 axisState.value = clampedValue
             }
+            if (controllerConfiguration.profileCameraEnabled) {
+                updateProfileCamera(motionEvent)
+            }
             return slot2Handled || deviceAxis.isNotEmpty()
         } else {
             return false
         }
+    }
+
+    private fun updateProfileCamera(motionEvent: MotionEvent) {
+        val next = profileCamera.update(
+            x = motionEvent.getAxisValue(MotionEvent.AXIS_Z).coerceIn(-1f, 1f),
+            y = motionEvent.getAxisValue(MotionEvent.AXIS_RZ).coerceIn(-1f, 1f),
+        )
+        val edges = profileCameraInputState.updateCamera(next)
+        edges.released.forEach(systemInputListener::onKeyReleased)
+        edges.pressed.forEach(systemInputListener::onKeyPress)
     }
 
     override fun onMotionEventSlot2(motionEvent: MotionEvent): Boolean {
@@ -120,18 +137,20 @@ class InputProcessor(private val controllerConfiguration: ControllerConfiguratio
 
     private fun dispatchInputPressed(input: Input, fromController: Boolean) {
         updateSlot2DigitalFallback(input, pressed = true, fromController = fromController)
-        if (input.isSystemInput) {
+        val shouldDispatch = !fromController || profileCameraInputState.controllerPressed(input)
+        if (input.isSystemInput && shouldDispatch) {
             systemInputListener.onKeyPress(input)
-        } else {
+        } else if (!input.isSystemInput && shouldDispatch) {
             frontendInputListener.onKeyPress(input)
         }
     }
 
     private fun dispatchInputReleased(input: Input, fromController: Boolean) {
         updateSlot2DigitalFallback(input, pressed = false, fromController = fromController)
-        if (input.isSystemInput) {
+        val shouldDispatch = !fromController || profileCameraInputState.controllerReleased(input)
+        if (input.isSystemInput && shouldDispatch) {
             systemInputListener.onKeyReleased(input)
-        } else {
+        } else if (!input.isSystemInput && shouldDispatch) {
             frontendInputListener.onKeyReleased(input)
         }
     }
@@ -191,7 +210,6 @@ class InputProcessor(private val controllerConfiguration: ControllerConfiguratio
             return false
         }
 
-        val deadzone = slot2Mapping.normalizedDeadzone()
         val rawAnalogX = resolveSlot2AxisValue(
             motionEvent = motionEvent,
             preferredAxisCode = slot2Mapping.axisXCode,
@@ -202,10 +220,7 @@ class InputProcessor(private val controllerConfiguration: ControllerConfiguratio
             preferredAxisCode = slot2Mapping.axisYCode,
             fallbackAxisCodes = slot2YAxisFallbackCodes,
         ).coerceIn(-1f, 1f)
-        val mappedX = if (slot2Mapping.invertX) -rawAnalogX else rawAnalogX
-        val mappedY = if (slot2Mapping.invertY) -rawAnalogY else rawAnalogY
-        val analogX = if (mappedX.absoluteValue < deadzone) 0f else mappedX
-        val analogY = if (mappedY.absoluteValue < deadzone) 0f else mappedY
+        val (analogX, analogY) = slot2Mapping.processRadial(rawAnalogX, rawAnalogY)
         MelonEmulator.setSlot2AnalogInput(analogX, analogY)
         val now = SystemClock.uptimeMillis()
         lastSlot2RawAnalogEventAtMs = now
@@ -215,7 +230,7 @@ class InputProcessor(private val controllerConfiguration: ControllerConfiguratio
             lastSlot2AnalogLogAtMs = now
             Log.w(
                 TAG,
-                "slot2AnalogInput deviceId=${motionEvent.deviceId} source=0x${motionEvent.source.toString(16)} axisX=${slot2Mapping.axisXCode} axisY=${slot2Mapping.axisYCode} x=${"%.3f".format(Locale.US, analogX)} y=${"%.3f".format(Locale.US, analogY)} deadzone=${"%.3f".format(Locale.US, deadzone)}",
+                "slot2AnalogInput deviceId=${motionEvent.deviceId} source=0x${motionEvent.source.toString(16)} axisX=${slot2Mapping.axisXCode} axisY=${slot2Mapping.axisYCode} x=${"%.3f".format(Locale.US, analogX)} y=${"%.3f".format(Locale.US, analogY)} deadzone=${"%.3f".format(Locale.US, slot2Mapping.normalizedDeadzone())}",
             )
         }
         return true

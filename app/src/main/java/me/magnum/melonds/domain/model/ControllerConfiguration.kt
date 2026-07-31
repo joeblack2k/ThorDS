@@ -3,6 +3,7 @@ package me.magnum.melonds.domain.model
 class ControllerConfiguration(
     configList: List<InputConfig>,
     val slot2AnalogMapping: Slot2AnalogMapping = Slot2AnalogMapping(),
+    val profileCameraEnabled: Boolean = false,
 ) {
     companion object {
         private val configurableInput = listOf(
@@ -70,10 +71,11 @@ class ControllerConfiguration(
         }?.input
     }
 
-    fun copy(): ControllerConfiguration {
+    fun copy(profileCameraEnabled: Boolean = this.profileCameraEnabled): ControllerConfiguration {
         return ControllerConfiguration(
             configList = inputMapper.map { it.copy() },
             slot2AnalogMapping = slot2AnalogMapping.copy(),
+            profileCameraEnabled = profileCameraEnabled,
         )
     }
 }

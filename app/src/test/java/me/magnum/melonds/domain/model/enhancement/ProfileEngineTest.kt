@@ -1,11 +1,14 @@
 package me.magnum.melonds.domain.model.enhancement
 
 import me.magnum.melonds.domain.model.Cheat
+import me.magnum.melonds.domain.model.RomInfo
+import me.magnum.melonds.domain.model.rom.config.RomGbaSlotConfig
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
+import java.security.MessageDigest
 import java.util.zip.CRC32
 
 class ProfileEngineTest {
@@ -51,8 +54,34 @@ class ProfileEngineTest {
         val original = resolver.resolve(sm64ds, device, ProfilePreferences(selectedProfileId = "original.sm64ds.eu"), emptyList())
         assertEquals("sm64ds.eu.thor-enhanced", enhanced.profileId)
         assertEquals("original.sm64ds.eu", original.profileId)
-        assertTrue(enhanced.curatedRuntimeCodes.isEmpty())
+        val analog = enhanced.curatedRuntimeCodes.single()
+        assertEquals("sm64ds.eu.am64ds-analog.v1", analog.id)
+        assertEquals(analog.codeSha256, sha256(analog.codeWords.joinToString("\n") + "\n"))
         assertTrue(original.curatedRuntimeCodes.isEmpty())
+    }
+
+    @Test
+    fun launchPlannerOnlyEnablesAnalogForTheExactEnhancedIdentity() {
+        val catalog = ProfileCatalog.parse(File("src/main/assets/enhancement-profiles.json").readText())
+        val planner = ProfileLaunchPlanner(catalog)
+        val exactInfo = RomInfo("ASMP", 0u, "SM64DS", "SM64DS", revision = 0)
+        val identity = RomIdentity(exactInfo.gameCode, exactInfo.revision, "ba3c4052e00c5cc31df5d5534c39de1b")
+        val exact = planner.resolve(identity, RomGbaSlotConfig.None, listOf(userCheat))
+        assertTrue(exact.useSlot2Analog)
+        assertEquals(listOf("ThorDS: sm64ds.eu.am64ds-analog.v1", "User"), RuntimeActionReplayComposer.compose(exact.plan).map { it.name })
+
+        val mismatch = planner.resolve(identity.copy(revision = 1), RomGbaSlotConfig.None, listOf(userCheat))
+        assertFalse(mismatch.useSlot2Analog)
+        assertEquals(listOf("User"), RuntimeActionReplayComposer.compose(mismatch.plan).map { it.name })
+
+        val protectedSlot = planner.resolve(identity, RomGbaSlotConfig.GbaRom(null, null), emptyList())
+        assertFalse(protectedSlot.useSlot2Analog)
+        assertTrue(RuntimeActionReplayComposer.compose(protectedSlot.plan).isEmpty())
+
+        val safeMode = planner.resolve(identity, RomGbaSlotConfig.None, emptyList(), enhancementsEnabled = false)
+        assertFalse(safeMode.useSlot2Analog)
+        assertEquals("original.sm64ds.eu", safeMode.plan.profileId)
+        assertTrue(RuntimeActionReplayComposer.compose(safeMode.plan).isEmpty())
     }
 
     @Test
@@ -267,5 +296,9 @@ class ProfileEngineTest {
             throw AssertionError("Expected failure")
         } catch (_: IllegalArgumentException) {
         }
+    }
+
+    private fun sha256(value: String): String {
+        return MessageDigest.getInstance("SHA-256").digest(value.encodeToByteArray()).joinToString("") { "%02x".format(it) }
     }
 }

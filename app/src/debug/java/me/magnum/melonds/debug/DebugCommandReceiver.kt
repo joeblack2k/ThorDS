@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.content.edit
+import androidx.core.content.FileProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -16,6 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.magnum.melonds.MelonDSAndroidInterface
 import me.magnum.melonds.MelonEmulator
+import me.magnum.melonds.common.ThorDeviceDefaults
 import me.magnum.melonds.domain.model.ControllerConfiguration
 import me.magnum.melonds.domain.model.Input
 import me.magnum.melonds.domain.model.SaveStateSlot
@@ -59,6 +61,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_SET_BGOBJ_LOG_SUFFIX) -> { handleSetBgObjLog(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_LATCH_TRACE_SUFFIX) -> { handleSetLatchTrace(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_FAST_FORWARD_SUFFIX) -> { handleSetFastForward(intent); true }
+            context.debugCommandAction(ACTION_SET_THORDS_SAFE_MODE_SUFFIX) -> { handleSetThorDSSafeMode(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_SLOT2_ANALOG_SUFFIX) -> { handleSetSlot2Analog(intent); true }
             context.debugCommandAction(ACTION_SET_SLOT2_ANALOG_MAPPING_SUFFIX) -> { handleSetSlot2AnalogMapping(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_VULKAN_FALLBACKS_SUFFIX) -> { handleSetVulkanFallbacks(intent); true }
@@ -134,6 +137,15 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             ?: throw IllegalArgumentException("Missing enabled extra")
         MelonEmulator.setFastForwardEnabled(enabled)
         Log.w(TAG, "action=set_fast_forward enabled=${if (enabled) 1 else 0}")
+    }
+
+    private fun handleSetThorDSSafeMode(entryPoint: DebugCommandEntryPoint, intent: Intent) {
+        val enabled = intent.firstBooleanExtra(EXTRA_ENABLED, EXTRA_VALUE)
+            ?: throw IllegalArgumentException("Missing enabled extra")
+        entryPoint.sharedPreferences().edit(commit = true) {
+            putBoolean(ThorDeviceDefaults.SAFE_MODE_KEY, enabled)
+        }
+        Log.w(TAG, "action=set_thords_safe_mode enabled=${if (enabled) 1 else 0}")
     }
 
     private fun handleSetSlot2Analog(intent: Intent) {
@@ -215,6 +227,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
     private suspend fun handleLaunchRom(context: Context, intent: Intent): Boolean {
         val romUri = intent.data ?: intent.firstStringExtra(EXTRA_ROM_URI, EXTRA_URI, EXTRA_PATH)?.let { Uri.parse(it) }
             ?: throw IllegalArgumentException("Missing ROM URI. Provide intent data or rom_uri.")
+        val launchUri = getLaunchUri(context, romUri)
         val waitReady = intent.firstBooleanExtra(EXTRA_WAIT_ROM_READY, EXTRA_WAIT_READY)
             ?: false
         val pauseAfterReady = intent.getBooleanExtra(EXTRA_PAUSE_AFTER, false)
@@ -230,7 +243,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context = context,
             launchIntent = Intent(context, EmulatorActivity::class.java).apply {
                 action = context.debugCommandAction(ACTION_LAUNCH_ROM_SUFFIX)
-                data = romUri
+                data = launchUri
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -248,6 +262,14 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             "action=launch_rom uri=$romUri waitReady=${if (waitReady) 1 else 0} activitySeen=${if (activitySeen) 1 else 0} ready=${if (ready) 1 else 0} pauseAfter=${if (pauseAfterReady) 1 else 0} requestedTimeoutMs=$requestedTimeoutMs deferredReady=1",
         )
         return activitySeen
+    }
+
+    private fun getLaunchUri(context: Context, romUri: Uri): Uri {
+        if (romUri.scheme != "file") return romUri
+        val file = romUri.path?.let(::File) ?: return romUri
+        val sharedDirectory = File(context.cacheDir, "shared_saves").canonicalFile
+        if (file.canonicalFile.parentFile != sharedDirectory) return romUri
+        return FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     }
 
     private fun startEmulatorActivityFromDebugCommand(context: Context, launchIntent: Intent) {
@@ -1166,6 +1188,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_SET_BGOBJ_LOG_SUFFIX = "SET_BGOBJ_LOG"
         private const val ACTION_SET_LATCH_TRACE_SUFFIX = "SET_LATCH_TRACE"
         private const val ACTION_SET_FAST_FORWARD_SUFFIX = "SET_FAST_FORWARD"
+        private const val ACTION_SET_THORDS_SAFE_MODE_SUFFIX = "SET_THORDS_SAFE_MODE"
         private const val ACTION_SET_SLOT2_ANALOG_SUFFIX = "SET_SLOT2_ANALOG"
         private const val ACTION_SET_SLOT2_ANALOG_MAPPING_SUFFIX = "SET_SLOT2_ANALOG_MAPPING"
         private const val ACTION_SET_VULKAN_FALLBACKS_SUFFIX = "SET_VULKAN_FALLBACKS"

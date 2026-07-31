@@ -68,7 +68,31 @@
             "RA_HARDCORE"
           ],
           "requiresRelaunch": true,
-          "provenance": "AM64DS Europe payload is intentionally deferred to M6"
+          "provenance": "AM64DS Europe by LRFLEW, https://github.com/LRFLEW/AM64DS_DeSmuME/blob/analog/PATCHES.md",
+          "runtimeCode": {
+            "id": "sm64ds.eu.am64ds-analog.v1",
+            "codeWords": [
+              "02024D60 EA00000C",
+              "E202C404 00000040",
+              "E3A03301 E3833F81",
+              "E1D300B0 E3C00080",
+              "E1C300B0 E3A03409",
+              "E3833C01 E8930003",
+              "E3700001 03A00000",
+              "03A01000 E2893008",
+              "E8830003 E3A00001",
+              "E5C90014 EA0000B4",
+              "E2075658 00000008",
+              "02000100 00000000",
+              "520FA7C0 E7D22001",
+              "020FA7C0 E3A02000",
+              "D0000000 00000000",
+              "520FC0C0 E19100B0",
+              "020FC0C0 EA000070",
+              "D2000000 00000000"
+            ],
+            "codeSha256": "e68025c3aad3a47941ab2903dd9d212b91bafedff705ea6252677c27d07bdb1c"
+          }
         },
         {
           "id": "right-stick-camera",

@@ -1,0 +1,14 @@
+M6 physical relaunch proof, 2026-07-31
+
+PASS: the app started from RomListActivity, launched the temporary app-private
+source through the debug FileProvider path, and reported running ROM readiness.
+PASS: normal mode resolved `sm64ds.eu.thor-enhanced`, one curated runtime code,
+Slot-2 Analog enabled, and camera override enabled.
+PASS: after safe mode was enabled and the app was relaunched, the same exact
+identity resolved `original.sm64ds.eu`, zero curated runtime codes, Slot-2
+Analog disabled, and camera override disabled.
+PASS: temporary device and app-private test copies were removed; the local
+source SHA-256 remains ce5829aaa79f06c67140ed1f45cbca738b0a9d0180538c8c1498472d859db032.
+
+The persistent ROM library scan result is not claimed by this file. No ROM
+path, source bytes, save, device serial, screenshot, or credential is present.

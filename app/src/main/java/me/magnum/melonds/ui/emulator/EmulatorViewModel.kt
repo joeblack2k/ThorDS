@@ -72,6 +72,7 @@ import me.magnum.melonds.domain.model.ConsoleType
 import me.magnum.melonds.domain.model.DualScreenPreset
 import me.magnum.melonds.domain.model.FpsCounterPosition
 import me.magnum.melonds.domain.model.RomInfo
+import me.magnum.melonds.domain.model.enhancement.ProfileLaunchPlanner
 import me.magnum.melonds.domain.model.RuntimeBackground
 import me.magnum.melonds.domain.model.Rect
 import me.magnum.melonds.domain.model.SaveStateSlot
@@ -113,6 +114,7 @@ import me.magnum.melonds.domain.model.input.SoftInputBehaviour
 import me.magnum.melonds.domain.model.retroachievements.RASimpleLeaderboard
 import me.magnum.melonds.domain.model.retroachievements.exception.RAGameNotExist
 import me.magnum.melonds.domain.model.rom.Rom
+import me.magnum.melonds.domain.model.rom.config.RomGbaSlotConfig
 import me.magnum.melonds.domain.model.rom.config.RuntimeMicSource
 import me.magnum.melonds.domain.model.ui.Orientation
 import me.magnum.melonds.domain.repositories.BackgroundRepository
@@ -123,6 +125,7 @@ import me.magnum.melonds.domain.repositories.RomsRepository
 import me.magnum.melonds.domain.repositories.SaveStatesRepository
 import me.magnum.melonds.domain.repositories.SettingsRepository
 import me.magnum.melonds.domain.services.EmulatorManager
+import me.magnum.melonds.impl.enhancement.EmbeddedProfileCatalog
 import me.magnum.melonds.impl.emulator.EmulatorSession
 import me.magnum.melonds.impl.emulator.LeaderboardTrackerUpdateLogLimiter
 import me.magnum.melonds.impl.emulator.debug.RendererDebugCaptureLogger
@@ -256,6 +259,7 @@ class EmulatorViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val sessionCoroutineScope = EmulatorSessionCoroutineScope()
+    private val profileLaunchPlanner by lazy { ProfileLaunchPlanner(EmbeddedProfileCatalog(context).catalog) }
     private var raBootstrapJob: Job? = null
     private var raSessionJob: Job? = null
 
@@ -419,12 +423,15 @@ class EmulatorViewModel @Inject constructor(
     val runtimeLayout = _runtimeLayout.asStateFlow()
 
     private val activeRomConfig = MutableStateFlow<Rom?>(null)
+    private val profileCameraEnabled = MutableStateFlow(false)
 
     val controllerConfiguration = combine(
         settingsRepository.observeControllerConfiguration(),
         activeRomConfig,
-    ) { globalConfiguration, rom ->
-        rom?.config?.getEffectiveControllerConfiguration(globalConfiguration) ?: globalConfiguration
+        profileCameraEnabled,
+    ) { globalConfiguration, rom, profileCameraEnabled ->
+        (rom?.config?.getEffectiveControllerConfiguration(globalConfiguration) ?: globalConfiguration)
+            .copy(profileCameraEnabled = profileCameraEnabled)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
@@ -782,8 +789,22 @@ class EmulatorViewModel @Inject constructor(
                 )
             }
 
-            val cheats = getRomInfo(rom)?.let { getRomEnabledCheats(it) } ?: emptyList()
-            val result = emulatorManager.loadRom(rom, cheats)
+            val romInfo = getRomInfo(rom)
+            val userCheats = romInfo?.let { getRomEnabledCheats(it) } ?: emptyList()
+            val plannedLaunch = profileLaunchPlanner.plan(
+                rom = rom,
+                romInfo = romInfo,
+                userCheats = userCheats,
+                enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
+            )
+            currentRom = plannedLaunch.rom
+            activeRomConfig.value = plannedLaunch.rom
+            profileCameraEnabled.value = plannedLaunch.plan.enhancements.any { it.id == "right-stick-camera" && it.enabled }
+            Log.i(
+                "ProfileLaunch",
+                "profile=${plannedLaunch.plan.profileId} curatedCodes=${plannedLaunch.plan.curatedRuntimeCodes.size} slot2Analog=${if (plannedLaunch.rom.config.gbaSlotConfig is RomGbaSlotConfig.AnalogInput) 1 else 0} camera=${if (profileCameraEnabled.value) 1 else 0}",
+            )
+            val result = emulatorManager.loadRom(plannedLaunch.rom, plannedLaunch.cheats)
             when (result) {
                 is RomLaunchResult.LaunchFailedRomNotFound,
                 is RomLaunchResult.LaunchFailedRomNotSupported,
@@ -796,11 +817,11 @@ class EmulatorViewModel @Inject constructor(
                     if (!result.isGbaLoadSuccessful) {
                         _toastEvent.tryEmit(ToastEvent.GbaLoadFailed)
                     }
-                    _emulatorState.value = EmulatorState.RunningRom(rom)
-                    maybeAutoLoadStateOnLaunch(rom)
-                    DebugCommandStateStore.onRunningRomReady(rom.uri, rom.name)
+                    _emulatorState.value = EmulatorState.RunningRom(plannedLaunch.rom)
+                    maybeAutoLoadStateOnLaunch(plannedLaunch.rom)
+                    DebugCommandStateStore.onRunningRomReady(plannedLaunch.rom.uri, plannedLaunch.rom.name)
                     startTrackingFps()
-                    startTrackingPlayTime(rom)
+                    startTrackingPlayTime(plannedLaunch.rom)
                 }
             }
         } catch (exception: Throwable) {
@@ -1550,8 +1571,14 @@ class EmulatorViewModel @Inject constructor(
 
         getRomInfo(rom)?.let {
             sessionCoroutineScope.launch {
-                val cheats = getRomEnabledCheats(it)
-                emulatorManager.updateCheats(cheats)
+                val userCheats = getRomEnabledCheats(it)
+                val plannedLaunch = profileLaunchPlanner.plan(
+                    rom = rom,
+                    romInfo = it,
+                    userCheats = userCheats,
+                    enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
+                )
+                emulatorManager.updateCheats(plannedLaunch.cheats)
             }
         }
     }
@@ -2639,6 +2666,7 @@ class EmulatorViewModel @Inject constructor(
         currentRom = null
         lastEndpointRestartNoticeGeneration = null
         activeRomConfig.value = null
+        profileCameraEnabled.value = false
         currentRetroAchievementsGameId = null
         offlineSyncChoiceDeferred?.cancel()
         offlineSyncChoiceDeferred = null

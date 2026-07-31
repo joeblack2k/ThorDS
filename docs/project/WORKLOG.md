@@ -321,3 +321,37 @@ the physical Thor and filtered logcat had no FATAL EXCEPTION or ANR
 ### Next
 
 - M6: integrate the exact AM64DS Europe Slot-2 analog profile.
+
+## 2026-07-31 - M6 implementation and device activation
+
+### Changes
+
+- embedded the exact checked AM64DS Europe Action Replay runtime payload in the
+  exact `sm64ds.eu.thor-enhanced` profile
+- added revision-aware profile identity, launch planning, Slot-2 Analog
+  activation, radial left-stick processing and right-stick D-pad hysteresis
+- protected simultaneous physical D-pad and camera mappings from premature
+  input release
+- made the existing ThorDS safe-mode preference select the exact Original
+  profile on the next launch, without a runtime payload or analog accessory
+- added debug-only FileProvider launch support and safe-mode control for
+  reproducible device validation; neither is included in production builds
+
+### Validation
+
+```text
+command: CARGO=/tmp/thords-cargo ./gradlew --no-daemon \
+  :app:testGitHubProdReleaseUnitTest :app:assembleGitHubProdDebug
+result: PASS
+
+physical Thor: enhanced launch selected one curated code, Slot-2 Analog and
+camera override; safe-mode relaunch selected exact Original with all three off.
+result: PASS; filtered logcat contained no FATAL EXCEPTION or ANR
+```
+
+### Scope
+
+- physical walk/run, swim/fly/slide, right-stick camera response and controller
+  reconnect still need a human gameplay observation
+- no ROM, save, capture, private URI, device serial or credential was added to
+  the source tree

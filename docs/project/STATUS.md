@@ -30,7 +30,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M3 | PASS | m3-product-identity | docs/evidence/m3/ | public source, identity, updater isolation, defaults, safe mode and offline notices verified |
 | M4 | PASS | 04ed45bd | docs/evidence/m4/ | catalog v1, exact resolver, safe Original fallback, curated/user separation and synthetic delta patches |
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
-| M6 | NEXT | | | Slot-2 analog controls |
+| M6 | IN_PROGRESS | | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; physical gameplay scenarios remain |
 | M7 | NOT_STARTED | | | |
 | M8 | NOT_STARTED | | | |
 | M9 | NOT_STARTED | | | |
@@ -41,7 +41,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Feature status
 
-- Analog: NOT_STARTED
+- Analog: IMPLEMENTED_PENDING_GAMEPLAY
 - True Widescreen: NOT_STARTED
 - RA Casual: NOT_STARTED
 - RA Hardcore gate: NOT_STARTED
@@ -52,4 +52,5 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Integrate the exact AM64DS Europe Slot-2 analog profile.
+Perform the remaining physical M6 gameplay and controller-reconnect scenarios
+without recording private captures.

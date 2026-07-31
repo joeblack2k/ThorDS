@@ -1,0 +1,28 @@
+{
+  "source": "AYN Thor integrated controller",
+  "identifiers": "redacted",
+  "leftStick": {
+    "axes": ["ABS_X", "ABS_Y"],
+    "destination": "Slot-2 Analog Input",
+    "processing": {
+      "deadzone": "radial",
+      "rescale": "full range after deadzone",
+      "inversion": "per-axis configuration"
+    }
+  },
+  "rightStick": {
+    "axes": ["ABS_Z", "ABS_RZ"],
+    "destination": "DS D-pad camera inputs",
+    "pressThreshold": 0.55,
+    "releaseThreshold": 0.35,
+    "diagonals": true,
+    "physicalDpadCoexistence": "reference-counted by source"
+  },
+  "evidence": {
+    "physicalDescriptor": "docs/evidence/m2/controller-events-redacted.json",
+    "unitTests": [
+      "Slot2AnalogMappingTest",
+      "CameraDpadHysteresisTest"
+    ]
+  }
+}

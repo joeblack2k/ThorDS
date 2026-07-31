@@ -1,0 +1,7 @@
+scenario,profile,curated_codes,slot2_analog,camera_override,result
+physical enhanced launch,sm64ds.eu.thor-enhanced,1,enabled,enabled,PASS
+physical safe-mode relaunch,original.sm64ds.eu,0,disabled,disabled,PASS
+debug native input injection,sm64ds.eu.thor-enhanced,1,"0.80,-0.35 then 0.00,0.00",enabled,PASS
+
+# 2026-07-31 physical Thor log summary. The temporary app-private test source,
+# its URI, device serial, and all captures were removed and are not recorded.

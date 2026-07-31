@@ -26,6 +26,10 @@ class ProfileCatalog private constructor(
             identity.retroAchievementsHash in game.raHashes
     }
 
+    fun exactProfiles(identity: RomIdentity): List<EnhancementProfile> {
+        return profiles.filter { matchesExactly(it, identity) }
+    }
+
     companion object {
         private val json = Json { ignoreUnknownKeys = true }
 

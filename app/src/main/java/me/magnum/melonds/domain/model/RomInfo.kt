@@ -9,6 +9,7 @@ data class RomInfo(
     val headerChecksum: UInt,
     val gameTitle: String,
     val gameName: String,
+    val revision: Int = 0,
 ) {
     fun headerChecksumString(): String {
         return headerChecksum.toString(16).padStart(8, '0').uppercase()

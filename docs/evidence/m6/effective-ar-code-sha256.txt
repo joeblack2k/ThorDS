@@ -1,0 +1,11 @@
+M6 curated runtime Action Replay payload
+
+profile: sm64ds.eu.thor-enhanced
+codeId: sm64ds.eu.am64ds-analog.v1
+normalization: LF-joined 8-hex-word pairs with one trailing LF
+sha256: e68025c3aad3a47941ab2903dd9d212b91bafedff705ea6252677c27d07bdb1c
+result: PASS
+
+The checked payload is the exact code represented by
+profiles/SM64DS_ANALOG_AR_CODE.md. No ROM bytes are copied, patched, cached,
+or recorded.
