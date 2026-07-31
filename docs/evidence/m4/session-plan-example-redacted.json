@@ -1,0 +1,9 @@
+{
+  "profileId": "original.generic",
+  "profileVersion": 1,
+  "match": "NO_MATCH",
+  "curatedRuntimeCodes": [],
+  "userCheats": "separate; count omitted",
+  "effectiveRaMode": "CASUAL",
+  "note": "The generic fallback never adds curated code without an exact profile identity match."
+}

@@ -1,0 +1,22 @@
+M4 enhancement profile engine validation
+Date: 2026-07-31
+
+Commands:
+CARGO=/tmp/thords-cargo ./gradlew --no-daemon :app:testGitHubProdReleaseUnitTest :app:assembleGitHubProdDebug
+adb install -r app/build/outputs/apk/gitHubProd/debug/app-gitHub-prod-debug.apk
+
+Result: PASS
+
+Thor smoke: PASS; `io.github.joeblack2k.thords.dev` started with version 0.1.0-dev
+and filtered logcat contained no ThorDS FATAL EXCEPTION or ANR.
+
+Covered:
+- embedded catalog parser and fallback validation
+- exact game-code, revision and RetroAchievements system-hash matching
+- dependency-cycle, malformed Action Replay and conflict validation
+- deterministic immutable session-plan hash and safe Original fallback
+- stable ROM preference key and corrupt preference payload fallback
+- curated runtime-code and user-cheat separation
+- synthetic IPS and BPS application, source checksum failure and target-copy overlap
+
+No ROM, save, private device capture, credential, or game asset is used by these tests.

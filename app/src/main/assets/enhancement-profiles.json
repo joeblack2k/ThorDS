@@ -1,0 +1,12 @@
+{
+  "catalogVersion": 1,
+  "profiles": [
+    {
+      "schemaVersion": 1,
+      "id": "original.generic",
+      "profileVersion": 1,
+      "displayName": "Original",
+      "fallback": true
+    }
+  ]
+}

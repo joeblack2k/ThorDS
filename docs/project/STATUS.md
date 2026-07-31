@@ -15,9 +15,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - Current milestone: M4
 - Current gate: generic Enhancement Profile Engine
 - Overall status: IN_PROGRESS
-- Latest verified result: M3 builds and passes GitHub Prod release unit tests;
-  the debug APK installs beside MelonDualDS on the physical Thor, exposes the
-  public source link and notices, and has no updater install route
+- Latest verified result: M4 release unit tests and GitHub Prod debug build
+  pass; the APK installs and starts on the physical Thor without a filtered
+  FATAL EXCEPTION or ANR
 - Active blocker: none
 
 ## Milestone status
@@ -28,8 +28,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M1 | PASS | 5c41182 | docs/evidence/m1/ | build/install/ASMP boot/10-minute smoke green; two-panel behavior is the M2 scope |
 | M2 | PASS | 812765e / e4cb944 | docs/evidence/m2/ | physical roles, exact DS touch grid, controller and lifecycle pass; private captures excluded from public history |
 | M3 | PASS | m3-product-identity | docs/evidence/m3/ | public source, identity, updater isolation, defaults, safe mode and offline notices verified |
-| M4 | NEXT | | | generic Enhancement Profile Engine |
-| M5 | NOT_STARTED | | | |
+| M4 | PASS | profile: add deterministic enhancement profile engine | docs/evidence/m4/ | catalog v1, exact resolver, safe Original fallback, curated/user separation and synthetic delta patches |
+| M5 | NEXT | | | exact Super Mario 64 DS Europe profile |
 | M6 | NOT_STARTED | | | |
 | M7 | NOT_STARTED | | | |
 | M8 | NOT_STARTED | | | |
@@ -52,4 +52,4 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Implement the generic Enhancement Profile Engine and its unit-test harness.
+Add the exact Super Mario 64 DS Europe identity and profile.

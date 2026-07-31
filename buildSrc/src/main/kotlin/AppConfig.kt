@@ -8,5 +8,5 @@ object AppConfig {
     const val versionName = "0.1.0-dev"
     const val upstreamVersionName = "0.7.0.rc5"
     const val coreRevision = "39363b7c"
-    const val profileCatalogVersion = "none"
+    const val profileCatalogVersion = "1"
 }

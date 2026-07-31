@@ -263,3 +263,47 @@ artifact: docs/evidence/m3/thor-validation.md
 ### Next
 
 - M4: Generic Enhancement Profile Engine.
+
+## 2026-07-31 - M4
+
+### Changes
+
+- product: added catalog v1 with an embedded, read-only `original.generic`
+  fallback; it cannot contain game identity or curated patches
+- engine: added exact identity matching, capability probing, dependency and
+  conflict resolution, immutable session plans, diagnostics, stable preference
+  keys and corrupt-preference fallback
+- safety: curated Action Replay code and user cheats are represented and
+  composed separately; no code is emitted without an exact selected profile
+- patch infrastructure: added synthetic byte-array IPS and BPS appliers only;
+  no source ROM is opened writable and no cache patch is produced
+- metadata: the About build metadata now reports profile catalog version `1`
+
+### Validation
+
+```text
+command: CARGO=/tmp/thords-cargo ./gradlew --no-daemon \
+  :app:testGitHubProdReleaseUnitTest :app:assembleGitHubProdDebug
+result: PASS; all release unit tests and GitHub Prod debug APK built
+
+command: adb install -r app/build/outputs/apk/gitHubProd/debug/app-gitHub-prod-debug.apk
+result: PASS; io.github.joeblack2k.thords.dev version 0.1.0-dev launched on
+the physical Thor and filtered logcat had no FATAL EXCEPTION or ANR
+```
+
+### Evidence
+
+- `docs/evidence/m4/profile-catalog-dump.json`
+- `docs/evidence/m4/profile-tests.txt`
+- `docs/evidence/m4/session-plan-example-redacted.json`
+
+### Scope
+
+- deferred: all real SM64DS profile identity, game codes, controller behavior
+  and patch addresses are M5 or later
+- safety: no ROM, save, device serial, private capture or credential was
+  added to the source tree
+
+### Next
+
+- M5: exact Super Mario 64 DS Europe identity and profile.
