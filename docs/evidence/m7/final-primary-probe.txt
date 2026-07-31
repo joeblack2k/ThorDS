@@ -23,8 +23,8 @@ Result: PARTIAL_PASS
 
 This proves the debug spike reaches the final primary surface and distinguishes
 the fallback and dual-UV presentation paths. It does not prove a European
-gameplay projection patch, extra horizontal FOV, culling, BOB world geometry,
-HUD/glyph ratios, lower-panel geometry, or no-flash transitions.
+gameplay projection patch, extra horizontal FOV, culling, castle-grounds world
+geometry, HUD/glyph ratios, lower-panel geometry, or no-flash transitions.
 
 All ROM copies, saves, final images, internal captures, metadata and temporary
 logs used for this probe were deleted after aggregation. No private asset,

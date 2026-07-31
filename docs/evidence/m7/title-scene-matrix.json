@@ -50,6 +50,6 @@
   ],
   "limitations": [
     "No pixel capture, ROM data, save data, device identifier or temporary path is retained.",
-    "These title phases do not establish BOB world aspect, horizontal FOV, culling or HUD geometry."
+    "These title phases do not establish castle-grounds world aspect, horizontal FOV, culling or HUD geometry."
   ]
 }

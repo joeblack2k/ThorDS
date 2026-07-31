@@ -140,7 +140,8 @@ physical debug launch reported two curated codes and retained a stable
   classifier sequence evidence only; it does not prove a no-flash final-panel
   transition.
 - D-pad automation did not produce a deterministic BOB-door route. No BOB,
-  FOV, culling, HUD-ratio or final-panel measurement is claimed.
+  FOV, culling, HUD-ratio or final-panel measurement is claimed. This
+  historical route failure does not define the M7 representative scene.
 - Evidence: `docs/evidence/m7/castle-grounds-scene-matrix.json`. All
   temporary ROM copies, saves, frame images, metadata and log output were
   deleted after aggregation.
@@ -155,16 +156,52 @@ physical debug launch reported two curated codes and retained a stable
   overlay. Final visual inspection placed the pause dialog and text inside the
   safe area.
 - This is final-surface presentation evidence only. It does not establish the
-  game projection, horizontal FOV, culling, BOB geometry, HUD ratios or
-  transition behavior needed to exit M7.
+  game projection, horizontal FOV, culling, castle-grounds geometry, HUD
+  ratios or transition behavior needed to exit M7.
 - Evidence: `docs/evidence/m7/final-primary-probe.txt`. All temporary ROM
   copies, saves, images, internal captures, metadata and logs were deleted
   after aggregation.
 
 ### Decision
 
-- M7 is not green. The diagnostic does not yet prove extra horizontal FOV,
-  culling, HUD ownership, transitions or the BOB scene matrix.
+- Save-state-assisted physical route: temporary app-private checkpoints
+  resumed castle grounds and the castle-entrance approach without replaying
+  the title, file selection or intro. Physical Touch Mode movement changed the
+  scene after ThorDS was restored to the foreground.
+- The separate `dev.picori.tmc.ra` test application reclaimed the foreground
+  during one probe, so later touches were initially delivered elsewhere.
+  Stopping that test application and restoring ThorDS was sufficient to
+  restore the expected input path; this was a temporary device condition, not
+  a product change.
+- The user-visible top screen was reported as physically rotated 180 degrees
+  relative to the internal capture orientation. No FOV, culling, HUD or
+  transition measurement is claimed.
+- Evidence: `docs/evidence/m7/save-state-physical-probe.txt`. Temporary ROM,
+  save-state, capture and log files were removed after aggregation.
+
+- Scope correction: per the repository owner’s explicit override, the M7
+  representative scene is the controllable castle-grounds/castle-approach
+  checkpoint. Bob-omb Battlefield and rabbit/key capture are no longer M7
+  exit criteria; the historical BOB route notes above remain for traceability.
+- Primary orientation probe: a launch-scoped debug-only
+  `VULKAN_ROTATE_180` extra rotates only the primary Vulkan output quads. The
+  same castle-grounds scene produced an inverted logical capture with
+  `M7Probe: dual-uv` and `M7Probe: rotate180 surface=1 vertices=12`; the lower
+  external presentation kept its ordinary configuration. This proves the
+  app-side transform path, not the physical panel result.
+- Performance probe: the instrumented castle-grounds run reported about
+  38-40 FPS and approximately 25.6 ms Vulkan instance CPU time, with presented
+  frames and no acquire/submit failures. That diagnostic configuration is not
+  a realtime acceptance pass.
+- Performance follow-up: a target-local `-O2` option was added only to the
+  GitHub debug `core` and Android frontend targets; the generated arm64 debug
+  compile database confirms the flag alongside debug symbols. With renderer
+  debug tools disabled, the same castle-grounds save state reported `FPS: 60`
+  in two captures separated by eight seconds. This is a strong scene-level
+  result, but sustained movement and transition behavior remains open.
+- M7 is not green. The diagnostic does not yet prove physical top-panel
+  orientation, sustained realtime behavior, extra horizontal FOV, culling,
+  HUD ownership, transitions or final castle-grounds geometry.
 - M8 remains blocked by `ADR-true-widescreen.md`.
 
 ## 2026-07-31 - M0

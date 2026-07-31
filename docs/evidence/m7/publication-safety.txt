@@ -15,11 +15,13 @@ APK:
   and a generic login error message only; no credential value found
 
 Secrets:
-- gitleaks scanned all reachable Git history and the current app source.
+- gitleaks rescanned all 983 reachable Git commits and the current app
+  source for this M7 update.
 - one `generic-api-key` finding is a false positive: the public NIST
   SP 800-38A AES-128 test vector in the pre-existing, third-party
   `app/src/main/cpp/rcheevos/src/rhash/aes.c`.
-- M7 documentation scan: PASS; no findings.
+- the current diff-only Gitleaks scan: PASS; no findings
+- M7 documentation scan: PASS; no findings
 
 No ROM bytes, saves, device identifier, temporary path, private screenshot,
 credential or token is included in this evidence directory.

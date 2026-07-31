@@ -38,7 +38,6 @@ Minimaal:
 - file select;
 - castle grounds;
 - castle lobby;
-- BOB start;
 - Chain Chomp;
 - mountain;
 - boss;

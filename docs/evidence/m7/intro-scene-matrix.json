@@ -21,6 +21,6 @@
   "limitations": [
     "No pixel capture, ROM data, save data, device identifier or temporary path is retained.",
     "The scene proves only the developer probe classifier and renderer source separation.",
-    "It does not establish BOB world aspect, horizontal FOV, culling, HUD geometry or transition stability."
+    "It does not establish castle-grounds world aspect, horizontal FOV, culling, HUD geometry or transition stability."
   ]
 }

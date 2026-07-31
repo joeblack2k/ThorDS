@@ -65,6 +65,7 @@ struct VulkanSurfaceConfig
     std::vector<std::pair<std::string, float>> retroShaderParameterOverrides;
     bool retroShaderClearHistory = false;
     bool developerWidescreenProbe = false;
+    bool developerVulkanRotate180 = false;
 };
 
 struct VulkanBackgroundImage

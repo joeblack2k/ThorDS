@@ -40,5 +40,5 @@ classifier and fallback, but M8 still requires conditional validated runtime
 writes, a fuller scene classifier and the full physical matrix before using
 the True Widescreen product name.
 
-Decision gate: `NO_GO_FOR_M8` until the M7 BOB/HUD/transition measurements are
-green.
+Decision gate: `NO_GO_FOR_M8` until the M7 castle-grounds/HUD/transition
+measurements are green.

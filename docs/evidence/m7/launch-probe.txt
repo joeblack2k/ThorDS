@@ -26,9 +26,11 @@ Layer gate:
     centered 1440x1080 UI-safe-area
   - a local-only visual inspection confirmed non-empty stable output; it was
     deleted and is not publication evidence
-- BOB world 16:9, HUD geometry and transition matrix: NOT_YET_MEASURED
-  - the debug touch route advanced the title flow, but physical Thor-controller
-    gameplay is still required for a valid BOB/camera run
+- castle-grounds world 16:9, HUD geometry and transition matrix:
+  NOT_YET_MEASURED
+  - the save-state route now reaches controllable castle grounds without
+    replaying the title or intro; physical orientation, performance and
+    geometry measurements remain open
 
 Safe fallback gate:
 - title-flow composition classified as no current top structured 3D and no

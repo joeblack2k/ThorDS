@@ -112,7 +112,8 @@ bool surfaceConfigsEqual(const VulkanSurfaceConfig& left, const VulkanSurfaceCon
         && left.retroShaderPassCount == right.retroShaderPassCount
         && left.retroShaderParameterOverrides == right.retroShaderParameterOverrides
         && left.retroShaderClearHistory == right.retroShaderClearHistory
-        && left.developerWidescreenProbe == right.developerWidescreenProbe;
+        && left.developerWidescreenProbe == right.developerWidescreenProbe
+        && left.developerVulkanRotate180 == right.developerVulkanRotate180;
 }
 
 bool retroArchConfigEqual(const VulkanSurfaceConfig& left, const VulkanSurfaceConfig& right)
@@ -3416,6 +3417,34 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
 
     if (vertices.size() > kMaxSurfaceVertexCount)
         return false;
+
+    if (config.developerVulkanRotate180)
+    {
+        // Rotate the output quads once; the source UV mapping is already
+        // normalized for each draw mode.
+        melonDS::Platform::Log(
+            melonDS::Platform::LogLevel::Info,
+            "M7Probe: rotate180 surface=%d vertices=%zu",
+            surfaceState.id,
+            vertices.size()
+        );
+        for (const DrawCall& drawCall : drawCalls)
+        {
+            const size_t firstVertex = drawCall.firstVertex;
+            const size_t endVertex = std::min(
+                vertices.size(),
+                firstVertex + static_cast<size_t>(drawCall.vertexCount));
+            if (firstVertex >= endVertex)
+                continue;
+
+            for (size_t vertexIndex = firstVertex; vertexIndex < endVertex; vertexIndex++)
+            {
+                SurfaceVertex& vertex = vertices[vertexIndex];
+                vertex.x = -vertex.x;
+                vertex.y = -vertex.y;
+            }
+        }
+    }
 
     if (surfaceState.mappedVertexMemory == nullptr)
         return false;

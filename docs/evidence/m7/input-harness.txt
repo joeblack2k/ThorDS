@@ -11,17 +11,18 @@ Physical Thor validation:
 - debug APK installed successfully
 - active ASMP debug session logged repeated TAP_INPUT Start and A commands
 - no ThorDS FATAL or ANR was observed during the command sequence
-- the sequence did not reach a valid BOB checkpoint, so no gameplay or
-  True Widescreen acceptance result is claimed
+- the sequence did not reach a deterministic castle-grounds checkpoint, so no
+  gameplay or True Widescreen acceptance result is claimed
 
 Execution note:
 - Android may reject an implicit debug broadcast while the receiver is not
   foreground-eligible. The verified harness route targets
   `DebugCommandReceiver` explicitly with `adb shell am broadcast -n`; it
   returned `success=1` and emitted the corresponding DebugCommand log.
-- Accepted debug touch input alone did not provide a deterministic title-to-BOB
-  route. Physical controller gameplay remains required for the M6 and M7
-  gameplay gates.
+- Accepted debug touch input alone did not provide a deterministic
+  title-to-castle-grounds route. The separate save-state route is used for M7
+  scene efficiency; physical orientation and gameplay measurements remain
+  required for the M6 and M7 gates.
 
 Temporary ROM copies, saves, frame images, metadata and log output were deleted
 after validation. No ROM path, ROM bytes, save, capture, device identifier or

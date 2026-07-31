@@ -122,6 +122,11 @@ add_subdirectory("${CORE_LIB_DIR}" ./melonDS-android-lib)
 if (TARGET core)
     add_dependencies(core regenerate_vulkan_spirv_headers)
     target_compile_definitions(core PUBLIC VK_NO_PROTOTYPES)
+    if (MELONDS_ANDROID_DEBUG_BUILD)
+        # Keep debug symbols, but make the device debug APK usable for timing
+        # and physical input probes.
+        target_compile_options(core PRIVATE "$<$<CONFIG:DEBUG>:-O2>")
+    endif()
     if (MELONDS_HAS_ADRENOTOOLS)
         target_compile_definitions(core PUBLIC MELONDS_HAS_ADRENOTOOLS=1)
         target_link_libraries(core PUBLIC adrenotools)
@@ -183,6 +188,9 @@ add_library(
 
 add_dependencies(melonDS-android-frontend regenerate_vulkan_spirv_headers)
 target_compile_definitions(melonDS-android-frontend PRIVATE VK_NO_PROTOTYPES)
+if (MELONDS_ANDROID_DEBUG_BUILD)
+    target_compile_options(melonDS-android-frontend PRIVATE "$<$<CONFIG:DEBUG>:-O2>")
+endif()
 
 target_include_directories(melonDS-android-frontend PUBLIC
         "${ANDROID_CPP_DIR}"

@@ -1,0 +1,37 @@
+M7 primary rotation and performance probe, 2026-07-31
+
+Scope:
+- developer-only Vulkan probe on the physical Thor primary presentation
+- controllable castle-grounds checkpoint loaded from an app-private save state
+- no ROM, save state, screenshot, log dump, device identifier or private
+  capture retained in this repository
+
+Rotation:
+- launch extra: `io.github.joeblack2k.thords.extra.VULKAN_ROTATE_180=true`
+- classifier: `M7Probe: dual-uv direct=0 rect=1920x1080 safeX=240 safeWidth=1440`
+- native transform: `M7Probe: rotate180 surface=1 vertices=12`
+- the primary logical capture was inverted by rotating output quad positions
+  only; source UVs remained unchanged
+- the lower external presentation kept its ordinary configuration because the
+  rotation flag is mapped only into the primary Activity presentation config
+- this proves the app-side transform path, not the physical panel result;
+  physical confirmation on the Thor is still required
+
+Performance observation:
+- the first instrumented castle-grounds debug run reported approximately
+  38-40 FPS
+- `VulkanPerf[Instance]` reported approximately 25.6 ms average CPU time
+- `VulkanPerf[Pacing]` reported `presented=120`, `fallback=240`, and no
+  acquire, record or submit failures in the sampled interval
+- the instrumented run retained renderer debug tools, so it remains diagnostic
+  evidence only
+- the follow-up GitHub Prod debug APK was rebuilt with target-local `-O2` for
+  the debug `core` and Android frontend targets; the compile database confirms
+  the flag and debug symbols remain enabled
+- with renderer debug tools disabled, the same castle-grounds save state
+  reported `FPS: 60` in two captures separated by eight seconds
+- the optimized debug result is a strong scene-level performance improvement,
+  but it is not yet a full realtime acceptance result across movement,
+  transitions and the remaining M7 geometry checks
+
+Result: PARTIAL_PASS

@@ -25,10 +25,22 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   issues separate full-width-world and 4:3-safe-overlay draw modes; the
   Lakitu transition produced the expected dual-UV/fallback/dual-UV sequence,
   while live debug scene metadata remains capture-safe during title
-  transitions
-- Active blocker: a valid BOB scene matrix and HUD/transition measurements;
-  direct debug input reaches controllable castle grounds but not a
-  deterministic BOB route, so physical Thor-controller gameplay is required
+  transitions. Temporary app-private save states now resume castle grounds
+  and the castle-entrance approach without replaying the title or intro, and
+  physical Touch Mode movement was observed after ThorDS foreground recovery.
+  A launch-scoped debug-only primary Vulkan rotation probe now produces an
+  inverted logical capture while leaving the lower external configuration
+  unchanged. This is a mapping probe, not yet physical-panel proof. The
+  instrumented run was about 38-40 FPS with approximately 25.6 ms instance CPU
+  time; after a target-local debug `-O2` experiment, the same castle-grounds
+  save state reported `FPS: 60` in two captures with renderer debug tools off.
+  This is a promising scene-level result, not yet sustained realtime proof
+  across movement and transitions.
+- Active blocker: physical confirmation of the primary top-panel orientation,
+  sustained realtime behavior during movement and transitions, and
+  castle-grounds FOV/culling/HUD/transition measurements. The owner explicitly
+  selected controllable castle grounds as the M7 representative scene;
+  Bob-omb Battlefield is no longer an M7 exit gate.
 
 ## Milestone status
 
@@ -41,7 +53,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M4 | PASS | 04ed45bd | docs/evidence/m4/ | catalog v1, exact resolver, safe Original fallback, curated/user separation and synthetic delta patches |
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
 | M6 | IN_PROGRESS | 883d00cf | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; physical gameplay scenarios remain |
-| M7 | IN_PROGRESS | | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and castle-grounds classifier matrices verified; no BOB/FOV/culling or M8 claim |
+| M7 | IN_PROGRESS | | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and castle-grounds classifier matrices verified; save-state-assisted castle-grounds route, primary rotation probe and target-local debug `-O2` performance result recorded; physical orientation, sustained realtime behavior, FOV/culling/HUD and transition gates remain open |
 | M8 | NOT_STARTED | | | |
 | M9 | NOT_STARTED | | | |
 | M10 | NOT_STARTED | | | |
@@ -62,7 +74,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Run the M7 developer probe through valid BOB gameplay and transition paths,
-measure FOV, world and HUD geometry without publishing private captures, and
-keep M8 blocked until that evidence is green. The M6 gameplay checklist also
-remains pending.
+Run the M7 developer probe from the castle-grounds checkpoint with the
+optimized debug APK, verify the primary rotation mapping on the physical top
+panel, measure sustained realtime behavior plus FOV, world and HUD geometry
+and transition stability without publishing private captures, and keep M8
+blocked until that evidence is green.
+The M6 gameplay checklist also remains pending.

@@ -31,7 +31,7 @@
   },
   "limitations": [
     "No pixel capture, ROM data, save data, device identifier or temporary path is retained.",
-    "The run reached controllable castle grounds, not a valid BOB checkpoint.",
+    "The run reached the selected controllable castle-grounds representative scene.",
     "It does not prove final-panel geometry, horizontal FOV, culling, HUD or glyph ratios, no-flash transition behavior, or bottom aspect measurements."
   ]
 }

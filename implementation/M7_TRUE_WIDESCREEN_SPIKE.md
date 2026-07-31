@@ -14,7 +14,8 @@ M5/M6; Vulkan source; decomp pin; local ROM; debug capture plan.
 2. Map alle relevante EU `0x1555` aspect sites.
 3. Bouw conditional developer AR-code.
 4. Voeg presentation mode en debug layer captures toe.
-5. Capture title, file select, castle, BOB, pause, star select, cutscene.
+5. Capture title, file select, controllable castle grounds, pause, star select,
+   and cutscene.
 6. Implementeer minimale dual-UV proof in Vulkan.
 7. Meet HUD geometry.
 8. Classificeer unsafe scenes.
@@ -46,7 +47,7 @@ docs/project/adr/ADR-true-widescreen.md
 
 Groen als:
 - EU patch semantisch bewezen;
-- BOB world 16:9;
+- castle-grounds world 16:9;
 - HUD apart samplebaar of concrete game-side fix bekend;
 - fallbackstrategie dekt unsafe scenes.
 

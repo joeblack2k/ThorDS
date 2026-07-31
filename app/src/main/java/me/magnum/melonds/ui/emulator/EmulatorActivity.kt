@@ -156,6 +156,7 @@ class EmulatorActivity : AppCompatActivity() {
         const val KEY_BOOT_FIRMWARE_ONLY = "boot_firmware_only"
         const val KEY_DEVELOPER_WIDESCREEN_PROBE = "io.github.joeblack2k.thords.extra.WIDESCREEN_PROBE"
         const val EXTRA_DEVELOPER_WIDESCREEN_PROBE = KEY_DEVELOPER_WIDESCREEN_PROBE
+        const val EXTRA_DEVELOPER_VULKAN_ROTATE_180 = "io.github.joeblack2k.thords.extra.VULKAN_ROTATE_180"
         private const val STARTUP_PRESENTATION_REFRESH_ATTEMPTS = 24
         private const val STARTUP_PRESENTATION_REFRESH_INTERVAL_MS = 100L
         private const val LEDGER_EXPIRATION_DAY_MS = 24L * 60L * 60L * 1000L
@@ -178,6 +179,9 @@ class EmulatorActivity : AppCompatActivity() {
     private val developerWidescreenProbe
         get() = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0 &&
             intent.getBooleanExtra(EXTRA_DEVELOPER_WIDESCREEN_PROBE, false)
+    private val developerVulkanRotate180: Boolean
+        get() = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0 &&
+            intent.getBooleanExtra(EXTRA_DEVELOPER_VULKAN_ROTATE_180, false)
     private val viewModel: EmulatorViewModel by viewModels(
         extrasProducer = {
             val extras = MutableCreationExtras(defaultViewModelCreationExtras)
@@ -1714,6 +1718,7 @@ class EmulatorActivity : AppCompatActivity() {
             retroShaderParameterOverrides = rendererConfiguration.retroArchShader.parameterOverrides,
             retroShaderClearHistory = rendererConfiguration.retroArchShader.clearHistory,
             developerWidescreenProbe = developerWidescreenProbe,
+            developerVulkanRotate180 = developerVulkanRotate180,
         )
     }
 
