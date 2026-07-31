@@ -1,0 +1,44 @@
+{
+  "format": "thords-sm64ds-aspect-sites-v1",
+  "scope": "M7 research only; no production runtime payload",
+  "game": {
+    "game_code": "ASMP",
+    "revision": 0,
+    "retroachievements_system_hash": "ba3c4052e00c5cc31df5d5534c39de1b"
+  },
+  "candidate_word_writes": [
+    {
+      "address": "0x0200D03C",
+      "module": "main-arm9",
+      "symbol": "func_0200cf40",
+      "role": "view-object aspect initialization",
+      "expected_original_word": "0x00001555",
+      "candidate_word": "0x00001C72"
+    },
+    {
+      "address": "0x0200F64C",
+      "module": "main-arm9",
+      "symbol": "Initialise3dGraphics",
+      "role": "default 3D perspective",
+      "expected_original_word": "0x00001555",
+      "candidate_word": "0x00001C72"
+    },
+    {
+      "address": "0x02015774",
+      "module": "main-arm9",
+      "symbol": "Clipper::Clipper",
+      "role": "clipper aspect initialization",
+      "expected_original_word": "0x00001555",
+      "candidate_word": "0x00001C72"
+    },
+    {
+      "address": "0x020C026C",
+      "module": "arm9-overlay-6",
+      "symbol": "Camera_UpdateMatrices",
+      "role": "gameplay projection and clipper aspect",
+      "expected_original_word": "0x00001555",
+      "candidate_word": "0x00001C72",
+      "requires_overlay_residency": true
+    }
+  ]
+}

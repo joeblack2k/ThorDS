@@ -692,6 +692,7 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
     bool hybridOnTop = false;
     bool retroShaderEnabled = false;
     bool retroShaderClearHistory = false;
+    bool developerWidescreenProbe = false;
     std::string retroShaderPresetPath;
     std::string retroShaderSourceResolution;
     int retroShaderPassCount = 0;
@@ -705,7 +706,8 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
         && callStringGetter(env, configObject, "getRetroShaderPresetPath", &retroShaderPresetPath)
         && callStringGetter(env, configObject, "getRetroShaderSourceResolution", &retroShaderSourceResolution)
         && callIntGetter(env, configObject, "getRetroShaderPassCount", &retroShaderPassCount)
-        && callBooleanGetter(env, configObject, "getRetroShaderClearHistory", &retroShaderClearHistory);
+        && callBooleanGetter(env, configObject, "getRetroShaderClearHistory", &retroShaderClearHistory)
+        && callBooleanGetter(env, configObject, "getDeveloperWidescreenProbe", &developerWidescreenProbe);
 
     configOut->topAlpha = topAlpha;
     configOut->bottomAlpha = bottomAlpha;
@@ -721,6 +723,7 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
             : MelonDSAndroid::RetroArchSourceResolution::VulkanIr;
     configOut->retroShaderPassCount = static_cast<melonDS::u32>(std::max(0, retroShaderPassCount));
     configOut->retroShaderClearHistory = retroShaderClearHistory;
+    configOut->developerWidescreenProbe = developerWidescreenProbe;
     result = result && mapStringFloatMap(env, retroShaderParametersObject, configOut->retroShaderParameterOverrides);
 
     result = result

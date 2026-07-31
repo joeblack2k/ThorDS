@@ -231,6 +231,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         val waitReady = intent.firstBooleanExtra(EXTRA_WAIT_ROM_READY, EXTRA_WAIT_READY)
             ?: false
         val pauseAfterReady = intent.getBooleanExtra(EXTRA_PAUSE_AFTER, false)
+        val widescreenProbe = intent.getBooleanExtra(EXTRA_WIDESCREEN_PROBE, false)
         val requestedTimeoutMs = intent.firstNullableIntExtra(EXTRA_WAIT_TIMEOUT_MS, EXTRA_TIMEOUT_MS)
             ?.coerceAtLeast(1)
             ?: DEFAULT_ROM_READY_TIMEOUT_MS
@@ -248,6 +249,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                putExtra(EmulatorActivity.EXTRA_DEVELOPER_WIDESCREEN_PROBE, widescreenProbe)
             },
         )
 
@@ -259,7 +261,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         }
         Log.w(
             TAG,
-            "action=launch_rom uri=$romUri waitReady=${if (waitReady) 1 else 0} activitySeen=${if (activitySeen) 1 else 0} ready=${if (ready) 1 else 0} pauseAfter=${if (pauseAfterReady) 1 else 0} requestedTimeoutMs=$requestedTimeoutMs deferredReady=1",
+            "action=launch_rom uri=$romUri waitReady=${if (waitReady) 1 else 0} activitySeen=${if (activitySeen) 1 else 0} ready=${if (ready) 1 else 0} pauseAfter=${if (pauseAfterReady) 1 else 0} widescreenProbe=${if (widescreenProbe) 1 else 0} requestedTimeoutMs=$requestedTimeoutMs deferredReady=1",
         )
         return activitySeen
     }
@@ -1194,6 +1196,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_SET_VULKAN_FALLBACKS_SUFFIX = "SET_VULKAN_FALLBACKS"
         private const val ACTION_TOUCH_SCREEN_SUFFIX = "TOUCH_SCREEN"
         private const val ACTION_LAUNCH_ROM_SUFFIX = "LAUNCH_ROM"
+        private const val EXTRA_WIDESCREEN_PROBE = "widescreen_probe"
         private const val ACTION_WAIT_ROM_READY_SUFFIX = "WAIT_ROM_READY"
         private const val ACTION_SAVE_STATE_SUFFIX = "SAVE_STATE"
         private const val ACTION_LOAD_STATE_SUFFIX = "LOAD_STATE"

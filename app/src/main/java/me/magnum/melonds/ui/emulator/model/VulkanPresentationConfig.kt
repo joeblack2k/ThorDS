@@ -25,4 +25,5 @@ data class VulkanPresentationConfig(
     val retroShaderPassCount: Int,
     val retroShaderParameterOverrides: Map<String, Float>,
     val retroShaderClearHistory: Boolean,
+    val developerWidescreenProbe: Boolean = false,
 )

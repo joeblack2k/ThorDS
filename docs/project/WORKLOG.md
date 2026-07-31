@@ -1,5 +1,55 @@
 # Worklog
 
+## 2026-07-31 - M7 in progress
+
+### Findings
+
+- Pinned the ignored `tangosdev/sm64ds-decomp` research checkout at
+  `2d38fe9b825199deec408240849b64b91c965d85`.
+- Semantically mapped the ASMP revision-0 main ARM9 and overlay-6 `0x1555`
+  Fix12 aspect literals. The gameplay-camera literal is overlay-resident and
+  cannot be treated as a persistent ROM-file offset.
+- Confirmed that the Vulkan direct presenter already binds independent
+  high-resolution 3D, packed planes and control buffers.
+
+### Changes
+
+- code: added an explicit debug-build plus intent-gated Vulkan diagnostic that
+  draws 3D full-width and plane-1/UI inside a centered 4:3 top safe area.
+- docs: added the symbol map, original-word evidence, zero-private-media
+  capture policy and a no-go ADR.
+
+### Validation
+
+```text
+command: CARGO=/tmp/thords-cargo ./gradlew --no-daemon
+  :app:regenerateVulkanSpirv :app:checkVulkanSpirv
+  :app:testGitHubProdReleaseUnitTest :app:assembleGitHubProdDebug
+result: PASS; embedded SPIR-V synchronized, unit tests and APK build green
+
+command: adb install -r app/build/outputs/apk/gitHubProd/debug/app-gitHub-prod-debug.apk
+result: PASS; debug APK installed on the connected AYN Thor
+
+physical developer probe: exact ASMP launch reached ROM-ready and initialized
+Vulkan with the explicit developer probe extra. The presenter submitted
+separate world-3D and plane-1/UI draws through the compositor fallback route
+because the Thor uses two presenter surfaces. The debug-only primary-surface
+probe widened the target to 1920x1080 and kept the UI-safe-area centered at
+1440x1080. A local-only visual check was non-empty and stable, then deleted.
+This is compositor geometry proof only, not a game-projection or BOB
+acceptance pass.
+
+Android input injection did not advance the title flow with the resolved
+DS-A or Start mappings. Continue the M7 scene matrix with a physical
+Thor-controller run.
+```
+
+### Decision
+
+- M7 is not green. The diagnostic does not yet prove extra horizontal FOV,
+  culling, HUD ownership, transitions or the BOB scene matrix.
+- M8 remains blocked by `ADR-true-widescreen.md`.
+
 ## 2026-07-31 - M0
 
 Commit before: none; repository initialized in this task.

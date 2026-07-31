@@ -1,0 +1,21 @@
+{
+  "format": "thords-m7-geometry-v1",
+  "status": "PARTIAL_LAYER_PROOF_ONLY",
+  "measured_top_target": {
+    "width": 1920,
+    "height": 1080,
+    "aspect": "16:9",
+    "ui_safe_x": 240,
+    "ui_safe_width": 1440,
+    "ui_safe_aspect": "4:3"
+  },
+  "reason": "The debug-only developer probe submitted distinct world-3D and plane-1/UI draws across a 16:9 top target on the physical Thor. It intentionally does not patch game projection or culling, and no valid BOB gameplay scene was measured.",
+  "required_before_m8": [
+    "world object aspect",
+    "horizontal FOV",
+    "HUD circle aspect",
+    "glyph aspect",
+    "bottom screen aspect",
+    "transition stability"
+  ]
+}

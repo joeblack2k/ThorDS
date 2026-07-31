@@ -20,7 +20,7 @@ bool areRendererDebugBgObjLogsEnabled();
 
 namespace
 {
-constexpr u32 kMaxSurfaceVertexCount = 30;
+constexpr u32 kMaxSurfaceVertexCount = 42;
 constexpr VkDeviceSize kVertexBufferSize = static_cast<VkDeviceSize>(kMaxSurfaceVertexCount * 5u * sizeof(float));
 constexpr u32 kDescriptorSetCapacity = 64;
 constexpr u32 kDrawModeBackground = 0u;
@@ -30,6 +30,8 @@ constexpr u32 kDrawModeBottomScreen = 3u;
 constexpr u32 kDrawModeFilteredCompositeTop = 4u;
 constexpr u32 kDrawModeFilteredCompositeBottom = 5u;
 constexpr u32 kDrawModeRetroArchCompositeFrame = 6u;
+constexpr u32 kDrawModeWidescreenWorld3d = 7u;
+constexpr u32 kDrawModeWidescreenUiOverlay = 8u;
 constexpr u32 kNativeScreenWidth = 256u;
 constexpr u32 kNativeScreenHeight = 192u;
 constexpr u32 kNativeAtlasHeight = 386u;
@@ -109,7 +111,8 @@ bool surfaceConfigsEqual(const VulkanSurfaceConfig& left, const VulkanSurfaceCon
         && left.retroShaderSourceResolution == right.retroShaderSourceResolution
         && left.retroShaderPassCount == right.retroShaderPassCount
         && left.retroShaderParameterOverrides == right.retroShaderParameterOverrides
-        && left.retroShaderClearHistory == right.retroShaderClearHistory;
+        && left.retroShaderClearHistory == right.retroShaderClearHistory
+        && left.developerWidescreenProbe == right.developerWidescreenProbe;
 }
 
 bool retroArchConfigEqual(const VulkanSurfaceConfig& left, const VulkanSurfaceConfig& right)
@@ -3313,6 +3316,32 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
         });
     };
 
+    auto appendWidescreenProbe = [&](const VulkanPresenterRect& rect, float alpha) {
+        if (!rect.enabled || rect.width <= 0 || rect.height <= 0)
+            return;
+
+        const int safeWidth = std::min(rect.width, (rect.height * 4) / 3);
+        const int safeX = rect.x + (rect.width - safeWidth) / 2;
+        const float worldLeft = screenXToNdc(rect.x);
+        const float worldRight = screenXToNdc(rect.x + rect.width);
+        const float top = screenYToNdc(rect.y);
+        const float bottom = screenYToNdc(rect.y + rect.height);
+        const float uiLeft = screenXToNdc(safeX);
+        const float uiRight = screenXToNdc(safeX + safeWidth);
+
+        melonDS::Platform::Log(
+            melonDS::Platform::LogLevel::Info,
+            "M7Probe: dual-uv direct=%d rect=%dx%d safeX=%d safeWidth=%d",
+            directPresent ? 1 : 0,
+            rect.width,
+            rect.height,
+            safeX,
+            safeWidth
+        );
+        appendQuad(worldLeft, worldRight, top, bottom, alpha, kDrawModeWidescreenWorld3d, surfaceState.screenDescriptorSet);
+        appendQuad(uiLeft, uiRight, top, bottom, alpha, kDrawModeWidescreenUiOverlay, surfaceState.screenDescriptorSet);
+    };
+
     struct PendingScreen
     {
         VulkanPresenterRect rect;
@@ -3342,10 +3371,16 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
     enqueueScreen(config.hybridTopScreen, true, config.hybridAlpha, config.hybridOnTop);
     enqueueScreen(config.hybridBottomScreen, false, config.hybridAlpha, config.hybridOnTop);
 
+    const auto appendPendingScreen = [&](const PendingScreen& screen) {
+        if (surfaceState.config.developerWidescreenProbe && screen.topScreen)
+            appendWidescreenProbe(screen.rect, screen.alpha);
+        else
+            appendScreen(screen.rect, screen.topScreen, screen.alpha);
+    };
     for (const PendingScreen& screen : underScreens)
-        appendScreen(screen.rect, screen.topScreen, screen.alpha);
+        appendPendingScreen(screen);
     for (const PendingScreen& screen : overScreens)
-        appendScreen(screen.rect, screen.topScreen, screen.alpha);
+        appendPendingScreen(screen);
 
     if (vertices.size() > kMaxSurfaceVertexCount)
         return false;

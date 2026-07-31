@@ -1,0 +1,28 @@
+M7 physical developer-probe result, 2026-07-31
+
+Device gate:
+- GitHubProdDebug APK installed on the connected AYN Thor: PASS
+- Existing debug-only FileProvider ROM launch route: PASS
+- Exact ASMP profile reported ROM-ready: PASS
+- VulkanOutput synchronization and Vulkan renderer initialization: PASS
+- Explicit developer widescreen probe extra propagated through the debug launch:
+  PASS
+- Filtered FATAL EXCEPTION / AndroidRuntime / ANR: none observed
+
+Layer gate:
+- top world-3D and plane-1/UI draw submissions observed separately: PASS
+  - the Vulkan presenter submitted the dual-UV probe through the compositor
+    fallback route (`direct=0`)
+  - two presenter surfaces were active, which correctly prevents the normal
+    one-surface direct-present fast path
+  - the debug-only primary-surface presentation measured 1920x1080 with a
+    centered 1440x1080 UI-safe-area
+  - a local-only visual inspection confirmed non-empty stable output; it was
+    deleted and is not publication evidence
+- BOB world 16:9, HUD geometry and transition matrix: NOT_YET_MEASURED
+  - Android input injection did not advance the title flow, including the
+    mapped DS-A and Start events; physical Thor-controller gameplay is required
+
+The temporary app-private ROM copy, transport copy and local diagnostic
+screenshot were deleted immediately after this check. No ROM path, ROM bytes,
+save data, capture or device identifier is retained here.

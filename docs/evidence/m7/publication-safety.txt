@@ -1,0 +1,25 @@
+M7 publication safety gate, 2026-07-31
+
+Repository:
+- tracked ROM/save scan: PASS; no .nds, .srl, .rom, .sav or .dsv path
+- all-history ROM/save scan: PASS
+- tracked private-evidence, credential and token path scan: PASS
+- the only `keystore`-named tracked path is
+  `AndroidKeystoreOfflineLedgerSigner.kt`, source that requests a device-held
+  AndroidKeyStore key; it contains no keystore file or key material
+- local ASMP ROM ignore assertion: PASS
+
+APK:
+- GitHubProdDebug archive ROM/save scan: PASS
+- password/bearer/authorization string hits: reviewed Android resource labels
+  and a generic login error message only; no credential value found
+
+Secrets:
+- gitleaks scanned all reachable Git history and the current app source.
+- one `generic-api-key` finding is a false positive: the public NIST
+  SP 800-38A AES-128 test vector in the pre-existing, third-party
+  `app/src/main/cpp/rcheevos/src/rhash/aes.c`.
+- M7 documentation scan: PASS; no findings.
+
+No ROM bytes, saves, device identifier, temporary path, private screenshot,
+credential or token is included in this evidence directory.

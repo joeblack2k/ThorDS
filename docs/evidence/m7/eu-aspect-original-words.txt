@@ -1,0 +1,17 @@
+M7 EU aspect original-word verification
+
+ROM identity: ASMP / revision 0 / RA system hash ba3c4052e00c5cc31df5d5534c39de1b
+Decomp pin: tangosdev/sm64ds-decomp 2d38fe9b825199deec408240849b64b91c965d85
+Method: local BLZ-decompression through the decomp's ignored research tool;
+only 32-bit constants and one function-range SHA-256 are recorded.
+
+0x0200D03C main ARM9 view-object initializer: 0x00001555
+0x0200F64C main ARM9 Initialise3dGraphics literal: 0x00001555
+0x02015774 main ARM9 Clipper constructor literal: 0x00001555
+0x020C026C overlay 6 Camera_UpdateMatrices literal: 0x00001555
+
+Candidate 16:9 Fix12 value: 0x00001C72
+Camera_UpdateMatrices range SHA-256: 0d72fe606146861bdaca6c07087235f6f052a8dcb3bab6a047b76d964649f6e8
+
+No ROM data, save data, screenshot, extracted module or private device evidence
+is included in this file.

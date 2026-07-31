@@ -154,6 +154,7 @@ class EmulatorActivity : AppCompatActivity() {
         const val KEY_URI = "uri"
         const val KEY_BOOT_FIRMWARE_CONSOLE = "boot_firmware_console"
         const val KEY_BOOT_FIRMWARE_ONLY = "boot_firmware_only"
+        const val EXTRA_DEVELOPER_WIDESCREEN_PROBE = "io.github.joeblack2k.thords.extra.WIDESCREEN_PROBE"
         private const val STARTUP_PRESENTATION_REFRESH_ATTEMPTS = 24
         private const val STARTUP_PRESENTATION_REFRESH_INTERVAL_MS = 100L
         private const val LEDGER_EXPIRATION_DAY_MS = 24L * 60L * 60L * 1000L
@@ -173,6 +174,9 @@ class EmulatorActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityEmulatorBinding
+    private val developerWidescreenProbe
+        get() = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0 &&
+            intent.getBooleanExtra(EXTRA_DEVELOPER_WIDESCREEN_PROBE, false)
     private val viewModel: EmulatorViewModel by viewModels(
         extrasProducer = {
             val extras = MutableCreationExtras(defaultViewModelCreationExtras)
@@ -1300,6 +1304,7 @@ class EmulatorActivity : AppCompatActivity() {
                 display = secondaryDisplay,
                 frameRenderCoordinator = frameRenderCoordinator,
                 excludeTouchScreenFromSystemGestures = excludeTouchScreenFromSystemGestures,
+                developerWidescreenProbe = developerWidescreenProbe,
             ).apply {
                 layoutView.apply {
                     setLayoutComponentViewBuilderFactory(RuntimeLayoutComponentViewBuilderFactory())
@@ -1666,17 +1671,30 @@ class EmulatorActivity : AppCompatActivity() {
             return null
         }
 
-        val (surfaceWidth, surfaceHeight) = binding.surfaceMain.getCurrentSurfaceSize()
+        val (reportedSurfaceWidth, reportedSurfaceHeight) = binding.surfaceMain.getCurrentSurfaceSize()
+        val surfaceWidth = if (reportedSurfaceWidth > 0) reportedSurfaceWidth else binding.surfaceMain.width
+        val surfaceHeight = if (reportedSurfaceHeight > 0) reportedSurfaceHeight else binding.surfaceMain.height
         val (resolvedTopScreenRect, resolvedBottomScreenRect) = resolveVulkanScreenRects(
             topScreenRect = topScreenRect,
             bottomScreenRect = bottomScreenRect,
-            surfaceWidth = if (surfaceWidth > 0) surfaceWidth else binding.surfaceMain.width,
-            surfaceHeight = if (surfaceHeight > 0) surfaceHeight else binding.surfaceMain.height,
+            surfaceWidth = surfaceWidth,
+            surfaceHeight = surfaceHeight,
             fallbackWhenEmpty = hybridTopScreenRect == null && hybridBottomScreenRect == null,
         )
+        val developerProbeTopScreenRect = if (
+            developerWidescreenProbe
+            && resolvedTopScreenRect != null
+            && resolvedBottomScreenRect == null
+            && surfaceWidth > 0
+            && surfaceHeight > 0
+        ) {
+            Rect(0, 0, surfaceWidth, surfaceHeight)
+        } else {
+            resolvedTopScreenRect
+        }
 
         return VulkanPresentationConfig(
-            topScreenRect = resolvedTopScreenRect,
+            topScreenRect = developerProbeTopScreenRect,
             bottomScreenRect = resolvedBottomScreenRect,
             topAlpha = topAlpha,
             bottomAlpha = bottomAlpha,
@@ -1694,6 +1712,7 @@ class EmulatorActivity : AppCompatActivity() {
             retroShaderPassCount = rendererConfiguration.retroArchShader.passCount,
             retroShaderParameterOverrides = rendererConfiguration.retroArchShader.parameterOverrides,
             retroShaderClearHistory = rendererConfiguration.retroArchShader.clearHistory,
+            developerWidescreenProbe = developerWidescreenProbe,
         )
     }
 

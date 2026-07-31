@@ -64,6 +64,7 @@ struct VulkanSurfaceConfig
     u32 retroShaderPassCount = 0;
     std::vector<std::pair<std::string, float>> retroShaderParameterOverrides;
     bool retroShaderClearHistory = false;
+    bool developerWidescreenProbe = false;
 };
 
 struct VulkanBackgroundImage

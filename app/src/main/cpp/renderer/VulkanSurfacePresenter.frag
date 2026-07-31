@@ -1452,6 +1452,26 @@ vec3 applyCompositePostFilter(vec2 uv, bool topScreen)
 
 void main()
 {
+    if (pushConstants.drawMode == 7u)
+    {
+        Rgba6 world = sample3DColorAtScaledCoord(
+            fragUv.x * float(pushConstants.rendererWidth),
+            (1.0 - fragUv.y) * float(pushConstants.rendererHeight));
+        outColor = vec4(color6ToRgb01(world), fragAlpha);
+        return;
+    }
+
+    if (pushConstants.drawMode == 8u)
+    {
+        int sourceX = int(clamp(fragUv.x * 256.0, 0.0, 255.0));
+        int sourceY = int(clamp((1.0 - fragUv.y) * 192.0, 0.0, 191.0));
+        Rgba6 overlay = unpackColor6(readTopPacked(sourceY, 256 + sourceX));
+        Rgba6 control = unpackColor6(readTopPacked(sourceY, 512 + sourceX));
+        bool visibleOverlay = hasStructured2DAbovePlane(control) && isStructured2DVisible(overlay);
+        outColor = vec4(color6ToRgb01(overlay), visibleOverlay ? fragAlpha : 0.0);
+        return;
+    }
+
     if (pushConstants.drawMode == 0u)
     {
         vec4 sampledColor = texture(uTexture, fragUv);
