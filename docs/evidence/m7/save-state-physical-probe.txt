@@ -17,12 +17,13 @@ The temporary app-private save-state route is usable for M7 investigation:
 The route is not an M7 acceptance pass. No FOV, culling, HUD, or transition
 measurement was produced. The user-visible top screen was reported as
 physically rotated 180 degrees relative to the internal capture orientation;
-the developer-only `VULKAN_ROTATE_180` mapping now produces an inverted
-logical castle-grounds capture on the primary surface while leaving the lower
-presentation unchanged. This proves the app-side transform path; the final
-physical orientation still needs direct verification before the M7 gate can
-close. Per the repository owner's scope correction, castle grounds is the M7
-representative scene; no Bob-omb Battlefield route is required for this gate.
+the Thor-specific product default now produces the same inverted logical
+castle-grounds capture on the primary surface without a rotation extra, while
+leaving the lower presentation unchanged. This proves the app-side transform
+path; the final physical orientation still needs direct verification before
+the M7 gate can close. Per the repository owner's scope correction, castle
+grounds is the M7 representative scene; no Bob-omb Battlefield route is
+required for the gate.
 
 Device contention
 

@@ -693,7 +693,7 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
     bool retroShaderEnabled = false;
     bool retroShaderClearHistory = false;
     bool developerWidescreenProbe = false;
-    bool developerVulkanRotate180 = false;
+    bool rotatePrimaryVulkan180 = false;
     std::string retroShaderPresetPath;
     std::string retroShaderSourceResolution;
     int retroShaderPassCount = 0;
@@ -709,7 +709,7 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
         && callIntGetter(env, configObject, "getRetroShaderPassCount", &retroShaderPassCount)
         && callBooleanGetter(env, configObject, "getRetroShaderClearHistory", &retroShaderClearHistory)
         && callBooleanGetter(env, configObject, "getDeveloperWidescreenProbe", &developerWidescreenProbe)
-        && callBooleanGetter(env, configObject, "getDeveloperVulkanRotate180", &developerVulkanRotate180);
+        && callBooleanGetter(env, configObject, "getRotatePrimaryVulkan180", &rotatePrimaryVulkan180);
 
     configOut->topAlpha = topAlpha;
     configOut->bottomAlpha = bottomAlpha;
@@ -726,7 +726,7 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
     configOut->retroShaderPassCount = static_cast<melonDS::u32>(std::max(0, retroShaderPassCount));
     configOut->retroShaderClearHistory = retroShaderClearHistory;
     configOut->developerWidescreenProbe = developerWidescreenProbe;
-    configOut->developerVulkanRotate180 = developerVulkanRotate180;
+    configOut->rotatePrimaryVulkan180 = rotatePrimaryVulkan180;
     result = result && mapStringFloatMap(env, retroShaderParametersObject, configOut->retroShaderParameterOverrides);
 
     result = result

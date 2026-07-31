@@ -66,6 +66,7 @@ import kotlinx.coroutines.launch
 import me.magnum.melonds.MelonEmulator
 import me.magnum.melonds.R
 import me.magnum.melonds.common.PermissionHandler
+import me.magnum.melonds.common.ThorDeviceCapabilities
 import me.magnum.melonds.databinding.ActivityEmulatorBinding
 import me.magnum.melonds.domain.model.ConsoleType
 import me.magnum.melonds.domain.model.ControllerConfiguration
@@ -179,9 +180,10 @@ class EmulatorActivity : AppCompatActivity() {
     private val developerWidescreenProbe
         get() = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0 &&
             intent.getBooleanExtra(EXTRA_DEVELOPER_WIDESCREEN_PROBE, false)
-    private val developerVulkanRotate180: Boolean
-        get() = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0 &&
-            intent.getBooleanExtra(EXTRA_DEVELOPER_VULKAN_ROTATE_180, false)
+    private val rotatePrimaryVulkan180: Boolean
+        get() = ThorDeviceCapabilities.isThor(Build.MANUFACTURER, Build.MODEL) ||
+            ((applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0 &&
+                intent.getBooleanExtra(EXTRA_DEVELOPER_VULKAN_ROTATE_180, false))
     private val viewModel: EmulatorViewModel by viewModels(
         extrasProducer = {
             val extras = MutableCreationExtras(defaultViewModelCreationExtras)
@@ -1718,7 +1720,7 @@ class EmulatorActivity : AppCompatActivity() {
             retroShaderParameterOverrides = rendererConfiguration.retroArchShader.parameterOverrides,
             retroShaderClearHistory = rendererConfiguration.retroArchShader.clearHistory,
             developerWidescreenProbe = developerWidescreenProbe,
-            developerVulkanRotate180 = developerVulkanRotate180,
+            rotatePrimaryVulkan180 = rotatePrimaryVulkan180,
         )
     }
 

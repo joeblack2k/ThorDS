@@ -7,13 +7,20 @@ Scope:
   capture retained in this repository
 
 Rotation:
-- launch extra: `io.github.joeblack2k.thords.extra.VULKAN_ROTATE_180=true`
+- the debug launch extra
+  `io.github.joeblack2k.thords.extra.VULKAN_ROTATE_180=true` remains available
+  for non-Thor reproductions
+- the product config now enables the same primary-only rotation automatically
+  when `Build.MANUFACTURER=AYN` and `Build.MODEL=AYN Thor`
 - classifier: `M7Probe: dual-uv direct=0 rect=1920x1080 safeX=240 safeWidth=1440`
 - native transform: `M7Probe: rotate180 surface=1 vertices=12`
 - the primary logical capture was inverted by rotating output quad positions
   only; source UVs remained unchanged
 - the lower external presentation kept its ordinary configuration because the
-  rotation flag is mapped only into the primary Activity presentation config
+  product rotation flag is mapped only into the primary Activity presentation
+  config
+- a fresh GitHub Prod debug launch with the widescreen probe but without the
+  rotation extra still logged `rotate180 surface=1`, proving the Thor default
 - this proves the app-side transform path, not the physical panel result;
   physical confirmation on the Thor is still required
 

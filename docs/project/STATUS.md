@@ -30,7 +30,10 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   physical Touch Mode movement was observed after ThorDS foreground recovery.
   A launch-scoped debug-only primary Vulkan rotation probe now produces an
   inverted logical capture while leaving the lower external configuration
-  unchanged. This is a mapping probe, not yet physical-panel proof. The
+  unchanged. That same primary-only rotation is now the product default for
+  the detected `AYN / AYN Thor` device; a fresh launch without the rotation
+  extra logged the same transform. This is still app-side mapping proof, not
+  yet physical-panel proof. The
   instrumented run was about 38-40 FPS with approximately 25.6 ms instance CPU
   time; after a target-local debug `-O2` experiment, the same castle-grounds
   save state reported `FPS: 60` in two captures with renderer debug tools off.
@@ -38,8 +41,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   left/right castle-ground world content outside the native 4:3 rectangle.
   This is a promising world/FOV result, not yet object-aspect, culling, HUD or
   sustained transition proof.
-- Active blocker: physical confirmation of the primary top-panel orientation,
-  sustained realtime behavior during movement and transitions, and
+- Active blocker: physical confirmation that the Thor-default primary
+  rotation makes the top panel readable, sustained realtime behavior during
+  movement and transitions, and
   castle-grounds object-aspect, side-region culling, HUD and transition
   measurements. The owner explicitly selected controllable castle grounds as
   the M7 representative scene; Bob-omb Battlefield is no longer an M7 exit

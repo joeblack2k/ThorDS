@@ -26,5 +26,5 @@ data class VulkanPresentationConfig(
     val retroShaderParameterOverrides: Map<String, Float>,
     val retroShaderClearHistory: Boolean,
     val developerWidescreenProbe: Boolean = false,
-    val developerVulkanRotate180: Boolean = false,
+    val rotatePrimaryVulkan180: Boolean = false,
 )

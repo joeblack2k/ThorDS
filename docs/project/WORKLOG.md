@@ -189,6 +189,12 @@ physical debug launch reported two curated codes and retained a stable
   `M7Probe: dual-uv` and `M7Probe: rotate180 surface=1 vertices=12`; the lower
   external presentation kept its ordinary configuration. This proves the
   app-side transform path, not the physical panel result.
+- Thor default correction: because the connected device reports manufacturer
+  `AYN` and model `AYN Thor`, the primary-only rotation is now enabled by the
+  normal Vulkan product config, including release-capable builds. A fresh
+  launch without `VULKAN_ROTATE_180` still emitted the rotation log on primary
+  surface 1; the external presentation config remains false. Physical
+  readability is still awaiting direct confirmation.
 - Performance probe: the instrumented castle-grounds run reported about
   38-40 FPS and approximately 25.6 ms Vulkan instance CPU time, with presented
   frames and no acquire/submit failures. That diagnostic configuration is not

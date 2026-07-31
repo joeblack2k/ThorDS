@@ -113,7 +113,7 @@ bool surfaceConfigsEqual(const VulkanSurfaceConfig& left, const VulkanSurfaceCon
         && left.retroShaderParameterOverrides == right.retroShaderParameterOverrides
         && left.retroShaderClearHistory == right.retroShaderClearHistory
         && left.developerWidescreenProbe == right.developerWidescreenProbe
-        && left.developerVulkanRotate180 == right.developerVulkanRotate180;
+        && left.rotatePrimaryVulkan180 == right.rotatePrimaryVulkan180;
 }
 
 bool retroArchConfigEqual(const VulkanSurfaceConfig& left, const VulkanSurfaceConfig& right)
@@ -3418,7 +3418,7 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
     if (vertices.size() > kMaxSurfaceVertexCount)
         return false;
 
-    if (config.developerVulkanRotate180)
+    if (config.rotatePrimaryVulkan180)
     {
         // Rotate the output quads once; the source UV mapping is already
         // normalized for each draw mode.
