@@ -34,13 +34,16 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   instrumented run was about 38-40 FPS with approximately 25.6 ms instance CPU
   time; after a target-local debug `-O2` experiment, the same castle-grounds
   save state reported `FPS: 60` in two captures with renderer debug tools off.
-  This is a promising scene-level result, not yet sustained realtime proof
-  across movement and transitions.
+  A same-checkpoint native-versus-probe comparison also showed extra
+  left/right castle-ground world content outside the native 4:3 rectangle.
+  This is a promising world/FOV result, not yet object-aspect, culling, HUD or
+  sustained transition proof.
 - Active blocker: physical confirmation of the primary top-panel orientation,
   sustained realtime behavior during movement and transitions, and
-  castle-grounds FOV/culling/HUD/transition measurements. The owner explicitly
-  selected controllable castle grounds as the M7 representative scene;
-  Bob-omb Battlefield is no longer an M7 exit gate.
+  castle-grounds object-aspect, side-region culling, HUD and transition
+  measurements. The owner explicitly selected controllable castle grounds as
+  the M7 representative scene; Bob-omb Battlefield is no longer an M7 exit
+  gate.
 
 ## Milestone status
 
@@ -53,7 +56,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M4 | PASS | 04ed45bd | docs/evidence/m4/ | catalog v1, exact resolver, safe Original fallback, curated/user separation and synthetic delta patches |
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
 | M6 | IN_PROGRESS | 883d00cf | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; physical gameplay scenarios remain |
-| M7 | IN_PROGRESS | | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and castle-grounds classifier matrices verified; save-state-assisted castle-grounds route, primary rotation probe and target-local debug `-O2` performance result recorded; physical orientation, sustained realtime behavior, FOV/culling/HUD and transition gates remain open |
+| M7 | IN_PROGRESS | | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and castle-grounds classifier matrices verified; save-state-assisted castle-grounds route, native-versus-probe world/FOV comparison, primary rotation probe and target-local debug `-O2` performance result recorded; physical orientation, sustained realtime behavior, object aspect, culling, HUD and transition gates remain open |
 | M8 | NOT_STARTED | | | |
 | M9 | NOT_STARTED | | | |
 | M10 | NOT_STARTED | | | |
@@ -76,7 +79,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 Run the M7 developer probe from the castle-grounds checkpoint with the
 optimized debug APK, verify the primary rotation mapping on the physical top
-panel, measure sustained realtime behavior plus FOV, world and HUD geometry
-and transition stability without publishing private captures, and keep M8
-blocked until that evidence is green.
+panel, measure sustained realtime behavior plus object/culling and HUD
+geometry and transition stability without publishing private captures, and
+keep M8 blocked until that evidence is green.
 The M6 gameplay checklist also remains pending.

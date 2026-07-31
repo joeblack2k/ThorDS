@@ -199,6 +199,12 @@ physical debug launch reported two curated codes and retained a stable
   debug tools disabled, the same castle-grounds save state reported `FPS: 60`
   in two captures separated by eight seconds. This is a strong scene-level
   result, but sustained movement and transition behavior remains open.
+- Native-versus-probe castle comparison: the native launch reported one
+  curated runtime code and showed the world in the centered 1440x1080 4:3
+  rectangle. The explicit M7 launch reported two curated codes, drew the world
+  across 1920x1080 and exposed new castle-ground water, trees and terrain in
+  both side regions. This is world/FOV evidence rather than a claim about
+  object aspect or side-region culling.
 - M7 is not green. The diagnostic does not yet prove physical top-panel
   orientation, sustained realtime behavior, extra horizontal FOV, culling,
   HUD ownership, transitions or final castle-grounds geometry.

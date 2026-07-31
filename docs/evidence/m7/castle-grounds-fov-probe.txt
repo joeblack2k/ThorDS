@@ -1,0 +1,32 @@
+M7 castle-grounds world and horizontal-FOV probe, 2026-07-31
+
+Method:
+- load the same app-private castle-grounds checkpoint in two fresh debug
+  sessions
+- compare the native presentation with the explicit M7
+  `io.github.joeblack2k.thords.extra.WIDESCREEN_PROBE=true` launch
+- retain only textual geometry and log results; delete the temporary captures
+
+Native comparison:
+- primary surface: 1920x1080
+- world presentation: centered 1440x1080 4:3 rectangle with 240-pixel black
+  sidebars
+- profile launch log: `curatedCodes=1`
+
+M7 probe comparison:
+- primary surface: 1920x1080
+- world presentation: full 1920x1080 top rectangle
+- UI safe area: centered x=240, width=1440, height=1080
+- profile launch log: `curatedCodes=2`, including the guarded EU aspect code
+- visual inspection of the temporary pair showed new castle-ground water, trees
+  and terrain in the left and right regions outside the native 4:3 rectangle
+- presenter log: `M7Probe: dual-uv direct=0 rect=1920x1080 safeX=240 safeWidth=1440`
+
+Result:
+- world full-width presentation: PASS
+- extra horizontal scene content rather than a stretched 4:3 final frame: PASS
+- object-aspect, new-side-region culling, HUD/glyph ratios and transition
+  stability: NOT_YET_MEASURED
+
+No ROM, save state, screenshot, device identifier, temporary path or private
+log dump is retained in this evidence file or repository.

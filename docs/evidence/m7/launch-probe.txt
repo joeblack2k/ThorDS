@@ -26,11 +26,12 @@ Layer gate:
     centered 1440x1080 UI-safe-area
   - a local-only visual inspection confirmed non-empty stable output; it was
     deleted and is not publication evidence
-- castle-grounds world 16:9, HUD geometry and transition matrix:
-  NOT_YET_MEASURED
-  - the save-state route now reaches controllable castle grounds without
-    replaying the title or intro; physical orientation, performance and
-    geometry measurements remain open
+- castle-grounds world 16:9 and horizontal FOV: PARTIAL_PASS
+  - a same-checkpoint native-versus-probe comparison showed full-width world
+    presentation plus new left/right castle-ground content outside the native
+    4:3 rectangle
+  - object aspect, new-side-region culling, HUD geometry and transition
+    measurements remain open
 
 Safe fallback gate:
 - title-flow composition classified as no current top structured 3D and no
