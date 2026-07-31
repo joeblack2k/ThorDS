@@ -129,6 +129,22 @@ physical debug launch reported two curated codes and retained a stable
   still did not yield a valid BOB checkpoint, so this is harness proof only.
 - Evidence: `docs/evidence/m7/input-harness.txt`.
 
+### Castle grounds scene route
+
+- The debug route reproducibly advanced from title touch through Adventure,
+  File A and the skippable intro into controllable castle grounds. The top
+  compositor held the full structured 3D slot while the bottom stayed 2D-only,
+  and the primary probe selected `M7Probe: dual-uv`.
+- The Lakitu-camera transition emitted
+  `dual-uv -> fallback -> dual-uv` without a ThorDS FATAL or ANR. This is
+  classifier sequence evidence only; it does not prove a no-flash final-panel
+  transition.
+- D-pad automation did not produce a deterministic BOB-door route. No BOB,
+  FOV, culling, HUD-ratio or final-panel measurement is claimed.
+- Evidence: `docs/evidence/m7/castle-grounds-scene-matrix.json`. All
+  temporary ROM copies, saves, frame images, metadata and log output were
+  deleted after aggregation.
+
 ### Decision
 
 - M7 is not green. The diagnostic does not yet prove extra horizontal FOV,

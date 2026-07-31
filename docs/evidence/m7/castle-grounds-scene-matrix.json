@@ -1,0 +1,37 @@
+{
+  "format": "thords-m7-castle-grounds-scene-matrix-v1",
+  "scope": "aggregated non-image Vulkan compositor metadata from a physical Thor debug run",
+  "scene": {
+    "id": "castle_grounds_first_control",
+    "top": {
+      "structuredSlotPixels": 49152,
+      "structuredAboveVisiblePixels": 0,
+      "structured2DOnlyPixels": 0,
+      "capture3dLines": 0
+    },
+    "bottom": {
+      "structuredSlotPixels": 0,
+      "structured2DOnlyPixels": 49152,
+      "capture3dLines": 0
+    },
+    "classifier": "WORLD_SAFE_DUAL_UV",
+    "presenter_log": "M7Probe: dual-uv",
+    "input": "debug Start, Slot-2 analog and DS D-pad",
+    "result": "PARTIAL_PASS"
+  },
+  "transition": {
+    "id": "lakitu_camera_to_first_control",
+    "classifier_sequence": [
+      "WORLD_SAFE_DUAL_UV",
+      "FALLBACK_4_3",
+      "WORLD_SAFE_DUAL_UV"
+    ],
+    "crash_or_anr": false,
+    "result": "PARTIAL_PASS"
+  },
+  "limitations": [
+    "No pixel capture, ROM data, save data, device identifier or temporary path is retained.",
+    "The run reached controllable castle grounds, not a valid BOB checkpoint.",
+    "It does not prove final-panel geometry, horizontal FOV, culling, HUD or glyph ratios, no-flash transition behavior, or bottom aspect measurements."
+  ]
+}
