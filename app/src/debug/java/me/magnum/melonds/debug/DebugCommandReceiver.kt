@@ -66,6 +66,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_SET_SLOT2_ANALOG_MAPPING_SUFFIX) -> { handleSetSlot2AnalogMapping(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_VULKAN_FALLBACKS_SUFFIX) -> { handleSetVulkanFallbacks(intent); true }
             context.debugCommandAction(ACTION_TOUCH_SCREEN_SUFFIX) -> { handleTouchScreen(intent); true }
+            context.debugCommandAction(ACTION_TAP_INPUT_SUFFIX) -> { handleTapInput(intent); true }
             context.debugCommandAction(ACTION_LAUNCH_ROM_SUFFIX) -> handleLaunchRom(context, intent)
             context.debugCommandAction(ACTION_WAIT_ROM_READY_SUFFIX) -> handleWaitRomReady(intent)
             context.debugCommandAction(ACTION_SAVE_STATE_SUFFIX) -> handleSaveState(context, entryPoint, intent)
@@ -222,6 +223,19 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         MelonEmulator.onInputUp(Input.TOUCHSCREEN)
         MelonEmulator.onScreenRelease()
         Log.w(TAG, "action=touch_screen x=$x y=$y durationMs=$durationMs")
+    }
+
+    private suspend fun handleTapInput(intent: Intent) {
+        val rawInput = intent.firstStringExtra(EXTRA_INPUT, EXTRA_VALUE)
+            ?: throw IllegalArgumentException("Missing input extra")
+        val input = Input.SYSTEM_BUTTONS.firstOrNull { it.name.equals(rawInput, ignoreCase = true) }
+            ?: throw IllegalArgumentException("Unsupported system input=$rawInput")
+        val durationMs = (intent.firstNullableIntExtra(EXTRA_DURATION_MS) ?: DEFAULT_INPUT_DURATION_MS)
+            .coerceIn(1, 2_000)
+        MelonEmulator.onInputDown(input)
+        delay(durationMs.toLong())
+        MelonEmulator.onInputUp(input)
+        Log.w(TAG, "action=tap_input input=${input.name.lowercase(Locale.US)} durationMs=$durationMs")
     }
 
     private suspend fun handleLaunchRom(context: Context, intent: Intent): Boolean {
@@ -1167,6 +1181,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val EXTRA_STEP_FRAMES = "step_frames"
         private const val EXTRA_BURST_LIVE = "burst_live"
         private const val EXTRA_LIVE_BURST = "live_burst"
+        private const val EXTRA_INPUT = "input"
         private const val EXTRA_CAPTURE_KINDS = "capture_kinds"
         private const val EXTRA_KINDS = "kinds"
         private const val EXTRA_CAPTURE_ID_BASE = "capture_id_base"
@@ -1184,6 +1199,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val DEFAULT_TOUCH_X = 128
         private const val DEFAULT_TOUCH_Y = 96
         private const val DEFAULT_TOUCH_DURATION_MS = 80
+        private const val DEFAULT_INPUT_DURATION_MS = 80
 
         private val receiverScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -1198,6 +1214,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_SET_SLOT2_ANALOG_MAPPING_SUFFIX = "SET_SLOT2_ANALOG_MAPPING"
         private const val ACTION_SET_VULKAN_FALLBACKS_SUFFIX = "SET_VULKAN_FALLBACKS"
         private const val ACTION_TOUCH_SCREEN_SUFFIX = "TOUCH_SCREEN"
+        private const val ACTION_TAP_INPUT_SUFFIX = "TAP_INPUT"
         private const val ACTION_LAUNCH_ROM_SUFFIX = "LAUNCH_ROM"
         private const val EXTRA_WIDESCREEN_PROBE = "widescreen_probe"
         private const val ACTION_WAIT_ROM_READY_SUFFIX = "WAIT_ROM_READY"

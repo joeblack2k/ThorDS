@@ -118,6 +118,17 @@ physical debug launch reported two curated codes and retained a stable
   `docs/evidence/m7/geometry-measurements.json`. All temporary ROM copies,
   frame images, metadata and log output were deleted after aggregation.
 
+### Direct DS-input harness
+
+- Added a debug-only `TAP_INPUT` command for the existing DS system-button
+  input path. It accepts only the existing system buttons and uses a bounded
+  press duration; it does not change controller mappings, profiles or release
+  behavior.
+- Physical Thor debug validation logged the direct Start/A sequence on an
+  active ASMP session without a ThorDS FATAL or ANR. The touch-only title path
+  still did not yield a valid BOB checkpoint, so this is harness proof only.
+- Evidence: `docs/evidence/m7/input-harness.txt`.
+
 ### Decision
 
 - M7 is not green. The diagnostic does not yet prove extra horizontal FOV,

@@ -1,0 +1,19 @@
+M7 debug input harness result, 2026-07-31
+
+Change:
+- debug-only TAP_INPUT accepts only existing DS system buttons:
+  A, B, X, Y, L, R, Start, Select and D-pad
+- it calls the existing MelonEmulator input-down/input-up path with a bounded
+  press duration
+- it does not alter controller configuration, profile behavior or release APKs
+
+Physical Thor validation:
+- debug APK installed successfully
+- active ASMP debug session logged repeated TAP_INPUT Start and A commands
+- no ThorDS FATAL or ANR was observed during the command sequence
+- the sequence did not reach a valid BOB checkpoint, so no gameplay or
+  True Widescreen acceptance result is claimed
+
+Temporary ROM copies, saves, frame images, metadata and log output were deleted
+after validation. No ROM path, ROM bytes, save, capture, device identifier or
+credential is retained here.
