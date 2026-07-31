@@ -1,0 +1,12 @@
+Milestone: M0
+Date: 2026-07-31
+Command: git check-ignore -v "Super Mario 64 DS.nds"
+Result: .gitignore:16:*.nds Super Mario 64 DS.nds
+
+Command: git ls-files | grep -Ei "\.(nds|srl)$"
+Result: empty
+
+Command: git log --all --name-only --pretty=format: | grep -Ei "\.(nds|srl)$"
+Result: empty
+
+Source ROM remains local, ignored and unmodified.

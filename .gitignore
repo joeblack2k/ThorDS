@@ -12,3 +12,12 @@ common/bin/
 rcheevos-api/bin/
 *.patch
 
+# Local copyrighted game data
+*.nds
+*.srl
+*.rom
+private/
+local/
+local-roms/
+patched-rom-cache/
+docs/evidence/private/

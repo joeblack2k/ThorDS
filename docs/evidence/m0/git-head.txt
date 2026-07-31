@@ -1,0 +1,7 @@
+Milestone: M0
+Date: 2026-07-31
+Branch: thords/enhancement-platform-v1
+HEAD: 9b28076281545a1e08dccee0b3f925febb8933ac
+Exact tag: 0.7.0.rc5
+Expected HEAD assertion: PASS
+Command: test "$(git rev-parse HEAD)" = "9b28076281545a1e08dccee0b3f925febb8933ac"

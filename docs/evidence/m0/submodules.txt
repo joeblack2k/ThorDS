@@ -1,0 +1,10 @@
+Milestone: M0
+Date: 2026-07-31
+Command: git submodule status --recursive
+
+ 2662c0de09e36f2a2030ccc2c528a3e4c9e8138a app/src/main/cpp/enet
+ 2653c918d788c5dc83826c97aaa4de4dd8931a8b app/src/main/cpp/faad2
+ a81bb9f87d4105b84b682685d3bfbb5beca371d1 app/src/main/cpp/oboe
+ 39363b7c34e5b1a12948961ddbbf539e8cd011e4 melonDS-android-lib
+
+Result: PASS; no missing or dirty submodule marker.
