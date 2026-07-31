@@ -25,6 +25,7 @@
     "device": "AYN Thor",
     "world_orientation": "READABLE",
     "packed_ui_orientation": "READABLE",
+    "native_composite_orientation": "READABLE",
     "observed_text": [
       "CASTLE SECRET STARS",
       "TOUCH TO SELECT"
@@ -38,6 +39,16 @@
     "reported_fps": 60,
     "crash_or_anr": false,
     "result": "PASS_SCENE_LEVEL"
+  },
+  "transition_smoke": {
+    "sequence": "world -> pause -> world",
+    "samples_ms": [
+      150,
+      1000
+    ],
+    "wrong_previous_frame": false,
+    "crash_or_anr": false,
+    "result": "PASS_SHORT_SAMPLE"
   },
   "reason": "The debug-only developer probe submitted distinct world-3D and plane-1/UI draws across a 16:9 top target on the physical Thor. It falls back to a centered 4:3 composite when no dominant current top structured 3D slot exists or capture 3D is present. Live Peach-intro and controllable Castle Garden scenes exercised the world-safe dual-UV route. A same-checkpoint native-versus-probe comparison showed the Castle Garden gaining left/right world content outside the native 4:3 rectangle. The Thor-specific primary rotation now covers the world quad while draw mode 8 samples the packed UI with the native top-down Y mapping. The physical pause overlay and movement smoke are now readable and stable at scene level. This still does not prove object aspect, new-side-region culling, exact HUD/glyph/bottom geometry or transition stability.",
   "required_before_m8": [

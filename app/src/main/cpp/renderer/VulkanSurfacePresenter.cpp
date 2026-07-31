@@ -3430,9 +3430,10 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
         );
         for (const DrawCall& drawCall : drawCalls)
         {
-            // The packed DS overlay is already vertically oriented for the
-            // Thor surface; only the world quad needs the primary rotation.
-            if (drawCall.drawMode == kDrawModeWidescreenUiOverlay)
+            // Composite DS output and packed plane-1 use native surface
+            // orientation; only the high-res world quad needs primary rotation.
+            if (drawCall.drawMode == kDrawModeCompositeFrame
+                || drawCall.drawMode == kDrawModeWidescreenUiOverlay)
                 continue;
 
             const size_t firstVertex = drawCall.firstVertex;

@@ -244,6 +244,30 @@ physical debug launch reported two curated codes and retained a stable
 - M7 remains open for object aspect, new-side-region culling, exact
   HUD/glyph/bottom geometry and transition stability. M8 remains blocked.
 
+### Castle Garden native composite orientation correction - 2026-08-01
+
+- The physical Thor comparison exposed a second path in addition to the
+  explicit dual-UV probe: the normal two-surface presentation uses
+  `kDrawModeCompositeFrame` and already carries native top-down surface
+  orientation.
+- The primary Thor vertex transform was applying a second 180-degree
+  geometry rotation to that composite frame. The bounded fix leaves both the
+  native composite frame and the packed plane-1 overlay in their source
+  orientation, while retaining the rotation for the high-resolution world
+  quad.
+- Rebuilt and reinstalled the same GitHubProdDebug variant:
+  SPIR-V regeneration/check, unit tests and APK build all passed.
+- Castle Garden physical checks after reinstall:
+  - native composite world: upright, centered 4:3, `FPS: 60`;
+  - native composite pause menu: `CASTLE SECRET STARS` and
+    `TOUCH TO SELECT` readable;
+  - dual-UV world and packed pause overlay: upright and readable;
+  - 10-second Slot-2 movement: `FPS: 60`;
+  - pause-to-world transition samples at 150 ms and 1 s: correct world frame;
+  - filtered logcat: no `FATAL EXCEPTION` or `ANR in`.
+- M7 remains open for measured object aspect, new-side-region culling, exact
+  HUD/glyph/bottom geometry and longer transition coverage. M8 remains blocked.
+
 ## 2026-07-31 - M0
 
 Commit before: none; repository initialized in this task.

@@ -33,13 +33,16 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   native top-down sample orientation. A fresh physical Castle Garden
   checkpoint shows readable `CASTLE SECRET STARS` and `TOUCH TO SELECT` text
   on the primary surface while the world remains upright and the lower
-  presentation remains unchanged. A 10-second Slot-2 movement smoke still
-  reports `FPS: 60` with no ThorDS crash or ANR. A same-checkpoint
-  native-versus-probe comparison also showed extra left/right castle-ground
-  world content outside the native 4:3 rectangle. This is a strong
-  presentation and scene-level performance result, not yet object-aspect,
-  side-region culling, exact HUD/glyph/bottom metrics or sustained transition
-  proof.
+  presentation remains unchanged. The normal native composite path was then
+  checked separately: its centered 4:3 world and pause menu are also upright
+  and readable, so the Thor rotation is no longer applied twice to an already
+  oriented composite frame. A 10-second Slot-2 movement smoke still reports
+  `FPS: 60` with no ThorDS crash or ANR, and a pause-to-world sample showed no
+  wrong previous frame. A same-checkpoint native-versus-probe comparison also
+  showed extra left/right castle-ground world content outside the native 4:3
+  rectangle. This is a strong presentation and scene-level performance
+  result, not yet object-aspect, side-region culling, exact HUD/glyph/bottom
+  metrics or sustained transition proof.
 - Active blocker: castle-grounds object-aspect, side-region culling, exact
   HUD/glyph/bottom geometry and transition measurements. The owner explicitly
   selected controllable castle grounds as the M7 representative scene;
@@ -79,5 +82,5 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 Run the remaining M7 Castle Garden measurements with the optimized debug APK:
 object aspect, new-side-region culling, exact HUD/glyph/bottom geometry and
-transition stability. Keep M8 blocked until that evidence is green.
+longer transition stability. Keep M8 blocked until that evidence is green.
 The M6 gameplay checklist also remains pending.

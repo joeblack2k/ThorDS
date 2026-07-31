@@ -54,3 +54,13 @@ Follow-up: primary UI rotation correction, 2026-08-01
 - This closes the orientation and scene-level movement smoke, but not the
   remaining M7 object-aspect, culling, exact HUD/glyph/bottom or transition
   gates.
+
+Native composite follow-up:
+
+- The same checkpoint was loaded through the ordinary composite presentation
+  without the developer widescreen extra.
+- The primary Thor surface now shows an upright centered 4:3 world and
+  readable pause text there as well; the composite frame no longer receives a
+  second primary 180-degree geometry rotation.
+- The dual-UV Castle Garden path and a pause-to-world sample were rerun after
+  the change. No filtered ThorDS crash or ANR was observed.

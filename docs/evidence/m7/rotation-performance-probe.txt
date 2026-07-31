@@ -56,4 +56,18 @@ Performance observation:
 - this is not yet a full realtime acceptance result across transitions and
   the remaining M7 geometry checks
 
+Native composite follow-up, 2026-08-01:
+
+- The same Castle Garden checkpoint was launched without the
+  `WIDESCREEN_PROBE` extra through the normal two-surface composite route.
+- That route uses `kDrawModeCompositeFrame`, whose source texture is already in
+  native top-down surface orientation. The Thor primary geometry transform now
+  skips this draw mode, just as it skips the packed plane-1 overlay.
+- Physical result: centered 4:3 world upright, pause text readable, `FPS: 60`.
+- The dual-UV route was rerun after the change and remained full-width with
+  readable safe-area text. A 10-second movement smoke and a pause-to-world
+  transition sample produced no filtered crash or ANR.
+- This closes the normal composite and dual-UV orientation smoke. The
+  remaining M7 geometry/culling and longer transition gates are unchanged.
+
 Result: PARTIAL_PASS

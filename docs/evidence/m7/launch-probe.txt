@@ -68,3 +68,16 @@ Follow-up Castle Garden UI and movement smoke, 2026-08-01:
 
 Temporary screenshots, logs, ROM copies and save states were deleted after
 aggregation. No private asset or device identifier is retained here.
+
+Native composite orientation follow-up, 2026-08-01:
+
+- The same app-private Castle Garden checkpoint was also launched through the
+  normal path without `WIDESCREEN_PROBE`.
+- The native composite world and pause menu were upright and readable on the
+  1920x1080 primary surface after the bounded draw-mode correction.
+- The dual-UV probe remained upright in the same installed APK; movement and
+  pause-to-world transition samples stayed at `FPS: 60` with no filtered
+  `FATAL EXCEPTION` or `ANR in`.
+- This remains a partial M7 result because object aspect, side-region culling,
+  exact HUD/glyph/bottom measurements and longer transition coverage are not
+  yet green.

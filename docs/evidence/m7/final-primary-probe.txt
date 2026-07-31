@@ -39,3 +39,17 @@ Follow-up, 2026-08-01:
 - The lower external presentation was not changed.
 - This closes the orientation smoke only; exact HUD/glyph/bottom ratios,
   object aspect, culling and transition stability remain M7 work.
+
+Native composite follow-up, 2026-08-01:
+
+- A normal launch of the same Castle Garden checkpoint without the developer
+  widescreen extra uses the ordinary composite-frame draw mode.
+- After the Thor primary rotation correction, the centered 4:3 world and the
+  pause overlay are upright and readable on the physical primary surface.
+- The dual-UV probe was rerun in the same build and stayed upright with the
+  readable pause overlay. A 10-second movement smoke held `FPS: 60`; a
+  pause-to-world sample at 150 ms showed a current world frame rather than a
+  rotated or stale pause frame.
+- This closes the primary orientation and scene-level movement smoke for both
+  presentation paths. Exact object/HUD/bottom geometry, side-region culling
+  and sustained transition stability remain open.
