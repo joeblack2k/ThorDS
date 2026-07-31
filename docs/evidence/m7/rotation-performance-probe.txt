@@ -3,6 +3,9 @@ M7 primary rotation and performance probe, 2026-07-31
 Scope:
 - developer-only Vulkan probe on the physical Thor primary presentation
 - controllable castle-grounds checkpoint loaded from an app-private save state
+- Thor-default rotation fix: commit
+  `54410dc0934886fb6f4ddaba4f59ce3772a9eb1f`, pushed as `main` to
+  `https://github.com/joeblack2k/ThorDS`
 - no ROM, save state, screenshot, log dump, device identifier or private
   capture retained in this repository
 

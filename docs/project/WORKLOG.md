@@ -195,6 +195,10 @@ physical debug launch reported two curated codes and retained a stable
   launch without `VULKAN_ROTATE_180` still emitted the rotation log on primary
   surface 1; the external presentation config remains false. Physical
   readability is still awaiting direct confirmation.
+- Publication: commit
+  `54410dc0934886fb6f4ddaba4f59ce3772a9eb1f` is pushed to `origin/main` on
+  `https://github.com/joeblack2k/ThorDS`; the corresponding debug build,
+  unit tests and physical Thor launch passed.
 - Performance probe: the instrumented castle-grounds run reported about
   38-40 FPS and approximately 25.6 ms Vulkan instance CPU time, with presented
   frames and no acquire/submit failures. That diagnostic configuration is not

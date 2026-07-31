@@ -60,7 +60,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M4 | PASS | 04ed45bd | docs/evidence/m4/ | catalog v1, exact resolver, safe Original fallback, curated/user separation and synthetic delta patches |
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
 | M6 | IN_PROGRESS | 883d00cf | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; physical gameplay scenarios remain |
-| M7 | IN_PROGRESS | | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and castle-grounds classifier matrices verified; save-state-assisted castle-grounds route, native-versus-probe world/FOV comparison, primary rotation probe and target-local debug `-O2` performance result recorded; physical orientation, sustained realtime behavior, object aspect, culling, HUD and transition gates remain open |
+| M7 | IN_PROGRESS | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and castle-grounds classifier matrices verified; save-state-assisted castle-grounds route, native-versus-probe world/FOV comparison, Thor-default primary rotation and target-local debug `-O2` performance result recorded; physical orientation, sustained realtime behavior, object aspect, culling, HUD and transition gates remain open |
 | M8 | NOT_STARTED | | | |
 | M9 | NOT_STARTED | | | |
 | M10 | NOT_STARTED | | | |
