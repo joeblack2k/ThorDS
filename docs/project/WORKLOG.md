@@ -268,6 +268,33 @@ physical debug launch reported two curated codes and retained a stable
 - M7 remains open for measured object aspect, new-side-region culling, exact
   HUD/glyph/bottom geometry and longer transition coverage. M8 remains blocked.
 
+### Castle Garden camera projection proof - 2026-08-01
+
+- The owner-selected Castle Garden checkpoint is now the only representative
+  scene for this M7 projection probe; Bob-omb Battlefield is not an exit gate.
+- The JNI Action Replay parser now shares a strict whitespace-aware helper with
+  a standalone native regression test. Newline-separated profile code is
+  accepted, while malformed, empty and odd-word input is rejected.
+- The static overlay-6 candidate is guarded at `0x020C025C`, but the Castle
+  Garden runtime word at that shared address is not the overlay-6
+  `0x00001555` literal. The static guard therefore fails closed.
+- The guarded pointer-relative write follows the live camera pointer at
+  `0x0209F318` and updates `camera + 0xF8` from `0x00001555` to
+  `0x00001C72`.
+- A temporary emulator-side measurement at the frame boundary compared the
+  actual projection matrix load:
+  - without the developer probe: `x=0x000020F8`, `y=0x00002BF5`;
+  - with the developer probe: `x=0x000018BA`, `y=0x00002BF5`.
+- The measured x-scale ratio is 0.75, matching the expected 4:3-to-16:9
+  aspect adjustment. The temporary emulator logging was removed before
+  integration; only the metadata-only result is retained.
+- Validation so far: standalone parser test PASS, GitHub Prod debug build
+  PASS, physical Castle Garden projection response PASS.
+- M7 remains `PARTIAL_PASS_M7_GATES_OPEN`. New-side-region culling, exact HUD
+  circle/glyph geometry, bottom-screen aspect and longer transition stability
+  remain open. M8 remains blocked.
+- Evidence: `docs/evidence/m7/castle-garden-camera-projection.txt`.
+
 ## 2026-07-31 - M0
 
 Commit before: none; repository initialized in this task.

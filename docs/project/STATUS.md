@@ -40,7 +40,10 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   `FPS: 60` with no ThorDS crash or ANR, and a pause-to-world sample showed no
   wrong previous frame. A same-checkpoint native-versus-probe comparison also
   showed extra left/right castle-ground world content outside the native 4:3
-  rectangle. This is a strong presentation and scene-level performance
+  rectangle. The Castle Garden camera probe also proves that the game
+  projection matrix changes from `x=0x20F8` to `x=0x18BA` with the y-scale
+  unchanged when the live camera aspect changes from `0x1555` to `0x1C72`.
+  This is a strong projection, presentation and scene-level performance
   result, not yet object-aspect, side-region culling, exact HUD/glyph/bottom
   metrics or sustained transition proof.
 - Active blocker: castle-grounds object-aspect, side-region culling, exact
@@ -59,7 +62,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M4 | PASS | 04ed45bd | docs/evidence/m4/ | catalog v1, exact resolver, safe Original fallback, curated/user separation and synthetic delta patches |
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
 | M6 | IN_PROGRESS | 883d00cf | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; physical gameplay scenarios remain |
-| M7 | IN_PROGRESS | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and Castle Garden classifier matrices verified; save-state-assisted Castle Garden route, native-versus-probe world/FOV comparison, Thor-default world plus packed-UI rotation, readable pause overlay and 10-second `FPS: 60` movement smoke recorded; object aspect, side-region culling, exact HUD/glyph/bottom geometry and transition gates remain open |
+| M7 | IN_PROGRESS | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, newline-safe parser, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and Castle Garden classifier matrices verified; save-state-assisted Castle Garden route, native-versus-probe world/FOV comparison, measured game projection response, Thor-default world plus packed-UI rotation, readable pause overlay and 10-second `FPS: 60` movement smoke recorded; object aspect, side-region culling, exact HUD/glyph/bottom geometry and transition gates remain open |
 | M8 | NOT_STARTED | | | |
 | M9 | NOT_STARTED | | | |
 | M10 | NOT_STARTED | | | |

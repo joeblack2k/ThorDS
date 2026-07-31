@@ -105,11 +105,11 @@ class ProfileEngineTest {
                 "0200D03C 00001555",
                 "0200F64C 00001555",
                 "02015774 00001555",
-                "020C026C 00001555",
+                "020C025C 00001555",
             ),
             aspect.expectedOriginalWords,
         )
-        assertEquals("44cfd537461cde6b2f9a575bb01334bf0e8fd607815e37f102eb5c55559f770e", sha256(aspect.codeWords.joinToString("\n") + "\n"))
+        assertEquals("28445a89a887a556b4a0564e21f8ca579eeab437471bff1b38c681efd6a3bbc6", sha256(aspect.codeWords.joinToString("\n") + "\n"))
     }
 
     @Test

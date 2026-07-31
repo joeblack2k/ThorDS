@@ -8,7 +8,19 @@ only 32-bit constants and one function-range SHA-256 are recorded.
 0x0200D03C main ARM9 view-object initializer: 0x00001555
 0x0200F64C main ARM9 Initialise3dGraphics literal: 0x00001555
 0x02015774 main ARM9 Clipper constructor literal: 0x00001555
-0x020C026C overlay 6 Camera_UpdateMatrices literal: 0x00001555
+0x020C025C overlay 6 Camera_UpdateMatrices literal: 0x00001555
+
+Overlay-6 mapping proof: Camera_UpdateMatrices starts at 0x020C0134; its last
+instruction is at 0x020C0254 and its documented 0x130-byte range ends at
+0x020C0264. Its ARM instruction at 0x020C0204 loads the PC-relative word at
+0x020C025C, and the following calls use that word as the perspective and
+clipper aspect argument. The next function begins at 0x020C0264, so
+0x020C026C lies inside that function and is not the aspect literal.
+
+Save-state camera mapping: Camera::Render reads the live aspect field at
+camera + 0xF8, and the global camera pointer is stored at 0x0209F318.
+The Castle Garden state is loaded after camera initialization, so the
+developer probe uses a non-zero-pointer guard and writes camera + 0xF8.
 
 Candidate 16:9 Fix12 value: 0x00001C72
 Camera_UpdateMatrices range SHA-256: 0d72fe606146861bdaca6c07087235f6f052a8dcb3bab6a047b76d964649f6e8

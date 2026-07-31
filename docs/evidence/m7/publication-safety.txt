@@ -15,12 +15,15 @@ APK:
   and a generic login error message only; no credential value found
 
 Secrets:
-- gitleaks rescanned all 983 reachable Git commits and the current app
-  source for this M7 update.
-- one `generic-api-key` finding is a false positive: the public NIST
-  SP 800-38A AES-128 test vector in the pre-existing, third-party
+- gitleaks rescanned all 989 reachable Git commits for this M7 update.
+- the history scan found one `generic-api-key` false positive: the public
+  NIST SP 800-38A AES-128 test vector in the pre-existing, third-party
   `app/src/main/cpp/rcheevos/src/rhash/aes.c`.
-- the current diff-only Gitleaks scan: PASS; no findings
+- the current local-source scan also found four pre-existing public
+  third-party/template matches in the pinned melonDS submodule:
+  `build-windows.yml`, `tiny-AES-c/aes.c` and two `xxhash.h` test constants.
+  They are not credentials and are outside the staged parent-repository diff.
+- the current staged diff-only Gitleaks scan: PASS; no findings
 - M7 documentation scan: PASS; no findings
 
 No ROM bytes, saves, device identifier, temporary path, private screenshot,

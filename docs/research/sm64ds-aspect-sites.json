@@ -32,13 +32,23 @@
       "candidate_word": "0x00001C72"
     },
     {
-      "address": "0x020C026C",
+      "address": "0x020C025C",
       "module": "arm9-overlay-6",
       "symbol": "Camera_UpdateMatrices",
       "role": "gameplay projection and clipper aspect",
       "expected_original_word": "0x00001555",
       "candidate_word": "0x00001C72",
       "requires_overlay_residency": true
+    },
+    {
+      "address": "0x0209F318",
+      "module": "main-ram-indirect",
+      "symbol": "Camera::Render camera pointer",
+      "role": "live Camera aspect field at pointer plus 0xF8 after state load",
+      "expected_original_word": "0x00001555",
+      "candidate_word": "0x00001C72",
+      "pointer_offset": "0x000000F8",
+      "requires_nonzero_pointer": true
     }
   ]
 }

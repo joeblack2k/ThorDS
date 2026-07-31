@@ -1,0 +1,56 @@
+M7 Castle Garden camera-projection probe
+Date: 2026-08-01
+Scope: temporary developer-only physical validation
+
+Representative scene
+
+- The owner-selected M7 scene is controllable Castle Garden/castle grounds.
+- Bob-omb Battlefield is not required for this gate.
+- The probe is limited to the exact ASMP Europe revision-0 profile and remains
+  default-off and developer-only.
+
+Profile and parser
+
+- `ProfileLaunch` reported two curated runtime codes when the explicit
+  developer probe was enabled.
+- The shared native Action Replay parser accepts whitespace-separated words,
+  including newline-separated profile text, and rejects empty, malformed and
+  odd-word input.
+- Standalone `ActionReplayCodeParserTest.cpp`: PASS.
+
+Runtime camera evidence
+
+- The Castle Garden save-state checkpoint held a non-zero camera pointer.
+- Before the indirect live-camera write, the field at `camera + 0xF8` was
+  `0x00001555`.
+- After the guarded developer code ran, the same live field was
+  `0x00001C72`.
+- The overlay-6 static candidate at `0x020C025C` was not resident in the
+  Castle Garden checkpoint; its live word differed from `0x00001555`.
+  The guarded static write therefore failed closed while the pointer-relative
+  live-camera write remained applicable.
+
+Projection-matrix comparison
+
+- Without the developer probe, the Castle Garden projection load measured
+  `x=0x000020F8`, `y=0x00002BF5`.
+- With the developer probe, it measured `x=0x000018BA`,
+  `y=0x00002BF5`.
+- The x-scale changed by exactly 0.75 at the measured Fix12 output, matching
+  the expected `0x1555` to `0x1C72` 4:3-to-16:9 aspect adjustment while
+  keeping the y-scale unchanged.
+- This proves the game-side projection matrix responds to the live aspect
+  patch. It is not only a presenter stretch.
+
+Open M7 gates
+
+- New-side-region object culling is not yet measured.
+- Exact HUD circle and glyph aspect are not yet measured.
+- Bottom-screen aspect is not yet measured.
+- Longer transition stability is not yet measured.
+- M7 remains `PARTIAL_PASS_M7_GATES_OPEN`; M8 remains blocked.
+
+Safety
+
+- No ROM bytes, save-state bytes, screenshots, raw logs, private captures,
+  device serials or credentials are retained in this evidence file.
