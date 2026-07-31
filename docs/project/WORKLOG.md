@@ -80,6 +80,20 @@ physical debug launch reported two curated codes and retained a stable
   classifier is stable across the measured transition.
 - All transient ROM and metadata files were removed after aggregation.
 - Evidence: `docs/evidence/m7/title-scene-matrix.json`.
+
+### Debug capture harness
+
+- A screen-only capture during the title-start transition exposed an ANR in the
+  debug broadcast route. The trace showed the paused route waiting for a full
+  Vulkan debug readback, even though it had requested only a screen frame.
+- Safe screen and metadata-only requests now default to the existing dense
+  live-burst route. Deeper layer, depth and attribute captures still require a
+  paused snapshot.
+- Physical Thor rerun: both screen-only and metadata-only captures completed
+  with `liveBurst=1` and `freezeSnapshot=0`; no ThorDS ANR occurred.
+- Validation: `:app:testGitHubProdReleaseUnitTest` and
+  `:app:assembleGitHubProdDebug` passed.
+- Evidence: `docs/evidence/m7/debug-capture-harness.txt`.
 ```
 
 ### Decision

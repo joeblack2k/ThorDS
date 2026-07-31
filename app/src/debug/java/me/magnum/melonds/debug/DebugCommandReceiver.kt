@@ -450,7 +450,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             ?: if (burstCount > 1) 0 else resumeMs
         val burstStepFrames = intent.firstNullableIntExtra(EXTRA_BURST_STEP_FRAMES, EXTRA_STEP_FRAMES)?.coerceAtLeast(0)
             ?: if (burstCount > 1) 1 else resumeFrames
-        val burstLive = intent.firstBooleanExtra(EXTRA_BURST_LIVE, EXTRA_LIVE_BURST) ?: false
+        val burstLiveOverride = intent.firstBooleanExtra(EXTRA_BURST_LIVE, EXTRA_LIVE_BURST)
         val captureIdBase = intent.firstStringExtra(EXTRA_CAPTURE_ID_BASE, EXTRA_CAPTURE_ID)
             ?.takeIf { it.isNotBlank() }
         val captureKinds = parseCaptureKinds(
@@ -469,6 +469,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             rawKinds = intent.firstStringExtra(EXTRA_CAPTURE_KINDS_REST, EXTRA_REST_KINDS),
             defaultKinds = captureKinds,
         )
+        val burstLive = burstLiveOverride
+            ?: (!requiresPausedBurstCapture(captureKindsFirst) && !requiresPausedBurstCapture(captureKindsRest))
         val captureOutputDir = if (burstCount > 1) {
             File(outputDir, "burst_${System.currentTimeMillis()}").apply { mkdirs() }
         } else {
@@ -1009,6 +1011,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
                 && it != RendererDebugCaptureKind.PACKED_TOP_PRIMARY
                 && it != RendererDebugCaptureKind.PACKED_BOTTOM_PRIMARY
                 && it != RendererDebugCaptureKind.RENDERER3D_CAPTURE_FRAME
+                && it != RendererDebugCaptureKind.SOFT_PACKED_FRAME_META_JSON
         }
     }
 

@@ -1,0 +1,26 @@
+M7 debug capture harness result, 2026-07-31
+
+Finding:
+- the paused screen-capture command always froze a full Vulkan debug snapshot,
+  even when only a screen frame was requested
+- on the connected Thor, a capture during the title-start transition blocked in
+  Vulkan debug readback and exceeded the broadcast deadline
+- this was a debug-command ANR, not a normal emulator-rendering crash
+
+Correction:
+- screen, packed-primary, renderer-capture and soft-packed-metadata-only
+  requests now default to the existing dense live-burst capture path
+- all other layer, depth and attribute capture requests retain the paused
+  snapshot path
+
+Validation:
+- `:app:testGitHubProdReleaseUnitTest`: PASS
+- `:app:assembleGitHubProdDebug`: PASS
+- physical Thor screen-only capture: PASS; `liveBurst=1`,
+  `freezeSnapshot=0`, successful result, no ThorDS ANR
+- physical Thor soft-packed-metadata-only capture: PASS; `liveBurst=1`,
+  `freezeSnapshot=0`, populated JSON result, no ThorDS ANR
+
+Temporary ROM copies, debug screenshots, metadata files and ANR output were
+deleted after validation. No ROM path, ROM bytes, save, capture, device
+identifier or credential is retained here.
