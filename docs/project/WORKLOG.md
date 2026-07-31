@@ -650,3 +650,29 @@ result: PASS; filtered logcat contained no FATAL EXCEPTION or ANR
   reconnect still need a human gameplay observation
 - no ROM, save, capture, private URI, device serial or credential was added to
   the source tree
+
+## Castle Garden live classifier stability probe - 2026-08-01
+
+- The owner-selected Castle Garden checkpoint was loaded directly through the
+  existing app-private save-state route; no Bob-omb route was used.
+- A 180-sample live Vulkan metadata burst completed with populated metadata for
+  every requested sample.
+- All samples kept the expected Castle Garden classification:
+  top structured 3D `49152`, bottom structured 2D-only `49152`, fixed
+  `[0,192,0,0]` display-mode counts, and the expected top/bottom compositor
+  modes. No classifier change or ThorDS crash/ANR was observed.
+- A temporary frozen geometry capture produced a non-empty 3D frame, but its
+  coverage/attribute and plane-1 outputs did not provide a discriminating
+  object or HUD mask at this checkpoint. No unsupported ratio claim was
+  added.
+- The first nine burst samples repeated `frameId=0` before the populated
+  sequence advanced from `19` through `189`. This is a capture-startup
+  limitation, not evidence of a rendered scene transition; it leaves W-20
+  unique-frame cadence open.
+- Evidence: `docs/evidence/m7/castle-garden-live-stability.txt`.
+
+Result:
+
+`PARTIAL_PASS_M7_LIVE_CLASSIFIER_STABLE`. Castle Garden remains the sole M7
+representative scene; Bob-omb Battlefield is explicitly out of scope. W-01,
+W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.

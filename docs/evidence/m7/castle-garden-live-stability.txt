@@ -1,0 +1,54 @@
+M7 Castle Garden live metadata stability probe
+Date: 2026-08-01
+Scope: temporary developer-only physical validation on the owner-selected
+Castle Garden/castle-grounds checkpoint
+
+Method
+
+- Load the existing app-private Castle Garden checkpoint through the debug
+  route so the title and intro are not replayed.
+- Run a 180-sample live Vulkan burst with one-frame capture steps.
+- Retain only aggregate metadata; renderer images, metadata files, ROM copies,
+  save states and logs remain temporary and are not part of the repository.
+
+Observed classifier
+
+- Captures completed: 180/180.
+- Every populated sample reported:
+  - top structured 3D slot: 49,152 pixels;
+  - top structured 2D-only pixels: 0;
+  - bottom structured 2D-only pixels: 49,152 pixels;
+  - top and bottom display-mode counts: `[0,192,0,0]`;
+  - top compositor mode: mode 0 for 49,152 pixels;
+  - bottom compositor mode: mode 7 for 49,152 pixels;
+  - top and bottom x-offset ranges: `[0,0]`.
+- The Castle Garden route therefore remained on the expected
+  `WORLD_SAFE_DUAL_UV` source classification for the complete captured burst.
+- A final physical primary screenshot remained upright, full-width and
+  readable, with the established scene smoke reporting `FPS: 60`.
+- A temporary frozen geometry capture produced a non-empty 256x192 3D frame.
+  The coverage/attribute and plane-1 outputs for this gameplay checkpoint did
+  not yield a discriminating object or HUD mask, so no new pixel-ratio claim
+  is made from them.
+
+Harness limitation
+
+- The first nine burst samples carried `frameId=0`; subsequent populated
+  samples advanced continuously from `frameId=19` through `frameId=189`.
+- No classifier change or crash/ANR occurred, but the repeated startup frame
+  means this run is not a complete W-20 proof of unique frame cadence.
+- The run does not close W-01 object aspect, W-03 side-region culling,
+  W-04/W-05 HUD and glyph ratios, W-06 bottom ratio or W-20 transitions.
+
+Result
+
+`PARTIAL_PASS_M7_LIVE_CLASSIFIER_STABLE`
+
+Castle Garden is sufficient as the M7 representative scene; Bob-omb
+Battlefield is not required. M8 remains blocked until the remaining geometry
+and transition evidence is green.
+
+Safety
+
+No ROM bytes, save-state bytes, screenshots, raw logs, device identifiers or
+credentials are retained in this evidence file or Git history.
