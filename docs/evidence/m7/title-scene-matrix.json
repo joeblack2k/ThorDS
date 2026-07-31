@@ -1,0 +1,55 @@
+{
+  "format": "thords-m7-scene-matrix-v1",
+  "scope": "aggregated non-image Vulkan compositor metadata from a physical Thor debug launch",
+  "scenes": [
+    {
+      "id": "title_pre_touch",
+      "classification": "FALLBACK_4_3",
+      "top": {
+        "structuredAboveVisiblePixels": 0,
+        "structured2DOnlyPixels": 49152,
+        "capture3dLines": 0
+      },
+      "bottom": {
+        "structuredAboveVisiblePixels": 1994,
+        "structuredSlotPixels": 49152,
+        "capture3dLines": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "title_post_touch",
+      "classification": "FALLBACK_4_3",
+      "top": {
+        "structuredAboveVisiblePixels": 0,
+        "structured2DOnlyPixels": 49152,
+        "capture3dLines": 0
+      },
+      "bottom": {
+        "structuredAboveVisiblePixels": 0,
+        "structuredSlotPixels": 49152,
+        "capture3dLines": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "id": "title_second_touch",
+      "classification": "FALLBACK_4_3",
+      "top": {
+        "structuredAboveVisiblePixels": 0,
+        "structured2DOnlyPixels": 49152,
+        "capture3dLines": 0
+      },
+      "bottom": {
+        "structuredAboveVisiblePixels": 0,
+        "structuredSlotPixels": 49152,
+        "capture3dLines": 0
+      },
+      "result": "PASS"
+    }
+  ],
+  "limitations": [
+    "No pixel capture, ROM data, save data, device identifier or temporary path is retained.",
+    "These title phases do not establish BOB world aspect, horizontal FOV, culling or HUD geometry."
+  ]
+}

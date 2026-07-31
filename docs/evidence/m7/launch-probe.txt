@@ -39,6 +39,13 @@ Safe fallback gate:
   PASS by construction
 - details: `docs/evidence/m7/fallback-probe.txt`
 
+Title scene-matrix gate:
+- three transient, metadata-only captures before and after two direct DS touches
+  reported no current top structured 3D and no capture-3D: PASS
+- all three title phases retained the conservative `FALLBACK_4_3` classification:
+  PASS
+- details: `docs/evidence/m7/title-scene-matrix.json`
+
 The temporary app-private ROM copy, transport copy and local diagnostic
 screenshot were deleted immediately after this check. No ROM path, ROM bytes,
 save data, capture or device identifier is retained here.

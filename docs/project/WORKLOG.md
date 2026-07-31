@@ -66,6 +66,20 @@ physical debug launch reported two curated codes and retained a stable
   `:app:assembleGitHubProdDebug` all passed after the correction.
 - Evidence: `docs/evidence/m7/fallback-probe.txt` and
   `docs/evidence/m7/geometry-measurements.json`.
+
+### Title scene metadata
+
+- The existing debug capture route was exercised with only
+  `soft_packed_frame_meta_json`; no screenshot or ROM-derived pixel data was
+  kept.
+- The pre-touch title phase and two subsequent direct DS-touch phases each
+  reported no current top structured 3D and no capture 3D. The primary
+  presenter consistently selected `FALLBACK_4_3`.
+- The bottom compositor mode changed across the touches, while the top source
+  remained 2D-only. This is expected title-flow behavior and confirms that the
+  classifier is stable across the measured transition.
+- All transient ROM and metadata files were removed after aggregation.
+- Evidence: `docs/evidence/m7/title-scene-matrix.json`.
 ```
 
 ### Decision
