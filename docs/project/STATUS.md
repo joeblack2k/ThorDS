@@ -26,7 +26,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 |---|---|---|---|---|
 | M0 | PASS | efddfac | docs/evidence/m0/ | rc5 pin, submodules, ROM protection and synthetic identity test verified |
 | M1 | PASS | pending | docs/evidence/m1/ | build/install/ASMP boot/10-minute smoke green; two-panel behavior is the M2 scope |
-| M2 | IN_PROGRESS | pending | docs/evidence/m2/ | physical display-role diagnosis in progress |
+| M2 | PARTIAL | pending | docs/evidence/m2/ | display roles, injected touch grid, controller and lifecycle pass; physical DS-coordinate touch remains |
 | M3 | NOT_STARTED | | | |
 | M4 | NOT_STARTED | | | |
 | M5 | NOT_STARTED | | | |
@@ -52,5 +52,5 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Prove display roles and capture the current rc5 split-screen limitation before
+Perform the nine-point physical-finger DS touch accuracy check before
 introducing a Thor-specific role classifier.

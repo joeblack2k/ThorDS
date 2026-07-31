@@ -1,0 +1,14 @@
+M2 window/display proof
+Date: 2026-07-31
+
+ThorDisplayDiagnosticActivity:
+- primary Activity window: display 0, requested 1920x1080
+- secondary Presentation window: display 4, requested 1240x1080
+- both windows had a ready, visible surface
+
+Unmodified rc5 emulator:
+- EmulatorActivity resumes on display 0
+- ExternalPresentation is a visible, ready TYPE_PRESENTATION window on display 4
+
+Result: PASS. The physical dual-display route works through Android's
+presentation mechanism; no product display ID was introduced.

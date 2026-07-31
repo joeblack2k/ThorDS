@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-31",
+  "target": "debug-only secondary Presentation",
+  "display_id": 4,
+  "app_window_px": {
+    "width": 1240,
+    "height": 969
+  },
+  "navigation_excluded_px": {
+    "bottom": 111
+  },
+  "method": "adb input -d 4 tap; routed through Android's lower-display input pipeline",
+  "observed_points": [
+    [0, 0],
+    [620, 0],
+    [1239, 0],
+    [0, 484],
+    [620, 484],
+    [1239, 484],
+    [0, 968],
+    [620, 968],
+    [1239, 968]
+  ],
+  "result": "PASS",
+  "limitation": "This proves panel routing and app-window coordinates, not physical-finger DS-coordinate accuracy for a final ThorDS layout."
+}

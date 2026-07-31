@@ -1,0 +1,22 @@
+M2 lifecycle results
+Date: 2026-07-31
+
+Background/resume:
+- EmulatorActivity resumed on display 0
+- process remained active
+- lower Presentation on display 4 was visible and had a ready surface
+- no FATAL/ANR found
+
+Sleep/wake:
+- screen powered off for 30 seconds, then woke
+- EmulatorActivity resumed on display 0
+- process remained active
+- lower Presentation on display 4 was visible and had a ready surface
+- no FATAL/ANR found
+
+Debug probe lifecycle:
+- initial probe left a Presentation visible after the activity stopped
+- fixed in debug-only ThorDisplayDiagnosticActivity by dismissing probes in onStop
+- retest: emulator returned with exactly one visible lower Presentation
+
+Result: PASS for Android display/presentation recovery.

@@ -1,0 +1,30 @@
+M2 display inventory, redacted
+Date: 2026-07-31
+Source: adb shell dumpsys display
+
+Top panel:
+- logical display ID: 0
+- display name: Built-in Screen
+- Android type: INTERNAL
+- logical viewport: 1920x1080, rotation 90
+- native mode: 1080x1920
+- current refresh: 60 Hz
+- supported refresh: 60 Hz and 120 Hz
+- touch classification: INTERNAL
+- presentation eligible: no
+
+Bottom panel:
+- logical display ID: 4
+- display name: Screen-2
+- Android type: INTERNAL
+- logical viewport: 1240x1080, rotation 90
+- native mode: 1080x1240
+- current refresh: 60 Hz
+- supported refresh: 60 Hz and 120 Hz
+- touch classification: EXTERNAL (firmware classification)
+- presentation eligible: yes
+
+Conclusion:
+The stable Thor role evidence is the combination of built-in display name,
+internal display type, viewport/shape and presentation eligibility. The
+product must not select a panel using the observed logical IDs.

@@ -1,0 +1,8 @@
+M2 device properties
+Date: 2026-07-31
+
+manufacturer: AYN
+model: AYN Thor
+android_release: 13
+
+Stable device serials, build fingerprint and hardware addresses are omitted.

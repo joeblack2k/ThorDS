@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application>
+        <activity
+            android:name=".debug.ThorDisplayDiagnosticActivity"
+            android:exported="true" />
+
         <receiver
             android:name=".debug.DebugCommandReceiver"
             android:enabled="true"

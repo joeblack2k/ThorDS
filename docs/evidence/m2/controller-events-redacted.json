@@ -1,0 +1,28 @@
+{
+  "date": "2026-07-31",
+  "controller": "Odin Controller",
+  "result": "FOUND",
+  "buttons": [
+    "BTN_EAST",
+    "BTN_NORTH",
+    "BTN_WEST",
+    "BTN_TL",
+    "BTN_TR",
+    "BTN_TL2",
+    "BTN_TR2",
+    "BTN_SELECT",
+    "BTN_START",
+    "BTN_THUMBL",
+    "BTN_THUMBR",
+    "BTN_DPAD_UP",
+    "BTN_DPAD_DOWN",
+    "BTN_DPAD_LEFT",
+    "BTN_DPAD_RIGHT"
+  ],
+  "axes": {
+    "sticks": ["ABS_X", "ABS_Y", "ABS_Z", "ABS_RZ"],
+    "triggers": ["ABS_GAS", "ABS_BRAKE"],
+    "dpad": ["ABS_HAT0X", "ABS_HAT0Y"]
+  },
+  "identifiers": "redacted"
+}

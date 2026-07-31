@@ -119,3 +119,44 @@ artifact: docs/evidence/m1/baseline-logcat.txt
 - next action: capture display roles, touch bounds, controller descriptors and
   lifecycle behavior without hardcoding a display ID
 - remaining gate: M2 physical hardware proof
+
+## 2026-07-31 - M2 partial hardware proof
+
+### Findings
+
+- display 0 is the physical top panel: `Built-in Screen`, 1920x1080 logical
+  viewport
+- display 4 is the physical lower panel: `Screen-2`, 1240x1080 logical
+  viewport, presentation-capable and with the dedicated lower touchscreen
+- the lower app content window is 1240x969; the remaining 111 pixels belong
+  to Android navigation and are not an emulator touch rectangle
+- the `Odin Controller` descriptor exposes expected buttons, sticks, triggers
+  and D-pad axes
+- background/resume and a 30-second sleep/wake retained an active emulator
+  process and recreated a visible lower `Presentation` without a FATAL/ANR
+
+### Changes
+
+- code: added a debug-only display probe that labels each physical panel and
+  logs received touch coordinates
+- product code: none
+- docs: M2 display, touch, controller and lifecycle evidence
+
+### Validation
+
+```text
+command: launch ThorDisplayDiagnosticActivity and capture both physical displays
+result: PASS; roles, names, dimensions and presentation eligibility visibly match
+artifact: docs/evidence/m2/display-role-screens/
+
+command: adb input -d 4 3x3 touch grid inside the 1240x969 app window
+result: PASS; all nine coordinates arrived unchanged at the lower Presentation
+artifact: docs/evidence/m2/touch-grid.json
+```
+
+### Remaining gate
+
+- a physical-finger nine-point DS-coordinate accuracy run is still needed to
+  prove the game touch rect itself, including its letterbox bars. The logged
+  M2 grid proves Android routing but deliberately does not claim that final
+  DS-coordinate acceptance.
