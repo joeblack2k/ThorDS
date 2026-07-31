@@ -1,4 +1,4 @@
-M7 primary rotation and performance probe, 2026-07-31
+M7 primary rotation and performance probe, follow-up 2026-08-01
 
 Scope:
 - developer-only Vulkan probe on the physical Thor primary presentation
@@ -17,15 +17,25 @@ Rotation:
   when `Build.MANUFACTURER=AYN` and `Build.MODEL=AYN Thor`
 - classifier: `M7Probe: dual-uv direct=0 rect=1920x1080 safeX=240 safeWidth=1440`
 - native transform: `M7Probe: rotate180 surface=1 vertices=12`
-- the primary logical capture was inverted by rotating output quad positions
-  only; source UVs remained unchanged
+- the world transform rotates output quad positions; the packed UI overlay uses
+  the native top-down buffer mapping in its dedicated draw mode
 - the lower external presentation kept its ordinary configuration because the
   product rotation flag is mapped only into the primary Activity presentation
   config
 - a fresh GitHub Prod debug launch with the widescreen probe but without the
   rotation extra still logged `rotate180 surface=1`, proving the Thor default
-- this proves the app-side transform path, not the physical panel result;
-  physical confirmation on the Thor is still required
+- a final physical-surface screenshot from the Castle Garden checkpoint
+  showed the world upright and the pause overlay text readable; this closes
+  the primary framebuffer orientation smoke
+
+Packed UI correction:
+- the first rotation implementation applied the primary vertex transform to
+  both the high-resolution world and the packed plane-1 overlay
+- the packed overlay uses the native top-down packed-buffer orientation, so
+  its primary probe draw now keeps the safe-area geometry and samples
+  `sourceY = fragUv.y * 192` in draw mode 8
+- the follow-up physical pause screen rendered readable `CASTLE SECRET STARS`
+  and `TOUCH TO SELECT`; the lower external presentation stayed unchanged
 
 Performance observation:
 - the first instrumented castle-grounds debug run reported approximately
@@ -40,8 +50,10 @@ Performance observation:
   the flag and debug symbols remain enabled
 - with renderer debug tools disabled, the same castle-grounds save state
   reported `FPS: 60` in two captures separated by eight seconds
-- the optimized debug result is a strong scene-level performance improvement,
-  but it is not yet a full realtime acceptance result across movement,
-  transitions and the remaining M7 geometry checks
+- the optimized debug result is a strong scene-level performance improvement;
+  a follow-up 10-second Slot-2 movement smoke held `FPS: 60` and produced no
+  ThorDS FATAL or ANR
+- this is not yet a full realtime acceptance result across transitions and
+  the remaining M7 geometry checks
 
 Result: PARTIAL_PASS

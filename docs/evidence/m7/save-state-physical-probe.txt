@@ -39,3 +39,18 @@ The ROM, save states, renderer captures, logs, and device-specific temporary
 files remained outside the repository and were removed after the probe. No
 private capture or ROM-derived data is part of this evidence file or Git
 history.
+
+Follow-up: primary UI rotation correction, 2026-08-01
+
+- The Castle Garden checkpoint was rebuilt and loaded with the Thor-default
+  primary rotation enabled, without the developer rotation extra.
+- The world remained upright and the packed pause overlay rendered readable
+  `CASTLE SECRET STARS` and `TOUCH TO SELECT` text on the physical primary
+  surface.
+- A 10-second Slot-2 movement smoke reported `FPS: 60`; no ThorDS FATAL or ANR
+  was observed.
+- The packed UI correction is limited to the primary probe draw mode. The
+  lower external presentation remains unchanged.
+- This closes the orientation and scene-level movement smoke, but not the
+  remaining M7 object-aspect, culling, exact HUD/glyph/bottom or transition
+  gates.

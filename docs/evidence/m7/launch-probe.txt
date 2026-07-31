@@ -52,3 +52,19 @@ Title scene-matrix gate:
 The temporary app-private ROM copy, transport copy and local diagnostic
 screenshot were deleted immediately after this check. No ROM path, ROM bytes,
 save data, capture or device identifier is retained here.
+
+Follow-up Castle Garden UI and movement smoke, 2026-08-01:
+
+- `:app:checkVulkanSpirv`, `:app:testGitHubProdReleaseUnitTest` and
+  `:app:assembleGitHubProdDebug`: PASS.
+- The same app-private Castle Garden checkpoint loaded through the existing
+  debug route on the connected AYN Thor.
+- The final primary surface showed readable `CASTLE SECRET STARS` and
+  `TOUCH TO SELECT` text while the full-width world stayed upright.
+- After returning to gameplay, a 10-second Slot-2 movement smoke held
+  `FPS: 60`; filtered logcat showed no `FATAL EXCEPTION` or `ANR in`.
+- This is a partial M7 pass. Object aspect, new-side-region culling, exact
+  HUD/glyph/bottom geometry and transition stability remain open.
+
+Temporary screenshots, logs, ROM copies and save states were deleted after
+aggregation. No private asset or device identifier is retained here.

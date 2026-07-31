@@ -193,8 +193,9 @@ physical debug launch reported two curated codes and retained a stable
   `AYN` and model `AYN Thor`, the primary-only rotation is now enabled by the
   normal Vulkan product config, including release-capable builds. A fresh
   launch without `VULKAN_ROTATE_180` still emitted the rotation log on primary
-  surface 1; the external presentation config remains false. Physical
-  readability is still awaiting direct confirmation.
+  surface 1; the external presentation config remains false. The follow-up
+  packed-UI correction and physical Castle Garden pause check are recorded
+  below.
 - Publication: commit
   `54410dc0934886fb6f4ddaba4f59ce3772a9eb1f` is pushed to `origin/main` on
   `https://github.com/joeblack2k/ThorDS`; the corresponding debug build,
@@ -215,10 +216,33 @@ physical debug launch reported two curated codes and retained a stable
   across 1920x1080 and exposed new castle-ground water, trees and terrain in
   both side regions. This is world/FOV evidence rather than a claim about
   object aspect or side-region culling.
-- M7 is not green. The diagnostic does not yet prove physical top-panel
-  orientation, sustained realtime behavior, extra horizontal FOV, culling,
-  HUD ownership, transitions or final castle-grounds geometry.
+- M7 is not green. The diagnostic still does not prove object aspect,
+  new-side-region culling, exact HUD/glyph/bottom geometry, sustained
+  transition behavior or final castle-grounds geometry.
 - M8 remains blocked by `ADR-true-widescreen.md`.
+
+### Castle Garden primary UI rotation correction - 2026-08-01
+
+- The owner explicitly selected Castle Garden as the representative M7 scene;
+  no Bob-omb route was used for this correction.
+- The first Thor-default rotation fix correctly rotated the high-resolution
+  world but left the packed DS plane-1 pause overlay unreadable. The root
+  cause was draw mode 8 using the composite shader's inverted Y mapping while
+  reading the packed top buffer directly.
+- The bounded fix keeps the safe 4:3 UI quad unrotated and changes only draw
+  mode 8 to sample the native top-down packed-buffer row mapping. The lower
+  external presentation remains unchanged.
+- Physical Castle Garden smoke after reinstall:
+  - world upright and full-width;
+  - `CASTLE SECRET STARS` and `TOUCH TO SELECT` readable;
+  - 10-second Slot-2 movement held `FPS: 60`;
+  - no filtered `FATAL EXCEPTION` or `ANR in`.
+- Validation:
+  `:app:regenerateVulkanSpirv`, `:app:checkVulkanSpirv`,
+  `:app:testGitHubProdReleaseUnitTest` and
+  `:app:assembleGitHubProdDebug`: PASS.
+- M7 remains open for object aspect, new-side-region culling, exact
+  HUD/glyph/bottom geometry and transition stability. M8 remains blocked.
 
 ## 2026-07-31 - M0
 

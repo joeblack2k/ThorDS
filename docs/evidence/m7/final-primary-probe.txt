@@ -29,3 +29,13 @@ geometry, HUD/glyph ratios, lower-panel geometry, or no-flash transitions.
 All ROM copies, saves, final images, internal captures, metadata and temporary
 logs used for this probe were deleted after aggregation. No private asset,
 device identifier, credential or temporary path is retained here.
+
+Follow-up, 2026-08-01:
+
+- The primary rotation correction was rebuilt and installed in the same
+  GitHubProdDebug variant.
+- Castle Garden gameplay remained upright and the physical pause overlay
+  rendered readable `CASTLE SECRET STARS` and `TOUCH TO SELECT` text.
+- The lower external presentation was not changed.
+- This closes the orientation smoke only; exact HUD/glyph/bottom ratios,
+  object aspect, culling and transition stability remain M7 work.

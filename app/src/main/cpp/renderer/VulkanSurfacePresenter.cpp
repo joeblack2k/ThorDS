@@ -3430,6 +3430,11 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
         );
         for (const DrawCall& drawCall : drawCalls)
         {
+            // The packed DS overlay is already vertically oriented for the
+            // Thor surface; only the world quad needs the primary rotation.
+            if (drawCall.drawMode == kDrawModeWidescreenUiOverlay)
+                continue;
+
             const size_t firstVertex = drawCall.firstVertex;
             const size_t endVertex = std::min(
                 vertices.size(),

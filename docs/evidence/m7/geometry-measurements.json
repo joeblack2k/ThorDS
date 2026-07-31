@@ -1,6 +1,6 @@
 {
   "format": "thords-m7-geometry-v1",
-  "status": "PARTIAL_LAYER_PROOF_ONLY",
+  "status": "PARTIAL_PASS_M7_GATES_OPEN",
   "measured_top_target": {
     "width": 1920,
     "height": 1080,
@@ -21,7 +21,25 @@
     "ui_safe_rect": "x=240, width=1440, height=1080",
     "result": "PASS"
   },
-  "reason": "The debug-only developer probe submitted distinct world-3D and plane-1/UI draws across a 16:9 top target on the physical Thor. It falls back to a centered 4:3 composite when no dominant current top structured 3D slot exists or capture 3D is present. Live Peach-intro and controllable castle-grounds scenes exercised the world-safe dual-UV route. A same-checkpoint native-versus-probe comparison showed the castle grounds gaining left/right world content outside the native 4:3 rectangle. This still does not prove object aspect, new-side-region culling or HUD integrity.",
+  "primary_rotation_and_ui": {
+    "device": "AYN Thor",
+    "world_orientation": "READABLE",
+    "packed_ui_orientation": "READABLE",
+    "observed_text": [
+      "CASTLE SECRET STARS",
+      "TOUCH TO SELECT"
+    ],
+    "lower_presentation": "UNCHANGED",
+    "result": "PASS"
+  },
+  "movement_smoke": {
+    "duration_seconds": 10,
+    "input": "Slot-2 analog x=0.72 y=0.18",
+    "reported_fps": 60,
+    "crash_or_anr": false,
+    "result": "PASS_SCENE_LEVEL"
+  },
+  "reason": "The debug-only developer probe submitted distinct world-3D and plane-1/UI draws across a 16:9 top target on the physical Thor. It falls back to a centered 4:3 composite when no dominant current top structured 3D slot exists or capture 3D is present. Live Peach-intro and controllable Castle Garden scenes exercised the world-safe dual-UV route. A same-checkpoint native-versus-probe comparison showed the Castle Garden gaining left/right world content outside the native 4:3 rectangle. The Thor-specific primary rotation now covers the world quad while draw mode 8 samples the packed UI with the native top-down Y mapping. The physical pause overlay and movement smoke are now readable and stable at scene level. This still does not prove object aspect, new-side-region culling, exact HUD/glyph/bottom geometry or transition stability.",
   "required_before_m8": [
     "new-side-region culling",
     "HUD circle aspect",
