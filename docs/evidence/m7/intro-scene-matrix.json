@@ -1,0 +1,26 @@
+{
+  "format": "thords-m7-intro-scene-matrix-v1",
+  "scope": "aggregated non-image Vulkan compositor metadata from a physical Thor debug launch",
+  "scene": {
+    "id": "peach_intro_after_file_a_selection",
+    "top": {
+      "structuredSlotPixels": 49152,
+      "structuredAboveVisiblePixels": 0,
+      "structured2DOnlyPixels": 0,
+      "capture3dLines": 0
+    },
+    "bottom": {
+      "structuredSlotPixels": 0,
+      "structured2DOnlyPixels": 49152,
+      "capture3dLines": 0
+    },
+    "classifier": "WORLD_SAFE_DUAL_UV",
+    "presenter_log": "M7Probe: dual-uv",
+    "result": "PASS"
+  },
+  "limitations": [
+    "No pixel capture, ROM data, save data, device identifier or temporary path is retained.",
+    "The scene proves only the developer probe classifier and renderer source separation.",
+    "It does not establish BOB world aspect, horizontal FOV, culling, HUD geometry or transition stability."
+  ]
+}

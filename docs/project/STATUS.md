@@ -16,10 +16,11 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - Current gate: developer-only structured Vulkan widescreen spike
 - Overall status: IN_PROGRESS
 - Latest verified result: M7 SPIR-V synchronization and GitHub Prod debug
-  build pass; the developer APK installs on the physical Thor and conservatively
-  falls back through three measured title phases to a centered 1440x1080 4:3
-  top rectangle without a ThorDS crash or ANR; live debug scene metadata is
-  now capture-safe during title transitions
+  build pass; the developer APK installs on the physical Thor, falls back
+  through three measured title phases to a centered 1440x1080 4:3 top
+  rectangle, and selects the dual-UV world-safe diagnostic route for a
+  measured Peach-intro top-3D scene without a ThorDS crash or ANR; live debug
+  scene metadata is capture-safe during title transitions
 - Active blocker: a valid BOB scene matrix and HUD/transition measurements;
   direct debug touch reaches title phases only, so physical Thor-controller
   gameplay is required
@@ -35,7 +36,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M4 | PASS | 04ed45bd | docs/evidence/m4/ | catalog v1, exact resolver, safe Original fallback, curated/user separation and synthetic delta patches |
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
 | M6 | IN_PROGRESS | 883d00cf | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; physical gameplay scenarios remain |
-| M7 | IN_PROGRESS | | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, capture-safe primary-only probe and title-phase conservative 4:3 matrix verified; no BOB/FOV/culling or M8 claim |
+| M7 | IN_PROGRESS | | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, capture-safe primary-only probe, title fallback and intro world-safe classifier matrix verified; no BOB/FOV/culling or M8 claim |
 | M8 | NOT_STARTED | | | |
 | M9 | NOT_STARTED | | | |
 | M10 | NOT_STARTED | | | |
@@ -56,6 +57,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Run the M7 developer probe through a valid local-ROM launch path, measure the
-scene matrix without publishing private captures, and keep M8 blocked until
-that evidence is green. The M6 gameplay checklist also remains pending.
+Run the M7 developer probe through valid BOB gameplay and transition paths,
+measure FOV, world and HUD geometry without publishing private captures, and
+keep M8 blocked until that evidence is green. The M6 gameplay checklist also
+remains pending.

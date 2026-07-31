@@ -1144,7 +1144,7 @@ bool VulkanSurfacePresenter::presentFrame(Frame* frame, VulkanOutput& output, co
                 surfaceState.background.imageView != VK_NULL_HANDLE ? &surfaceState.background : nullptr,
                 directPresent,
                 retroArchApplied,
-                inputs.topSourceHasHighres3d && !inputs.capture3dSourceValid,
+                inputs.topSourceHasStructured3d && !inputs.capture3dSourceValid,
                 inputs.capture3dSourceValid,
                 drawCalls))
         {

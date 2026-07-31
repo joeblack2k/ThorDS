@@ -4104,6 +4104,7 @@ bool VulkanOutput::buildCompositionInputs(
         topHasVisibleStructured3d
         || bottomHasVisibleStructured3d;
     outInputs.topSourceHasHighres3d = topHasVisibleStructured3d;
+    outInputs.topSourceHasStructured3d = topUsesStructured3d;
     outInputs.class4VramStructuredPair =
         resource.captureBackedClass4Only
         && !topUsesRegularCapture3d

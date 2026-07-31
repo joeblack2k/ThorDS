@@ -48,6 +48,7 @@ Action Replay code. It is enabled only when the debuggable activity receives
 the M7 probe extra, and each write has an `IF original 0x1555` guard. The
 physical debug launch reported two curated codes and retained a stable
 1920x1080 world / 1440x1080 UI-safe presentation without a crash.
+```
 
 ### Safe fallback correction
 
@@ -94,7 +95,28 @@ physical debug launch reported two curated codes and retained a stable
 - Validation: `:app:testGitHubProdReleaseUnitTest` and
   `:app:assembleGitHubProdDebug` passed.
 - Evidence: `docs/evidence/m7/debug-capture-harness.txt`.
-```
+
+### Dominant structured-3D classifier
+
+- A live local-only Adventure flow reached the File A Peach-intro scene by
+  direct DS-touch injection. The top compositor reported a dominant structured
+  3D slot across all 49,152 pixels, while the bottom remained 2D-only and no
+  capture-3D source existed.
+- The earlier visible-pixel predicate was too strict for this composition:
+  the structured layer's 1,592 above-layer pixels were black, leaving its
+  visible count at zero despite the top 3D slot being present. The diagnostic
+  classifier now uses the dominant top structured-3D slot, while any
+  capture-3D source still forces the 4:3 fallback.
+- Physical Thor result: PASS. The presenter changed from
+  `M7Probe: fallback` during the title flow to `M7Probe: dual-uv` during the
+  intro. No ThorDS FATAL or ANR was observed.
+- Validation: `:app:checkVulkanSpirv`,
+  `:app:testGitHubProdReleaseUnitTest` and
+  `:app:assembleGitHubProdDebug` passed before installation; the debug APK
+  installed and ran on the physical Thor.
+- Evidence: `docs/evidence/m7/intro-scene-matrix.json` and
+  `docs/evidence/m7/geometry-measurements.json`. All temporary ROM copies,
+  frame images, metadata and log output were deleted after aggregation.
 
 ### Decision
 

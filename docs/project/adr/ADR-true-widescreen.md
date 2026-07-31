@@ -20,10 +20,10 @@ The mode is gated by both an app-debuggable build and the explicit
 presentation, release builds, OpenGL and safe mode remain native 4:3.
 
 The diagnostic applies only to the primary top presentation. It uses the
-current top structured-3D and capture-3D compositor inputs as a conservative
-classifier: no current top 3D or any capture-3D selects a centered 4:3
-composite fallback. The lower external presentation always keeps its ordinary
-aspect-correct configuration.
+dominant current top structured-3D slot and capture-3D compositor inputs as a
+conservative classifier: no dominant top 3D slot or any capture-3D selects a
+centered 4:3 composite fallback. The lower external presentation always keeps
+its ordinary aspect-correct configuration.
 
 ## Rejected
 

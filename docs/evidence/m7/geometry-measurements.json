@@ -10,12 +10,18 @@
     "ui_safe_aspect": "4:3"
   },
   "safe_fallback": {
-    "source_classification": "top_highres_3d=false, capture_3d=false",
+    "source_classification": "top_structured_3d=false, capture_3d=false",
     "top_rect": "1920x1080",
     "safe_rect": "x=240, width=1440, height=1080",
     "result": "PASS"
   },
-  "reason": "The debug-only developer probe submitted distinct world-3D and plane-1/UI draws across a 16:9 top target on the physical Thor. It now falls back to a centered 4:3 composite when no current top structured 3D source exists or capture 3D is present. It intentionally does not prove game projection or culling, and no valid BOB gameplay scene was measured.",
+  "world_safe_probe": {
+    "source_classification": "top_structured_3d=true, capture_3d=false",
+    "top_rect": "1920x1080",
+    "ui_safe_rect": "x=240, width=1440, height=1080",
+    "result": "PASS"
+  },
+  "reason": "The debug-only developer probe submitted distinct world-3D and plane-1/UI draws across a 16:9 top target on the physical Thor. It falls back to a centered 4:3 composite when no dominant current top structured 3D slot exists or capture 3D is present. A live Peach-intro scene exercised the world-safe dual-UV route. This intentionally does not prove game projection or culling, and no valid BOB gameplay scene was measured.",
   "required_before_m8": [
     "world object aspect",
     "horizontal FOV",
