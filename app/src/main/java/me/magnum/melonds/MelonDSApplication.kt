@@ -2,6 +2,7 @@ package me.magnum.melonds
 
 import android.Manifest
 import android.app.Application
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
@@ -17,6 +18,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.magnum.melonds.common.UriFileHandler
+import me.magnum.melonds.common.ThorDeviceDefaults
 import me.magnum.melonds.common.uridelegates.UriHandler
 import me.magnum.melonds.domain.repositories.SettingsRepository
 import me.magnum.melonds.impl.AppLogFileRecorder
@@ -37,6 +39,7 @@ class MelonDSApplication : Application(), Configuration.Provider {
     }
 
     @Inject lateinit var workerFactory: HiltWorkerFactory
+    @Inject lateinit var sharedPreferences: SharedPreferences
     @Inject lateinit var settingsRepository: SettingsRepository
     @Inject lateinit var migrator: Migrator
     @Inject lateinit var uriHandler: UriHandler
@@ -48,6 +51,7 @@ class MelonDSApplication : Application(), Configuration.Provider {
         super.onCreate()
         createNotificationChannels()
         applyTheme()
+        ThorDeviceDefaults.apply(sharedPreferences)
         performMigrations()
         settingsBackupManager.initializeMirror()
         appLogFileRecorder.start()

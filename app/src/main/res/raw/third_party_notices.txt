@@ -1,0 +1,19 @@
+ThorDS Enhanced notice index
+
+This build is based on MelonDualDS 0.7.0.rc5 and melonDS-android-lib core
+revision 39363b7c. Source for this ThorDS fork is available at:
+
+https://github.com/joeblack2k/ThorDS
+
+Included source components and their license files:
+
+MelonDualDS Android frontend: GPL-3.0-or-later.
+melonDS-android-lib core: GPL-3.0-or-later.
+Oboe: Apache License 2.0.
+ENet: MIT License.
+FAAD2: GPL-2.0-or-later.
+rcheevos: see its included LICENSE.
+librashader: see its pinned source licenses at build time.
+
+The full original license texts remain in the source checkout. A release must
+ship the applicable full notices and corresponding source.

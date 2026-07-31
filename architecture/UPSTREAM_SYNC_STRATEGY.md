@@ -3,9 +3,9 @@
 ## Remotes
 
 ```text
+origin         → joeblack2k/ThorDS
 upstream       → SapphireRhodonite/melonDS-android
 parent-upstream→ rafaelvcaetano/melonDS-android (optioneel)
-origin         → later eigen repository
 ```
 
 ## Branches

@@ -1,5 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">melonDualDS</string>
+    <string name="app_name">ThorDS Enhanced</string>
+    <string name="thords_about">About ThorDS Enhanced</string>
+    <string name="thords_about_product_source">ThorDS product source</string>
+    <string name="thords_about_product_source_summary">https://github.com/joeblack2k/ThorDS</string>
+    <string name="thords_about_upstream_source">MelonDualDS upstream source</string>
+    <string name="thords_about_upstream_source_summary">The pinned upstream base for this local ThorDS fork</string>
+    <string name="thords_about_notices">Licenses and notices</string>
+    <string name="thords_about_notices_summary">Offline notice index for included source components</string>
+    <string name="thords_about_privacy">Privacy and RetroAchievements</string>
+    <string name="thords_about_privacy_summary">RetroAchievements and its optional offline proxy use the network only when enabled; credentials remain local</string>
+    <string name="thords_safe_mode">ThorDS safe mode</string>
+    <string name="thords_safe_mode_summary">Keep ThorDS enhancements disabled when they are added in later milestones</string>
 
     <string name="ok">OK</string>
     <string name="yes">Yes</string>

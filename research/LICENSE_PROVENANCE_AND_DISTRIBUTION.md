@@ -16,6 +16,12 @@ Een gedistribueerde APK vereist bijbehorende bron en notices conform de toepasse
 
 ## Productrepository
 
+Canonieke bron:
+
+```text
+https://github.com/joeblack2k/ThorDS
+```
+
 Vereist:
 
 - `LICENSE` behouden;

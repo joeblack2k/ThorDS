@@ -1,15 +1,11 @@
 package me.magnum.melonds.di
 
-import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
-import me.magnum.melonds.domain.services.UpdateInstallManager
 import me.magnum.melonds.github.GitHubApi
-import me.magnum.melonds.github.services.GitHubUpdateInstallManager
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -27,11 +23,5 @@ object GitHubModule {
             .build()
 
         return retrofit.create(GitHubApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideUpdateInstallManager(@ApplicationContext context: Context): UpdateInstallManager {
-        return GitHubUpdateInstallManager(context)
     }
 }

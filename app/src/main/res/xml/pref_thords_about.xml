@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Preference
+            android:title="@string/thords_about_product"
+            android:summary="@string/thords_about_product_summary"
+            android:selectable="false"
+            app:iconSpaceReserved="false" />
+
+    <Preference
+            android:key="thords_about_product_source"
+            android:title="@string/thords_about_product_source"
+            android:summary="@string/thords_about_product_source_summary"
+            app:iconSpaceReserved="false" />
+
+    <Preference
+            android:key="thords_about_upstream_source"
+            android:title="@string/thords_about_upstream_source"
+            android:summary="@string/thords_about_upstream_source_summary"
+            app:iconSpaceReserved="false" />
+
+    <Preference
+            android:key="thords_about_notices"
+            android:fragment="me.magnum.melonds.ui.settings.fragments.ThorDSNoticesFragment"
+            android:title="@string/thords_about_notices"
+            android:summary="@string/thords_about_notices_summary"
+            app:iconSpaceReserved="false" />
+
+    <Preference
+            android:title="@string/thords_about_privacy"
+            android:summary="@string/thords_about_privacy_summary"
+            android:selectable="false"
+            app:iconSpaceReserved="false" />
+</PreferenceScreen>

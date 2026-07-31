@@ -7,14 +7,21 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import me.magnum.melonds.domain.repositories.UpdatesRepository
+import me.magnum.melonds.domain.services.UpdateInstallManager
 import me.magnum.melonds.github.GitHubApi
 import me.magnum.melonds.github.repositories.GitHubNightlyUpdatesRepository
+import me.magnum.melonds.github.services.GitHubUpdateInstallManager
 import javax.inject.Singleton
 import android.content.SharedPreferences
 
 @Module
 @InstallIn(SingletonComponent::class)
 object GitHubNightlyModule {
+    @Provides
+    @Singleton
+    fun provideUpdateInstallManager(@ApplicationContext context: Context): UpdateInstallManager {
+        return GitHubUpdateInstallManager(context)
+    }
 
     @Provides
     @Singleton

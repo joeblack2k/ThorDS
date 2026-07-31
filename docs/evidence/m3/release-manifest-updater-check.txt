@@ -1,0 +1,3 @@
+merged manifest: app/build/intermediates/merged_manifests/gitHubProdRelease/processGitHubProdReleaseManifest/AndroidManifest.xml
+updater install permission: absent
+update content provider: absent

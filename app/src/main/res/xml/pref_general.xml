@@ -52,6 +52,13 @@
             app:iconSpaceReserved="false"
             android:defaultValue="false" />
 
+    <SwitchPreference
+            android:key="thords_safe_mode"
+            android:title="@string/thords_safe_mode"
+            android:summary="@string/thords_safe_mode_summary"
+            app:iconSpaceReserved="false"
+            android:defaultValue="false" />
+
     <Preference
             android:key="backup_settings"
             android:title="@string/backup_settings"

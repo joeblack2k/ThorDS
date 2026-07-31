@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import me.magnum.melonds.common.romprocessors.RomFileProcessorFactory
+import me.magnum.melonds.common.ThorDeviceCapabilities
 import me.magnum.melonds.common.uridelegates.UriHandler
 import me.magnum.melonds.common.vibration.Api26VibratorDelegate
 import me.magnum.melonds.common.vibration.OldVibratorDelegate
@@ -240,7 +241,7 @@ object MelonModule {
     @Provides
     @Singleton
     fun provideDeviceLayoutDisplayMapper(@ApplicationContext context: Context): DeviceLayoutDisplayMapper {
-        return if (Build.MANUFACTURER == "AYN" && Build.MODEL == "AYN Thor") {
+        return if (ThorDeviceCapabilities.isThor(Build.MANUFACTURER, Build.MODEL)) {
             AynThorLayoutDisplayMapper(context)
         } else {
             DefaultLayoutDisplayMapper(context)

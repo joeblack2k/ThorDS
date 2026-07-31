@@ -28,6 +28,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
 import me.magnum.melonds.common.retroarch.RetroArchShaderPreset
+import me.magnum.melonds.common.ThorDeviceDefaults
 import me.magnum.melonds.common.uridelegates.UriHandler
 import me.magnum.melonds.domain.model.AudioBitrate
 import me.magnum.melonds.domain.model.AudioInterpolation
@@ -245,7 +246,7 @@ class SharedPreferencesSettingsRepository(
             RenderConfigurationInputs(core, coverageFix)
         }
 
-        renderConfigurationFlow = combine(
+        val requestedRendererConfiguration = combine(
             renderInputsFlow,
             observeRetroArchShaderConfiguration(),
         ) { renderInputs, retroArchShader ->
@@ -276,6 +277,14 @@ class SharedPreferencesSettingsRepository(
                 renderInputs.coverageFix.debugClearMagenta,
                 if (effectiveFiltering == VideoFiltering.RETROARCH) retroArchShader else EmptyRetroArchShaderConfiguration,
             )
+        }
+
+        renderConfigurationFlow = combine(requestedRendererConfiguration, observeThorDSSafeMode()) { configuration, safeMode ->
+            if (safeMode) {
+                ThorDSSafeModePolicy.rendererConfiguration(configuration, EmptyRetroArchShaderConfiguration)
+            } else {
+                configuration
+            }
         }.conflate().shareIn(preferencesCoroutineScope, SharingStarted.Lazily, replay = 1)
     }
 
@@ -558,15 +567,19 @@ class SharedPreferencesSettingsRepository(
 
     override fun getCurrentVideoRenderer(): VideoRenderer {
         val videoRendererPreference = preferences.getString("video_renderer", "software")!!
-        return sanitizeVideoRenderer(
+        val renderer = sanitizeVideoRenderer(
             runCatching { VideoRenderer.valueOf(videoRendererPreference.uppercase()) }
                 .getOrDefault(VideoRenderer.SOFTWARE),
             fallback = VideoRenderer.SOFTWARE,
         )
+        return ThorDSSafeModePolicy.renderer(isThorDSSafeModeEnabled(), renderer)
     }
 
     override fun getEffectiveVideoRenderer(romConfig: RomConfig): VideoRenderer {
-        return sanitizeVideoRenderer(romConfig.videoRenderer, fallback = getCurrentVideoRenderer())
+        return ThorDSSafeModePolicy.renderer(
+            safeMode = isThorDSSafeModeEnabled(),
+            requested = sanitizeVideoRenderer(romConfig.videoRenderer, fallback = getCurrentVideoRenderer()),
+        )
     }
 
     override fun setCurrentVideoRenderer(renderer: VideoRenderer) {
@@ -576,8 +589,11 @@ class SharedPreferencesSettingsRepository(
     }
 
     override fun getVideoRenderer(): Flow<VideoRenderer> {
-        return getOrCreatePreferenceSharedFlow("video_renderer") {
-            getCurrentVideoRenderer()
+        return combine(
+            getOrCreatePreferenceSharedFlow("video_renderer") { getCurrentVideoRenderer() },
+            observeThorDSSafeMode(),
+        ) { renderer, safeMode ->
+            ThorDSSafeModePolicy.renderer(safeMode, renderer)
         }
     }
 
@@ -756,10 +772,13 @@ class SharedPreferencesSettingsRepository(
     }
 
     override fun getVideoFiltering(): Flow<VideoFiltering> {
-        return getOrCreatePreferenceSharedFlow("video_filtering") {
+        val filtering = getOrCreatePreferenceSharedFlow("video_filtering") {
             val filteringPreference = preferences.getString("video_filtering", "none")!!
             runCatching { VideoFiltering.valueOf(filteringPreference.uppercase()) }
                 .getOrDefault(VideoFiltering.NONE)
+        }
+        return combine(filtering, observeThorDSSafeMode()) { requestedFiltering, safeMode ->
+            ThorDSSafeModePolicy.filtering(safeMode, requestedFiltering)
         }
     }
 
@@ -1395,9 +1414,14 @@ class SharedPreferencesSettingsRepository(
         return controllerConfiguration
     }
 
+    override fun isThorDSSafeModeEnabled(): Boolean {
+        return preferences.getBoolean(ThorDeviceDefaults.SAFE_MODE_KEY, false)
+    }
+
     override fun getSelectedLayoutId(): UUID {
         val id = preferences.getString("input_layout_id", null)
-        return id?.let { UUID.fromString(it) } ?: LayoutConfiguration.DEFAULT_ID
+        val selectedLayoutId = id?.let { UUID.fromString(it) } ?: LayoutConfiguration.DEFAULT_ID
+        return ThorDSSafeModePolicy.layoutId(isThorDSSafeModeEnabled(), selectedLayoutId)
     }
 
     override fun getSoftInputBehaviour(): Flow<SoftInputBehaviour> {
@@ -1486,7 +1510,10 @@ class SharedPreferencesSettingsRepository(
     }
 
     override fun areCheatsEnabled(): Boolean {
-        return preferences.getBoolean("cheats_enabled", false)
+        return ThorDSSafeModePolicy.cheatsEnabled(
+            safeMode = isThorDSSafeModeEnabled(),
+            userEnabled = preferences.getBoolean("cheats_enabled", false),
+        )
     }
 
     override fun observeRomSearchDirectories(): Flow<Array<Uri>> {
@@ -1496,8 +1523,11 @@ class SharedPreferencesSettingsRepository(
     }
 
     override fun observeSelectedLayoutId(): Flow<UUID> {
-        return getOrCreatePreferenceSharedFlow("input_layout_id") {
-            getSelectedLayoutId()
+        return combine(
+            getOrCreatePreferenceSharedFlow("input_layout_id") { getSelectedLayoutId() },
+            observeThorDSSafeMode(),
+        ) { layoutId, safeMode ->
+            ThorDSSafeModePolicy.layoutId(safeMode, layoutId)
         }
     }
 
@@ -1652,6 +1682,12 @@ class SharedPreferencesSettingsRepository(
         return preferenceFlow.map { mapper() }
     }
 
+    private fun observeThorDSSafeMode(): Flow<Boolean> {
+        return getOrCreatePreferenceSharedFlow(ThorDeviceDefaults.SAFE_MODE_KEY) {
+            isThorDSSafeModeEnabled()
+        }
+    }
+
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         preferenceSharedFlows[key]?.tryEmit(Unit)
     }
@@ -1684,6 +1720,10 @@ class SharedPreferencesSettingsRepository(
         globalPresetRelativePath: String?,
         globalParameterText: String?,
     ): RendererConfiguration {
+        if (isThorDSSafeModeEnabled()) {
+            return ThorDSSafeModePolicy.rendererConfiguration(baseConfiguration, EmptyRetroArchShaderConfiguration)
+        }
+
         val renderer = sanitizeVideoRenderer(romConfig.videoRenderer, fallback = baseConfiguration.renderer)
         val requestedFiltering = romConfig.videoFiltering ?: baseConfiguration.videoFiltering
         val retroArchShader = if (renderer == VideoRenderer.VULKAN && requestedFiltering == VideoFiltering.RETROARCH) {

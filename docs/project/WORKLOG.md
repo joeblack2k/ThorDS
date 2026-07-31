@@ -187,3 +187,79 @@ artifact: docs/evidence/m2/touch-grid-ds-log.txt
 
 - next action: implement the M3 Thor role classifier and default layout
 - remaining gate: M3 build, Thor install and dual-panel output proof
+
+## 2026-07-31 - M3 partial product identity and safe defaults
+
+### Changes
+
+- product: introduced the isolated `io.github.joeblack2k.thords` application id,
+  ThorDS Enhanced labels, version metadata, and an About screen with the
+  pinned MelonDualDS/core provenance
+- updater: production binds no-update implementations, omits both the install
+  permission and update content provider, and hides the absent product channel
+  from General settings
+- defaults: AYN Thor receives hidden soft controls only when it has no existing
+  preference; the default runs before migrations and migrations preserve that
+  choice
+- safe mode: the user toggle forces Native/software 4:3-compatible defaults,
+  disables cheats and renderer extras transiently, and preserves the original
+  user configuration when disabled
+- isolation: settings backup and mirror filenames use `ThorDS.opts`, avoiding
+  the prior `melonDualDS.opts` collision
+- legal UI: the in-app About view exposes a readable offline component notice
+  index and the canonical public ThorDS source link
+
+### Validation
+
+```text
+command: CARGO=/tmp/thords-cargo ./gradlew --no-daemon \
+  :app:assembleGitHubProdDebug :app:testGitHubProdReleaseUnitTest
+result: PASS; all GitHub Prod release unit tests and the Thor debug APK built
+artifact: docs/evidence/m3/
+
+command: install the debug APK and traverse launcher -> Settings -> About ->
+Licenses and notices on the physical Thor
+result: PASS; product version, upstream/core provenance, public source action,
+and offline notice index are visible
+artifact: docs/evidence/m3/thor-validation.md
+
+command: package/manifest inspection plus physical General settings toggle
+result: PASS; ThorDS is installed alongside two MelonDualDS packages, the
+release merged manifest has no install permission or update provider, safe mode
+persists and defaults back to false after the probe
+artifact: docs/evidence/m3/package-list.txt,
+docs/evidence/m3/release-manifest-updater-check.txt,
+docs/evidence/m3/safe-mode.txt
+```
+
+## 2026-07-31 - M3 publication completion
+
+### Publication
+
+- created public source repository `https://github.com/joeblack2k/ThorDS`
+- preserved `upstream` and added the repository as `origin`
+- replaced all temporary source-publication wording with the canonical URL in
+  About, notices, README, source lock, provenance, and sync documentation
+- removed physical display/UI captures from the local pushable history; public
+  evidence contains only textual, redacted checks
+
+### Validation
+
+```text
+command: GitHub identity/repository/history/ROM/save/secret safety scan
+result: PASS; no prohibited artifact in a pushable ref
+artifact: docs/evidence/m3/publication-safety.md
+
+command: CARGO=/tmp/thords-cargo ./gradlew --no-daemon \
+  :app:testGitHubProdReleaseUnitTest :app:assembleGitHubProdDebug
+result: PASS
+
+command: install on AYN Thor; open About source, notices, and safe-mode UI
+result: PASS; source dispatches ACTION_VIEW to the public ThorDS URL; no
+filtered FATAL EXCEPTION or ANR
+artifact: docs/evidence/m3/thor-validation.md
+```
+
+### Next
+
+- M4: Generic Enhancement Profile Engine.

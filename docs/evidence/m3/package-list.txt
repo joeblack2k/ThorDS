@@ -1,0 +1,3 @@
+package:me.magnum.melondualds
+package:me.magnum.melondualds.dev
+package:io.github.joeblack2k.thords.dev

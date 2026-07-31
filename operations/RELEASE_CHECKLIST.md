@@ -7,7 +7,7 @@
 - [ ] no accidental dependency drift;
 - [ ] changelog;
 - [ ] source notices;
-- [ ] GPL source availability plan.
+- [ ] GPL source availability plan: https://github.com/joeblack2k/ThorDS
 
 ## Build
 

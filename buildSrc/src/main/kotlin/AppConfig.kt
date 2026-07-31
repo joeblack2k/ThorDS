@@ -4,6 +4,9 @@ object AppConfig {
     const val minSdkVersion = 24
     const val ndkVersion = "28.0.13004108"
 
-    const val versionCode = 38
-    const val versionName = "0.7.0.rc5"
+    const val versionCode = 42
+    const val versionName = "0.1.0-dev"
+    const val upstreamVersionName = "0.7.0.rc5"
+    const val coreRevision = "39363b7c"
+    const val profileCatalogVersion = "none"
 }

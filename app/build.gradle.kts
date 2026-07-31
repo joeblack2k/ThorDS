@@ -34,12 +34,18 @@ android {
     compileSdk = AppConfig.compileSdkVersion
     ndkVersion = AppConfig.ndkVersion
     defaultConfig {
-        applicationId = "me.magnum.melondualds"
+        applicationId = "io.github.joeblack2k.thords"
         minSdk = AppConfig.minSdkVersion
         targetSdk = AppConfig.targetSdkVersion
         versionCode = AppConfig.versionCode
         versionName = AppConfig.versionName
-        manifestPlaceholders["appName"] = "@string/app_name"
+        manifestPlaceholders["appName"] = "ThorDS Enhanced"
+        resValue("string", "thords_about_product", "ThorDS Enhanced ${AppConfig.versionName}")
+        resValue(
+            "string",
+            "thords_about_product_summary",
+            "Based on MelonDualDS ${AppConfig.upstreamVersionName}\\nmelonDS-android-lib core ${AppConfig.coreRevision}\\nProfile catalog ${AppConfig.profileCatalogVersion}",
+        )
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86_64"))
@@ -128,14 +134,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    }
-}
-
-androidComponents {
-    onVariants(selector().withName("gitHubProdDebug")) { variant ->
-        // Keep prod-debug distinct from other debug/release variants.
-        variant.manifestPlaceholders.put("appName", "debug melonDualDS")
-        variant.sources.res?.addStaticSourceDirectory("src/nightly/res")
     }
 }
 

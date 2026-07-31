@@ -1,7 +1,10 @@
-The PNGs in this directory are physical SurfaceFlinger captures of the AYN
-Thor panels while the debug-only M2 display probe was active.
+The physical SurfaceFlinger captures from the AYN Thor panels are kept outside
+the public repository.
 
-- `upper-primary.png`: Built-in Screen, display 0, 1920x1080
-- `lower-secondary.png`: Screen-2, display 4, 1240x1080 and presentation true
+The redacted textual M2 evidence records the same verified roles:
 
-They contain no ROM frame, device serial, hardware address or account data.
+- Built-in Screen: primary panel, display 0, 1920x1080;
+- Screen-2: lower panel, display 4, 1240x1080, presentation-capable.
+
+No physical screenshot, device identifier, account data, or ROM content is
+published here.

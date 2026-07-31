@@ -1,7 +1,12 @@
-# melonDS Android port
-Android port of [melonDS](https://melonds.kuribo64.net/), a DS and DSi emulator.
+# ThorDS Enhanced
 
-[<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="80">](https://play.google.com/store/apps/details?id=me.magnum.melonds&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)[<img src="https://raw.githubusercontent.com/Kunzisoft/Github-badge/main/get-it-on-github.png" alt="Get it on GitHub" height="80">](https://github.com/rafaelvcaetano/melonDS-android/releases/latest)
+Thor-first enhanced Nintendo DS emulator based on
+[MelonDualDS 0.7.0.rc5](https://github.com/SapphireRhodonite/melonDS-android).
+The canonical ThorDS source is
+[github.com/joeblack2k/ThorDS](https://github.com/joeblack2k/ThorDS).
+
+ThorDS does not bundle ROMs, saves, or Nintendo assets. Bring a legally obtained
+ROM locally; it is never part of the source repository or release artifacts.
 
 |Rom List|Dark Theme|Pocket Physics|Layout Editor|
 |---|---|---|---|
@@ -20,7 +25,7 @@ Performance is solid on 64 bit devices with thread rendering and JIT enabled, an
 # Integration with third-party frontends
 It's possible to launch melonDS from third part frontends. For that, you will need to have the ROMs you want to launch already scanned by melonDS. Then, you can configure your
 third-party frontend with the following configuration:
-*  Package name: `me.magnum.melondualds`
+*  Package name: `io.github.joeblack2k.thords`
 *  Activity name: `me.magnum.melonds.ui.emulator.EmulatorActivity`
 *  Parameters (choose one):
     * Intent data (preferred) - a URI of the NDS ROM (ZIP and 7z files are supported). Ensure [read permission is granted](https://developer.android.com/reference/android/content/Intent#FLAG_GRANT_READ_URI_PERMISSION)
@@ -34,13 +39,12 @@ third-party frontend with the following configuration:
 ### Info regarding save files
 When launching ROMs from third-party frontends, if melonDS hasn't scanned that particular ROM previously, it won't be able to create the save file next to the ROM file if the
 option "Save next to ROM file" is enabled in the settings or the save file directory is not set. Instead, melonDS will create a save file in
-`Android/data/me.magnum.melonds/files/saves`
+`Android/data/io.github.joeblack2k.thords/files/saves`
 
-# Nightly Builds
+# Releases
 
-To have access to the latest changes, you can install nightly builds that you can find [here](https://github.com/rafaelvcaetano/melonDS-android/releases/tag/nightly-release).
-
-Be aware that these builds can contain more bugs than usual and you may need to clear your app data to get it to work properly after updates.
+ThorDS v0.1 has no automatic updater. Do not install MelonDualDS binaries over
+ThorDS; the package and signing lineage are intentionally separate.
 
 # Building
 To build the project you will need Android SDK, NDK and CMake.
@@ -48,7 +52,7 @@ To build the project you will need Android SDK, NDK and CMake.
 ## Build steps:
 1.  Clone the project, including submodules with:
     
-    `git clone --recurse-submodules https://github.com/rafaelvcaetano/melonDS-android.git`
+    `git clone --recurse-submodules https://github.com/joeblack2k/ThorDS.git`
 2.  Install the Android SDK, NDK and CMake
 3.  Build with:
     1.  Unix: `./gradlew :app:assembleGitHubProdDebug`

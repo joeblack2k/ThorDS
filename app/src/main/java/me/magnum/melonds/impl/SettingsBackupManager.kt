@@ -31,7 +31,7 @@ class SettingsBackupManager @Inject constructor(
 ) : OnSharedPreferenceChangeListener {
     companion object {
         private const val TAG = "SettingsBackupManager"
-        private const val MELON_DUAL_DS_OPTIONS_FILE = "melonDualDS.opts"
+        private const val THORDS_OPTIONS_FILE = "ThorDS.opts"
         private const val SETTINGS_FILE = "settings.json"
         private const val CONTROLLER_FILE = "controller_config.json"
         private const val LAYOUTS_FILE = "layouts.json"
@@ -102,8 +102,8 @@ class SettingsBackupManager @Inject constructor(
     fun backup(treeUri: Uri) {
         val root = DocumentFile.fromTreeUri(context, treeUri) ?: return
 
-        val backupDoc = root.findFile(MELON_DUAL_DS_OPTIONS_FILE)
-            ?: root.createFile("application/octet-stream", MELON_DUAL_DS_OPTIONS_FILE)
+        val backupDoc = root.findFile(THORDS_OPTIONS_FILE)
+            ?: root.createFile("application/octet-stream", THORDS_OPTIONS_FILE)
             ?: return
         context.contentResolver.openOutputStream(backupDoc.uri)?.use { outStream ->
             outStream.writer().use { it.write(createBackupJson().toString()) }
@@ -146,7 +146,7 @@ class SettingsBackupManager @Inject constructor(
 
     private fun writeInternalMirror() {
         val mirrorJson = createBackupJson().toString()
-        writeTextAtomically(File(context.filesDir, MELON_DUAL_DS_OPTIONS_FILE), mirrorJson)
+        writeTextAtomically(File(context.filesDir, THORDS_OPTIONS_FILE), mirrorJson)
         val mirrorDirectory = getConfiguredMirrorDirectory()
         if (mirrorDirectory != null) {
             writeMirrorToTree(mirrorDirectory, mirrorJson)
@@ -164,8 +164,8 @@ class SettingsBackupManager @Inject constructor(
 
     private fun writeMirrorToTree(treeUri: Uri, mirrorJson: String) {
         val root = DocumentFile.fromTreeUri(context, treeUri) ?: return
-        val mirrorDocument = root.findFile(MELON_DUAL_DS_OPTIONS_FILE)
-            ?: root.createFile("application/octet-stream", MELON_DUAL_DS_OPTIONS_FILE)
+        val mirrorDocument = root.findFile(THORDS_OPTIONS_FILE)
+            ?: root.createFile("application/octet-stream", THORDS_OPTIONS_FILE)
             ?: return
         context.contentResolver.openOutputStream(mirrorDocument.uri, "wt")?.use { output ->
             output.writer().use { it.write(mirrorJson) }
@@ -173,7 +173,7 @@ class SettingsBackupManager @Inject constructor(
     }
 
     private fun getMirrorDocument(treeUri: Uri): DocumentFile? {
-        return DocumentFile.fromTreeUri(context, treeUri)?.findFile(MELON_DUAL_DS_OPTIONS_FILE)
+        return DocumentFile.fromTreeUri(context, treeUri)?.findFile(THORDS_OPTIONS_FILE)
     }
 
     private fun pruneStaleMirrors(currentMirrorDirectory: Uri?) {
@@ -250,7 +250,7 @@ class SettingsBackupManager @Inject constructor(
 
     fun restore(treeUri: Uri) {
         val root = DocumentFile.fromTreeUri(context, treeUri) ?: return
-        val backupDoc = root.findFile(MELON_DUAL_DS_OPTIONS_FILE)
+        val backupDoc = root.findFile(THORDS_OPTIONS_FILE)
         if (backupDoc != null) {
             context.contentResolver.openInputStream(backupDoc.uri)?.use { input ->
                 restoreBackupJson(JSONObject(input.reader().readText()))

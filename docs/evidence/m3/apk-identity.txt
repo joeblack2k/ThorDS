@@ -1,0 +1,1 @@
+package: name='io.github.joeblack2k.thords.dev' versionCode='42' versionName='0.1.0-dev' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'

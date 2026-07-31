@@ -1,0 +1,16 @@
+M3 build and unit-test evidence
+Date: 2026-07-31
+
+Command:
+CARGO=/tmp/thords-cargo ./gradlew --no-daemon \
+  :app:assembleGitHubProdDebug :app:testGitHubProdReleaseUnitTest
+
+Result:
+BUILD SUCCESSFUL
+
+The local CARGO wrapper only adapts this Mac's Homebrew Cargo invocation to
+the already-installed Rust stable toolchain. It is not source, an APK input,
+or a project dependency.
+
+Validated output:
+app/build/outputs/apk/gitHubProd/debug/app-gitHub-prod-debug.apk

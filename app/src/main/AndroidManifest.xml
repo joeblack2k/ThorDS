@@ -150,7 +150,7 @@
 
         <receiver
             android:name="me.magnum.melondualds.RetroAchievementsHostOverrideReceiver"
-            android:exported="true" />
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

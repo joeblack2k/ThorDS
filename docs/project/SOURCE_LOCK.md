@@ -4,6 +4,7 @@ Date: 2026-07-31
 Base repository: https://github.com/SapphireRhodonite/melonDS-android.git
 Base tag: 0.7.0.rc5
 Base commit: 9b28076281545a1e08dccee0b3f925febb8933ac
+Product repository: https://github.com/joeblack2k/ThorDS
 Product branch: thords/enhancement-platform-v1
 
 ## Submodules

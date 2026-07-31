@@ -1,0 +1,15 @@
+ThorDS Enhanced v0.1 is a fork of MelonDualDS 0.7.0.rc5.
+Source: https://github.com/joeblack2k/ThorDS
+
+Source components present in this checkout:
+
+- MelonDualDS Android frontend: GPL-3.0-or-later, root LICENSE.
+- melonDS-android-lib core: GPL-3.0-or-later, melonDS-android-lib/LICENSE.
+- Oboe: Apache License 2.0, app/src/main/cpp/oboe/LICENSE.
+- ENet: MIT License, app/src/main/cpp/enet/LICENSE.
+- FAAD2: GPL-2.0-or-later, app/src/main/cpp/faad2/COPYING.
+- rcheevos: see app/src/main/cpp/rcheevos/LICENSE.
+- librashader: see its pinned source licenses at build time.
+
+This notice is an index, not a replacement for the original license texts.
+Keep upstream copyright and license notices intact when redistributing.

@@ -1,0 +1,2 @@
+    <boolean name="thords_safe_mode" value="false" />
+    <string name="soft_input_behaviour">always_invisible</string>

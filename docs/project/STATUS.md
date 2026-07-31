@@ -4,7 +4,7 @@ Project: ThorDS Enhanced
 Date: 2026-07-31
 Agent: Luna Xhigh
 Branch: thords/enhancement-platform-v1
-HEAD: 9b28076281545a1e08dccee0b3f925febb8933ac
+Origin: https://github.com/joeblack2k/ThorDS
 Base: MelonDualDS 0.7.0.rc5
 APK: app/build/outputs/apk/gitHubProd/debug/app-gitHub-prod-debug.apk
 Thor connected: yes
@@ -12,22 +12,23 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Summary
 
-- Current milestone: M3
-- Current gate: Thor role classifier and default dual-panel layout
+- Current milestone: M4
+- Current gate: generic Enhancement Profile Engine
 - Overall status: IN_PROGRESS
-- Latest verified result: unmodified rc5 builds, installs, boots ASMP and remains
-  running for ten minutes on the physical Thor
-- Active blocker: none; M3 implementation has not started
+- Latest verified result: M3 builds and passes GitHub Prod release unit tests;
+  the debug APK installs beside MelonDualDS on the physical Thor, exposes the
+  public source link and notices, and has no updater install route
+- Active blocker: none
 
 ## Milestone status
 
 | M | Status | Commit | Evidence | Notes |
 |---|---|---|---|---|
-| M0 | PASS | efddfac | docs/evidence/m0/ | rc5 pin, submodules, ROM protection and synthetic identity test verified |
-| M1 | PASS | pending | docs/evidence/m1/ | build/install/ASMP boot/10-minute smoke green; two-panel behavior is the M2 scope |
-| M2 | PASS | pending | docs/evidence/m2/ | physical roles, exact DS touch grid, controller and lifecycle pass |
-| M3 | IN_PROGRESS | pending | | Thor role classifier and default layout |
-| M4 | NOT_STARTED | | | |
+| M0 | PASS | 0ad4589 / f758855 | docs/evidence/m0/ | rc5 pin, submodules, ROM protection and synthetic identity test verified |
+| M1 | PASS | 5c41182 | docs/evidence/m1/ | build/install/ASMP boot/10-minute smoke green; two-panel behavior is the M2 scope |
+| M2 | PASS | 812765e / e4cb944 | docs/evidence/m2/ | physical roles, exact DS touch grid, controller and lifecycle pass; private captures excluded from public history |
+| M3 | PASS | m3-product-identity | docs/evidence/m3/ | public source, identity, updater isolation, defaults, safe mode and offline notices verified |
+| M4 | NEXT | | | generic Enhancement Profile Engine |
 | M5 | NOT_STARTED | | | |
 | M6 | NOT_STARTED | | | |
 | M7 | NOT_STARTED | | | |
@@ -51,5 +52,4 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Read the M3 specification and implement a role classifier without hardcoded
-display IDs.
+Implement the generic Enhancement Profile Engine and its unit-test harness.

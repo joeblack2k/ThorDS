@@ -11,6 +11,9 @@ class Migration34to35(private val context: Context) : Migration {
 
     override fun migrate() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        if (sharedPreferences.contains("soft_input_behaviour")) {
+            return
+        }
         sharedPreferences.edit {
             val showSoftInputPref = sharedPreferences.getBoolean("input_show_soft", true)
             remove("input_show_soft")
