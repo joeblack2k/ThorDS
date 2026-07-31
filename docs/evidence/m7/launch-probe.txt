@@ -7,6 +7,13 @@ Device gate:
 - VulkanOutput synchronization and Vulkan renderer initialization: PASS
 - Explicit developer widescreen probe extra propagated through the debug launch:
   PASS
+- Exact guarded EU aspect runtime code was added only to the developer launch:
+  PASS
+  - `ProfileLaunch` reported two curated codes: the existing analog code and
+    `sm64ds.eu.aspect-16x9.dev.v1`
+  - each aspect write is guarded by its semantically verified `0x1555`
+    original word; the overlay-6 guard is evaluated repeatedly by the existing
+    Action Replay engine so it can reapply after a reload
 - Filtered FATAL EXCEPTION / AndroidRuntime / ANR: none observed
 
 Layer gate:

@@ -24,9 +24,10 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
         romInfo: RomInfo?,
         userCheats: List<Cheat>,
         enhancementsEnabled: Boolean,
+        developerWidescreenProbe: Boolean = false,
     ): PlannedRomLaunch {
         val identity = romInfo?.let { RomIdentity(it.gameCode, it.revision, rom.retroAchievementsHash) }
-        val resolution = resolve(identity, rom.config.gbaSlotConfig, userCheats, enhancementsEnabled)
+        val resolution = resolve(identity, rom.config.gbaSlotConfig, userCheats, enhancementsEnabled, developerWidescreenProbe)
         val gbaSlotConfig = when {
             resolution.useSlot2Analog -> RomGbaSlotConfig.AnalogInput
             !enhancementsEnabled && rom.config.gbaSlotConfig is RomGbaSlotConfig.AnalogInput -> RomGbaSlotConfig.None
@@ -44,6 +45,7 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
         currentSlot: RomGbaSlotConfig,
         userCheats: List<Cheat>,
         enhancementsEnabled: Boolean = true,
+        developerWidescreenProbe: Boolean = false,
     ): LaunchProfileResolution {
         val requestedProfile = if (enhancementsEnabled) {
             identity?.let { catalog.exactProfiles(it).firstOrNull { profile -> profile.id == "sm64ds.eu.thor-enhanced" } }?.id
@@ -54,11 +56,18 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
             add(EnhancementCapability.NDS_EMULATION)
             add(EnhancementCapability.ACTION_REPLAY)
             if (currentSlot !is RomGbaSlotConfig.GbaRom) add(EnhancementCapability.SLOT2_ANALOG)
+            if (developerWidescreenProbe) {
+                add(EnhancementCapability.VULKAN)
+                add(EnhancementCapability.VULKAN_STRUCTURED_COMPOSITOR)
+            }
         }
         val resolved = sessionPlanBuilder.build(
             identity = identity,
             device = DeviceProfileContext(capabilities),
-            preferences = ProfilePreferences(selectedProfileId = requestedProfile),
+            preferences = ProfilePreferences(
+                selectedProfileId = requestedProfile,
+                enabledEnhancements = if (developerWidescreenProbe) mapOf("true-widescreen" to true) else emptyMap(),
+            ),
             userCheats = userCheats,
         )
         val analogEnabled = resolved.enhancements.any { it.id == "analog" && it.enabled }

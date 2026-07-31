@@ -111,16 +111,43 @@
         {
           "id": "true-widescreen",
           "displayName": "True Widescreen",
-          "defaultEnabled": true,
-          "kind": "COMPOSITE",
+          "defaultEnabled": false,
+          "kind": "ACTION_REPLAY",
           "requiredCapabilities": [
+            "ACTION_REPLAY",
+            "VULKAN",
             "VULKAN_STRUCTURED_COMPOSITOR"
           ],
           "conflicts": [
             "RA_HARDCORE"
           ],
           "requiresRelaunch": true,
-          "provenance": "ThorDS widescreen derivation; implementation deferred to M7-M8"
+          "experimental": true,
+          "provenance": "ThorDS M7 EU semantic derivation; developer probe only",
+          "runtimeCode": {
+            "id": "sm64ds.eu.aspect-16x9.dev.v1",
+            "codeWords": [
+              "5200D03C 00001555",
+              "0200D03C 00001C72",
+              "D0000000 00000000",
+              "5200F64C 00001555",
+              "0200F64C 00001C72",
+              "D0000000 00000000",
+              "52015774 00001555",
+              "02015774 00001C72",
+              "D0000000 00000000",
+              "520C026C 00001555",
+              "020C026C 00001C72",
+              "D0000000 00000000"
+            ],
+            "codeSha256": "44cfd537461cde6b2f9a575bb01334bf0e8fd607815e37f102eb5c55559f770e",
+            "expectedOriginalWords": [
+              "0200D03C 00001555",
+              "0200F64C 00001555",
+              "02015774 00001555",
+              "020C026C 00001555"
+            ]
+          }
         }
       ],
       "allowedRaModes": [

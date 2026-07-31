@@ -154,7 +154,8 @@ class EmulatorActivity : AppCompatActivity() {
         const val KEY_URI = "uri"
         const val KEY_BOOT_FIRMWARE_CONSOLE = "boot_firmware_console"
         const val KEY_BOOT_FIRMWARE_ONLY = "boot_firmware_only"
-        const val EXTRA_DEVELOPER_WIDESCREEN_PROBE = "io.github.joeblack2k.thords.extra.WIDESCREEN_PROBE"
+        const val KEY_DEVELOPER_WIDESCREEN_PROBE = "io.github.joeblack2k.thords.extra.WIDESCREEN_PROBE"
+        const val EXTRA_DEVELOPER_WIDESCREEN_PROBE = KEY_DEVELOPER_WIDESCREEN_PROBE
         private const val STARTUP_PRESENTATION_REFRESH_ATTEMPTS = 24
         private const val STARTUP_PRESENTATION_REFRESH_INTERVAL_MS = 100L
         private const val LEDGER_EXPIRATION_DAY_MS = 24L * 60L * 60L * 1000L
@@ -181,11 +182,12 @@ class EmulatorActivity : AppCompatActivity() {
         extrasProducer = {
             val extras = MutableCreationExtras(defaultViewModelCreationExtras)
             // Inject intent data into view-model creation extras to make it accessible through the SavedStateHandle
+            val existingExtras = extras[DEFAULT_ARGS_KEY]?.let(::Bundle) ?: Bundle()
             intent.data?.let { dataUri ->
-                val existingExtras = extras[DEFAULT_ARGS_KEY]?.let { Bundle(it) } ?: Bundle()
                 existingExtras.putString(KEY_URI, dataUri.toString())
-                extras[DEFAULT_ARGS_KEY] = existingExtras
             }
+            existingExtras.putBoolean(KEY_DEVELOPER_WIDESCREEN_PROBE, developerWidescreenProbe)
+            extras[DEFAULT_ARGS_KEY] = existingExtras
             extras
         }
     )

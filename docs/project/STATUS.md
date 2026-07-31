@@ -34,7 +34,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M4 | PASS | 04ed45bd | docs/evidence/m4/ | catalog v1, exact resolver, safe Original fallback, curated/user separation and synthetic delta patches |
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
 | M6 | IN_PROGRESS | 883d00cf | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; physical gameplay scenarios remain |
-| M7 | IN_PROGRESS | | docs/evidence/m7/ | EU aspect literals semantically mapped; physical developer probe proves 16:9 world and 4:3 UI-safe-area compositor geometry; no game-projection or M8 claim |
+| M7 | IN_PROGRESS | | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code and 16:9 world/4:3 UI-safe-area compositor geometry verified; no BOB/FOV/culling or M8 claim |
 | M8 | NOT_STARTED | | | |
 | M9 | NOT_STARTED | | | |
 | M10 | NOT_STARTED | | | |

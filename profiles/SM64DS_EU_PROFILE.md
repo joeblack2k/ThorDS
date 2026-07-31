@@ -19,7 +19,7 @@ save group:       sm64ds-eu-retail
 |---|---:|---|
 | Slot-2 analog | aan | vereist |
 | Right-stick camera | aan | vereist |
-| True Widescreen | aan bij capability | vereist |
+| True Widescreen | developer probe | M7 diagnostic; production blocked |
 | Vulkan | voorkeur | vereist voor True WS |
 | High internal resolution | geteste Thorwaarde | vereist |
 | ARM9 overclock | 100% | foundation |
@@ -41,7 +41,8 @@ RA_INTEGRATION optional
 ## Runtimecodes
 
 1. `sm64ds.eu.am64ds-analog.v1`
-2. `sm64ds.eu.aspect-16x9.v1`
+2. `sm64ds.eu.aspect-16x9.dev.v1` (default uit; alleen expliciete
+   debuggable M7-probe)
 3. eventuele bewezen HUD/cullingcorrecties als afzonderlijke IDs.
 
 Iedere code:

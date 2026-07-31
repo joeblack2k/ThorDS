@@ -42,6 +42,12 @@ acceptance pass.
 Android input injection did not advance the title flow with the resolved
 DS-A or Start mappings. Continue the M7 scene matrix with a physical
 Thor-controller run.
+
+The exact Europe aspect candidate is now a default-off, experimental runtime
+Action Replay code. It is enabled only when the debuggable activity receives
+the M7 probe extra, and each write has an `IF original 0x1555` guard. The
+physical debug launch reported two curated codes and retained a stable
+1920x1080 world / 1440x1080 UI-safe presentation without a crash.
 ```
 
 ### Decision

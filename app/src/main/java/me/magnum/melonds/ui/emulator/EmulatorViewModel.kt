@@ -255,11 +255,12 @@ class EmulatorViewModel @Inject constructor(
     private val emulatorManager: EmulatorManager,
     private val emulatorSession: EmulatorSession,
     private val retroAchievementsSubmissionHandler: RetroAchievementsSubmissionHandler,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val sessionCoroutineScope = EmulatorSessionCoroutineScope()
     private val profileLaunchPlanner by lazy { ProfileLaunchPlanner(EmbeddedProfileCatalog(context).catalog) }
+    private val developerWidescreenProbe = savedStateHandle.get<Boolean>(EmulatorActivity.KEY_DEVELOPER_WIDESCREEN_PROBE) == true
     private var raBootstrapJob: Job? = null
     private var raSessionJob: Job? = null
 
@@ -796,6 +797,7 @@ class EmulatorViewModel @Inject constructor(
                 romInfo = romInfo,
                 userCheats = userCheats,
                 enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
+                developerWidescreenProbe = developerWidescreenProbe,
             )
             currentRom = plannedLaunch.rom
             activeRomConfig.value = plannedLaunch.rom
@@ -1577,6 +1579,7 @@ class EmulatorViewModel @Inject constructor(
                     romInfo = it,
                     userCheats = userCheats,
                     enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
+                    developerWidescreenProbe = developerWidescreenProbe,
                 )
                 emulatorManager.updateCheats(plannedLaunch.cheats)
             }

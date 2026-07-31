@@ -85,6 +85,34 @@ class ProfileEngineTest {
     }
 
     @Test
+    fun developerWidescreenProbeEnablesOnlyTheExactGuardedEuropeAspectCode() {
+        val catalog = ProfileCatalog.parse(File("src/main/assets/enhancement-profiles.json").readText())
+        val planner = ProfileLaunchPlanner(catalog)
+        val identity = RomIdentity("ASMP", 0, "ba3c4052e00c5cc31df5d5534c39de1b")
+
+        val normal = planner.resolve(identity, RomGbaSlotConfig.None, emptyList())
+        assertTrue(normal.plan.curatedRuntimeCodes.none { it.id == "sm64ds.eu.aspect-16x9.dev.v1" })
+
+        val probe = planner.resolve(
+            identity = identity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            developerWidescreenProbe = true,
+        )
+        val aspect = probe.plan.curatedRuntimeCodes.single { it.id == "sm64ds.eu.aspect-16x9.dev.v1" }
+        assertEquals(
+            listOf(
+                "0200D03C 00001555",
+                "0200F64C 00001555",
+                "02015774 00001555",
+                "020C026C 00001555",
+            ),
+            aspect.expectedOriginalWords,
+        )
+        assertEquals("44cfd537461cde6b2f9a575bb01334bf0e8fd607815e37f102eb5c55559f770e", sha256(aspect.codeWords.joinToString("\n") + "\n"))
+    }
+
+    @Test
     fun matcherRequiresExactCodeRevisionAndHash() {
         val catalog = ProfileCatalog.from(EnhancementCatalogDocument(1, listOf(original(), enhanced())))
         assertEquals(ProfileMatch.MATCH_EXACT, catalog.match(exactIdentity).second)
