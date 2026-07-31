@@ -7,6 +7,102 @@
       "profileVersion": 1,
       "displayName": "Original",
       "fallback": true
+    },
+    {
+      "schemaVersion": 1,
+      "id": "original.sm64ds.eu",
+      "profileVersion": 1,
+      "displayName": "Super Mario 64 DS - Original",
+      "game": {
+        "system": "NDS",
+        "gameCode": "ASMP",
+        "revision": 0,
+        "raHashes": [
+          "ba3c4052e00c5cc31df5d5534c39de1b"
+        ]
+      },
+      "saveCompatibilityGroup": "sm64ds-eu-retail",
+      "provenance": [
+        {
+          "author": "ThorDS",
+          "source": "research/SM64DS_ROM_IDENTITY.md",
+          "version": "1",
+          "testStatus": "identity-verified"
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "sm64ds.eu.thor-enhanced",
+      "profileVersion": 1,
+      "displayName": "Super Mario 64 DS - Thor Enhanced",
+      "game": {
+        "system": "NDS",
+        "gameCode": "ASMP",
+        "revision": 0,
+        "raHashes": [
+          "ba3c4052e00c5cc31df5d5534c39de1b"
+        ]
+      },
+      "saveCompatibilityGroup": "sm64ds-eu-retail",
+      "provenance": [
+        {
+          "author": "ThorDS",
+          "source": "profiles/SM64DS_EU_PROFILE.md",
+          "version": "1",
+          "testStatus": "identity-verified; runtime-code-deferred-to-M6"
+        }
+      ],
+      "enhancements": [
+        {
+          "id": "analog",
+          "displayName": "Analog Controls",
+          "defaultEnabled": true,
+          "kind": "ACTION_REPLAY",
+          "requiredCapabilities": [
+            "NDS_EMULATION",
+            "ACTION_REPLAY",
+            "SLOT2_ANALOG"
+          ],
+          "conflicts": [
+            "RA_HARDCORE"
+          ],
+          "requiresRelaunch": true,
+          "provenance": "AM64DS Europe payload is intentionally deferred to M6"
+        },
+        {
+          "id": "right-stick-camera",
+          "displayName": "Right Stick Camera",
+          "defaultEnabled": true,
+          "kind": "COMPOSITE",
+          "requires": [
+            "analog"
+          ],
+          "conflicts": [
+            "RA_HARDCORE"
+          ],
+          "requiresRelaunch": true,
+          "provenance": "ThorDS controller profile; implementation deferred to M6"
+        },
+        {
+          "id": "true-widescreen",
+          "displayName": "True Widescreen",
+          "defaultEnabled": true,
+          "kind": "COMPOSITE",
+          "requiredCapabilities": [
+            "VULKAN_STRUCTURED_COMPOSITOR"
+          ],
+          "conflicts": [
+            "RA_HARDCORE"
+          ],
+          "requiresRelaunch": true,
+          "provenance": "ThorDS widescreen derivation; implementation deferred to M7-M8"
+        }
+      ],
+      "allowedRaModes": [
+        "OFF",
+        "CASUAL"
+      ]
     }
   ]
 }

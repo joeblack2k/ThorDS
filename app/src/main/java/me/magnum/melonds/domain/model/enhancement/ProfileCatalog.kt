@@ -19,6 +19,13 @@ class ProfileCatalog private constructor(
         return if (exact != null) exact to ProfileMatch.MATCH_EXACT else null to ProfileMatch.MATCH_GAME_UNKNOWN_HASH
     }
 
+    fun matchesExactly(profile: EnhancementProfile, identity: RomIdentity): Boolean {
+        val game = profile.game ?: return false
+        return game.gameCode == identity.gameCode &&
+            game.revision == identity.revision &&
+            identity.retroAchievementsHash in game.raHashes
+    }
+
     companion object {
         private val json = Json { ignoreUnknownKeys = true }
 

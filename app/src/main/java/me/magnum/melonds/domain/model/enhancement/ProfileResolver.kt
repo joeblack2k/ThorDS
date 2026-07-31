@@ -37,7 +37,7 @@ class ProfileResolver(private val catalog: ProfileCatalog) {
         val selected = preferences.selectedProfileId?.let(catalog::find)
         val profile = when {
             selected?.fallback == true -> selected
-            selected != null && selected == matched -> selected
+            selected != null && identity != null && catalog.matchesExactly(selected, identity) -> selected
             else -> catalog.originalProfile
         }
         val effectiveMatch = if (profile.fallback) match else ProfileMatch.MATCH_EXACT

@@ -18,6 +18,8 @@ data class EnhancementProfile(
     val displayName: String,
     val fallback: Boolean = false,
     val game: ProfileGameIdentity? = null,
+    val saveCompatibilityGroup: String? = null,
+    val provenance: List<ProfileProvenance> = emptyList(),
     val enhancements: List<EnhancementDefinition> = emptyList(),
     val allowedRaModes: Set<ProfileRaMode> = setOf(ProfileRaMode.OFF, ProfileRaMode.CASUAL, ProfileRaMode.HARDCORE),
 )
@@ -28,6 +30,14 @@ data class ProfileGameIdentity(
     val gameCode: String,
     val revision: Int,
     val raHashes: Set<String>,
+)
+
+@Serializable
+data class ProfileProvenance(
+    val author: String,
+    val source: String,
+    val version: String,
+    val testStatus: String,
 )
 
 @Serializable
@@ -55,6 +65,8 @@ enum class EnhancementKind {
 
 @Serializable
 enum class EnhancementCapability {
+    NDS_EMULATION,
+    ACTION_REPLAY,
     SLOT2_ANALOG,
     VULKAN,
     VULKAN_STRUCTURED_COMPOSITOR,

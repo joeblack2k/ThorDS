@@ -31,6 +31,31 @@ class ProfileEngineTest {
     }
 
     @Test
+    fun sm64dsProfilesRequireTheExactEuropeIdentityAndContainNoM6Code() {
+        val catalog = ProfileCatalog.parse(File("src/main/assets/enhancement-profiles.json").readText())
+        val sm64ds = RomIdentity("ASMP", 0, "ba3c4052e00c5cc31df5d5534c39de1b")
+        assertEquals(ProfileMatch.MATCH_EXACT, catalog.match(sm64ds).second)
+        assertEquals(ProfileMatch.MATCH_GAME_UNSUPPORTED_REVISION, catalog.match(sm64ds.copy(revision = 1)).second)
+        assertEquals(ProfileMatch.MATCH_GAME_UNKNOWN_HASH, catalog.match(sm64ds.copy(retroAchievementsHash = "f".repeat(32))).second)
+
+        val resolver = ProfileResolver(catalog)
+        val device = DeviceProfileContext(
+            setOf(
+                EnhancementCapability.NDS_EMULATION,
+                EnhancementCapability.ACTION_REPLAY,
+                EnhancementCapability.SLOT2_ANALOG,
+                EnhancementCapability.VULKAN_STRUCTURED_COMPOSITOR,
+            ),
+        )
+        val enhanced = resolver.resolve(sm64ds, device, ProfilePreferences(selectedProfileId = "sm64ds.eu.thor-enhanced"), emptyList())
+        val original = resolver.resolve(sm64ds, device, ProfilePreferences(selectedProfileId = "original.sm64ds.eu"), emptyList())
+        assertEquals("sm64ds.eu.thor-enhanced", enhanced.profileId)
+        assertEquals("original.sm64ds.eu", original.profileId)
+        assertTrue(enhanced.curatedRuntimeCodes.isEmpty())
+        assertTrue(original.curatedRuntimeCodes.isEmpty())
+    }
+
+    @Test
     fun matcherRequiresExactCodeRevisionAndHash() {
         val catalog = ProfileCatalog.from(EnhancementCatalogDocument(1, listOf(original(), enhanced())))
         assertEquals(ProfileMatch.MATCH_EXACT, catalog.match(exactIdentity).second)

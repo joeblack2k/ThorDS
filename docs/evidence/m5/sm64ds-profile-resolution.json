@@ -1,0 +1,15 @@
+{
+  "identity": {
+    "system": "NDS",
+    "gameCode": "ASMP",
+    "revision": 0,
+    "raSystemHash": "ba3c4052e00c5cc31df5d5534c39de1b"
+  },
+  "profiles": [
+    "original.sm64ds.eu",
+    "sm64ds.eu.thor-enhanced"
+  ],
+  "saveCompatibilityGroup": "sm64ds-eu-retail",
+  "curatedRuntimeCodes": [],
+  "note": "M5 validates identity and profile options only. AM64DS payload is deferred to M6."
+}

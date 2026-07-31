@@ -307,3 +307,17 @@ the physical Thor and filtered logcat had no FATAL EXCEPTION or ANR
 ### Next
 
 - M5: exact Super Mario 64 DS Europe identity and profile.
+
+## 2026-07-31 - M5
+
+- added exact ASMP / revision 0 / RetroAchievements system-hash profile cards
+  for Original and Thor Enhanced
+- both cards share the declared runtime-only save compatibility group
+- AM64DS and all other runtime payloads remain intentionally absent until M6
+- validation: full GitHub Prod release unit tests and debug APK build passed;
+  the debug package reinstalled and launched on the physical Thor with no
+  filtered FATAL EXCEPTION or ANR
+
+### Next
+
+- M6: integrate the exact AM64DS Europe Slot-2 analog profile.

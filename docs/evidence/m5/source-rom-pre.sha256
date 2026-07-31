@@ -1,0 +1,5 @@
+ce5829aaa79f06c67140ed1f45cbca738b0a9d0180538c8c1498472d859db032  Super Mario 64 DS.nds
+
+Source identity was inspected locally before M5. The path and ROM contents are
+not recorded. M5 adds no cache patch or runtime code, so the source byte hash
+remains the M0 identity baseline.

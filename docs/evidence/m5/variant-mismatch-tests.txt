@@ -1,0 +1,9 @@
+M5 exact SM64DS Europe profile validation
+
+PASS: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b matches both explicit profile options.
+PASS: revision mutation resolves as MATCH_GAME_UNSUPPORTED_REVISION.
+PASS: RA system hash mutation resolves as MATCH_GAME_UNKNOWN_HASH.
+PASS: both M5 profiles resolve with zero curated runtime codes.
+PASS: fallback remains Original unless an exact profile is selected.
+
+No ROM content, save, private path, device serial, or credentials are present.
