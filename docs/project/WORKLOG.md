@@ -1696,6 +1696,14 @@ Evidence:
   `unresolved-function` findings. This is classification evidence only; F2
   semantic review and 60fps runtime validation remain open.
 
+### 2026-08-01 - M13 cadence write candidates
+
+- Generated `docs/evidence/m13/cadence-writes.md` from the pinned EU cadence
+  inventory; it contains 18 source-level write candidates.
+- The list is deliberately not treated as a patch manifest. Pointer casts,
+  overlay-local declarations and incomplete symbol typing require binary and
+  runtime confirmation before F4 changes any word.
+
 ### 2026-08-01 - M13 F3 developer cadence probe definition
 
 - Added the hidden, default-off exact-profile `60fps-dev-cadence` definition for
