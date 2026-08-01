@@ -80,6 +80,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - The cadence scanner now separates scheduler, render/OAM, scene-update and
   boot/init consumers. Sixteen low-level `func_...` entries remain explicitly
   `unresolved-function` pending manual decomp review; F2 is not claimed PASS.
+- F3 now has a hidden exact-profile `60fps-dev-cadence` Action Replay definition
+  with default-off and relaunch-required semantics. It is experimental only;
+  no product or 60fps validation claim is made.
 - M13 now also contains a timed, read-only sampler for the mapped EU main-loop
   counter. It reports one-second `uniqueUpdates` windows for runtime
   validation; this is not yet 60fps acceptance evidence.

@@ -148,10 +148,11 @@ class ProfileEngineTest {
         assertEquals(ProfileIntegrity.ENHANCED, casual.plan.profileIntegrity)
         assertEquals(ProfileRaMode.CASUAL, casual.plan.requestedRaMode)
         assertEquals(125, casual.plan.requestedArm9Percent)
-        assertEquals(100, casual.plan.effectiveArm9Percent)
-        assertEquals(Arm9OverclockCapability.PLUMBING_ONLY, casual.plan.arm9OverclockCapability)
+        assertEquals(125, casual.plan.effectiveArm9Percent)
+        assertEquals(Arm9OverclockCapability.EXPERIMENTAL, casual.plan.arm9OverclockCapability)
         assertEquals(RetroAchievementsEffectiveMode.CASUAL, casual.retroAchievementsPolicy.effectiveMode)
         assertTrue(casual.plan.enhancements.any { it.id == "analog" && it.enabled })
+        assertTrue(casual.plan.enhancements.any { it.id == "60fps-dev-cadence" && !it.enabled })
         assertTrue(casual.retroAchievementsPolicy.runtimeFeaturePermissions.allowEnhancements)
 
         val off = planner.resolve(
@@ -187,7 +188,7 @@ class ProfileEngineTest {
         assertEquals(ProfileRaMode.HARDCORE, cleanHardcore.plan.requestedRaMode)
         assertEquals(125, cleanHardcore.plan.requestedArm9Percent)
         assertEquals(100, cleanHardcore.plan.effectiveArm9Percent)
-        assertEquals(Arm9OverclockCapability.PLUMBING_ONLY, cleanHardcore.plan.arm9OverclockCapability)
+        assertEquals(Arm9OverclockCapability.EXPERIMENTAL, cleanHardcore.plan.arm9OverclockCapability)
         assertEquals(RetroAchievementsEffectiveMode.HARDCORE, cleanHardcore.retroAchievementsPolicy.effectiveMode)
         assertFalse(cleanHardcore.retroAchievementsPolicy.runtimeFeaturePermissions.allowEnhancements)
         assertTrue("arm9_percent_not_100" !in cleanHardcore.retroAchievementsPolicy.reasonCodeValues)

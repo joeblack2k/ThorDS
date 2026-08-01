@@ -219,6 +219,35 @@
               "020C025C 00001555"
             ]
           }
+        },
+        {
+          "id": "60fps-dev-cadence",
+          "displayName": "60 FPS Developer Cadence Probe",
+          "defaultEnabled": false,
+          "kind": "ACTION_REPLAY",
+          "requiredCapabilities": [
+            "NDS_EMULATION",
+            "ACTION_REPLAY"
+          ],
+          "conflicts": [
+            "RA_HARDCORE"
+          ],
+          "requiresRelaunch": true,
+          "experimental": true,
+          "provenance": "ThorDS M13 developer-only cadence probe; exact ASMP revision-0 and RA hash only; not validated for product use",
+          "runtimeCode": {
+            "id": "sm64ds.eu.60fps-dev-cadence.v1",
+            "codeWords": [
+              "5208EE44 00000002",
+              "0208EE44 00000001",
+              "D0000000 00000000",
+              "D2000000 00000000"
+            ],
+            "codeSha256": "c3e4806266ad8b7827c5ae51982dc8967a64978372204408564930b3141f324d",
+            "expectedOriginalWords": [
+              "0208EE44 00000002"
+            ]
+          }
         }
       ],
       "allowedRaModes": [

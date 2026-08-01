@@ -1681,3 +1681,15 @@ Evidence:
   explicitly `unresolved-function` for manual decomp review.
 - This reduces false `unknown` grouping but does not close F2 or authorize a
   cadence patch.
+
+### 2026-08-01 - M13 F3 developer cadence probe definition
+
+- Added the hidden, default-off exact-profile `60fps-dev-cadence` definition for
+  ASMP revision 0 / RA hash `ba3c4052e00c5cc31df5d5534c39de1b`.
+- The probe uses the documented guarded `2 -> 1` cadence override, requires a
+  full relaunch and is marked experimental. It is not exposed as a product
+  toggle and is not validated.
+- Updated profile-engine regression expectations for the current ARM9
+  `EXPERIMENTAL` capability and verified the new probe remains disabled by
+  default.
+- Focused GitHubProdRelease profile unit tests: PASS, 17 tests.
