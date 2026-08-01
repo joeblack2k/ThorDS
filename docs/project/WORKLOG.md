@@ -1010,3 +1010,50 @@ Evidence: `docs/evidence/m12/release-preflight.txt`.
 G0 is `PASS`. The active workstream is G1 analog closeout, followed by G2
 Castle Garden proof closeout. Evidence:
 `docs/evidence/g0/state-reconciliation.txt`.
+
+## G1 deterministic analog and lifecycle slice - 2026-08-01
+
+### Implementation
+
+- Routed debug joystick samples through the live `EmulatorActivity` and
+  production `InputProcessor`, with an injectable Slot-2 sink for focused
+  tests.
+- Added explicit input release on activity pause, destroy and input-pipeline
+  replacement. Camera/D-pad ownership, digital fallback state and Slot-2
+  analog all return to neutral.
+- Cleared native Slot-2 atomics during emulator reset and stop.
+- Kept debug startup metadata in the debug source set so release lint and
+  unit-test assembly do not depend on a debug-only manifest entry.
+- Added a bounded app-private sweep and gameplay-trial command. Public
+  evidence stores only aggregate values.
+
+### Validation
+
+- `git diff --check`: PASS.
+- Full SPIR-V, GitHubProdRelease unit-test and GitHubProdDebug APK gate:
+  `BUILD SUCCESSFUL`.
+- Final APK SHA-256:
+  `cab47c10ea7b9388cf580a46ebaae4d1ea10a2f916de500bf7cbc69168213a3e`.
+- Exact APK install on the connected AYN Thor: PASS.
+- Live sweep: 64/64 samples, 16 directions, magnitudes
+  `0.25/0.50/0.75/1.00`, deadzone boundary, HAT D-pad plus right-stick camera,
+  all-neutral and pipeline recreation: PASS.
+- Same-checkpoint Castle Garden low/mid/full movement and right-stick camera
+  trials each advanced 30 renderer frames and produced distinct world/map
+  response above the neutral control.
+- Original relaunch: zero curated codes, Slot-2 off, camera off. Enhanced
+  relaunch: one curated analog code, Slot-2 on, camera on.
+- Filtered device logcat: no fatal exception, ANR or native fatal signal.
+- The connected Android test source compiled, but the existing instrumented
+  runner failed before test discovery because `androidx.tracing.Trace` is
+  absent. After the required method change, the in-app Thor sweep supplied
+  the device integration proof without adding a test-only dependency.
+
+### Decision
+
+The bounded deterministic G1 implementation slice is `PASS`; M6 and Analog
+remain `PARTIAL`. Swim/fly/slide and usable physical play are not witnessed
+while the owner-observed top screen remains 180 degrees inverted and gameplay
+is approximately 20fps. G2 deterministic renderer instrumentation is the next
+independent workstream. Evidence:
+`docs/evidence/m6/analog-end-to-end.json`.

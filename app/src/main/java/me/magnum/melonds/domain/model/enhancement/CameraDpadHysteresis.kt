@@ -16,6 +16,11 @@ class CameraDpadHysteresis(
         return setOfNotNull(horizontal, vertical)
     }
 
+    fun reset() {
+        horizontal = null
+        vertical = null
+    }
+
     private fun updateAxis(value: Float, active: Input?, negative: Input, positive: Input): Input? {
         if (active != null && value.absoluteValue <= releaseThreshold) return null
         if (value >= pressThreshold) return positive
@@ -48,5 +53,12 @@ class CameraDpadInputState {
 
     fun controllerReleased(input: Input): Boolean {
         return controllerInputs.remove(input) && input !in cameraInputs
+    }
+
+    fun releaseAll(): Set<Input> {
+        val released = controllerInputs + cameraInputs
+        controllerInputs.clear()
+        cameraInputs = emptySet()
+        return released
     }
 }

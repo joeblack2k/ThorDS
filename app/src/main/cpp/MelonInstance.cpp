@@ -1394,6 +1394,8 @@ void MelonInstance::start()
 
 void MelonInstance::reset()
 {
+    slot2AnalogX.store(0.0f, std::memory_order_relaxed);
+    slot2AnalogY.store(0.0f, std::memory_order_relaxed);
     nds->Reset();
     setBatteryLevels();
     setDateTime();
@@ -1849,6 +1851,8 @@ void MelonInstance::handleVulkanRuntimeFailure(const char* reason)
 
 void MelonInstance::stop()
 {
+    slot2AnalogX.store(0.0f, std::memory_order_relaxed);
+    slot2AnalogY.store(0.0f, std::memory_order_relaxed);
     std::unique_ptr<RetroAchievements::RetroAchievementsManager> managerToDestroy;
     {
         std::lock_guard lock(retroAchievementsManagerLifetimeMutex);

@@ -21,6 +21,8 @@
                 <action android:name="${applicationId}.WAIT_ROM_READY" />
                 <action android:name="${applicationId}.SAVE_STATE" />
                 <action android:name="${applicationId}.LOAD_STATE" />
+                <action android:name="${applicationId}.RUN_ANALOG_SWEEP" />
+                <action android:name="${applicationId}.RUN_ANALOG_GAMEPLAY_TRIAL" />
                 <action android:name="${applicationId}.DUMP_RENDERER_CAPTURE" />
             </intent-filter>
         </receiver>

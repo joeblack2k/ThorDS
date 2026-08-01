@@ -9,4 +9,5 @@ interface INativeInputListener {
     fun onMotionEventSlot2(motionEvent: MotionEvent): Boolean {
         return false
     }
+    fun releaseAllInputs() = Unit
 }

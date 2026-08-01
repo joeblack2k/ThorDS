@@ -28,4 +28,18 @@ class CameraDpadHysteresisTest {
         assertEquals(false, state.controllerReleased(Input.LEFT))
         assertEquals(setOf(Input.LEFT), state.updateCamera(emptySet()).released)
     }
+
+    @Test
+    fun releaseAllClearsCameraAndControllerOwnership() {
+        val camera = CameraDpadHysteresis()
+        val state = CameraDpadInputState()
+        assertEquals(setOf(Input.RIGHT), camera.update(0.8f, 0f))
+        assertEquals(setOf(Input.RIGHT), state.updateCamera(setOf(Input.RIGHT)).pressed)
+        state.controllerPressed(Input.LEFT)
+
+        camera.reset()
+        assertEquals(setOf(Input.LEFT, Input.RIGHT), state.releaseAll())
+        assertEquals(emptySet<Input>(), camera.update(0f, 0f))
+        assertEquals(emptySet<Input>(), state.releaseAll())
+    }
 }

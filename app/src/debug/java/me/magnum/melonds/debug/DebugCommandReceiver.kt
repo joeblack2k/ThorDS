@@ -7,7 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.SystemClock
 import android.util.Log
+import android.view.InputDevice
+import android.view.MotionEvent
 import androidx.core.content.edit
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.CoroutineScope
@@ -27,10 +30,16 @@ import me.magnum.melonds.impl.emulator.debug.RendererDebugCapturePresets
 import me.magnum.melonds.impl.emulator.debug.RendererDebugCaptureLogger
 import me.magnum.melonds.impl.emulator.debug.RendererDebugBridge
 import me.magnum.melonds.impl.emulator.debug.RendererDebugCaptureResult
+import me.magnum.melonds.impl.emulator.debug.RendererParityComparator
 import me.magnum.melonds.ui.emulator.EmulatorActivity
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.File
 import java.util.LinkedHashSet
 import java.util.Locale
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 internal class DebugCommandReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -64,6 +73,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_SET_THORDS_SAFE_MODE_SUFFIX) -> { handleSetThorDSSafeMode(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_SLOT2_ANALOG_SUFFIX) -> { handleSetSlot2Analog(intent); true }
             context.debugCommandAction(ACTION_SET_SLOT2_ANALOG_MAPPING_SUFFIX) -> { handleSetSlot2AnalogMapping(entryPoint, intent); true }
+            context.debugCommandAction(ACTION_RUN_ANALOG_SWEEP_SUFFIX) -> handleRunAnalogSweep(context, entryPoint, intent)
+            context.debugCommandAction(ACTION_RUN_ANALOG_GAMEPLAY_TRIAL_SUFFIX) -> handleRunAnalogGameplayTrial(context, entryPoint, intent)
             context.debugCommandAction(ACTION_SET_VULKAN_FALLBACKS_SUFFIX) -> { handleSetVulkanFallbacks(intent); true }
             context.debugCommandAction(ACTION_TOUCH_SCREEN_SUFFIX) -> { handleTouchScreen(intent); true }
             context.debugCommandAction(ACTION_TAP_INPUT_SUFFIX) -> { handleTapInput(intent); true }
@@ -187,6 +198,278 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         Log.w(
             TAG,
             "action=set_slot2_analog_mapping axisX=${nextMapping.axisXCode} axisY=${nextMapping.axisYCode} invertX=${if (nextMapping.invertX) 1 else 0} invertY=${if (nextMapping.invertY) 1 else 0} deadzone=${"%.3f".format(Locale.US, nextMapping.deadzone)} deviceId=${nextMapping.deviceId ?: -1} refreshed=${if (refreshed) 1 else 0}",
+        )
+    }
+
+    private suspend fun handleRunAnalogSweep(
+        context: Context,
+        entryPoint: DebugCommandEntryPoint,
+        intent: Intent,
+    ): Boolean {
+        if (!DebugCommandStateStore.isRunningRom()) {
+            Log.w(TAG, "action=run_analog_sweep ready=0")
+            return false
+        }
+
+        val timeoutMs = intent.firstNullableIntExtra(EXTRA_TIMEOUT_MS)
+            ?.coerceIn(250, MAX_RECEIVER_WAIT_TIMEOUT_MS)
+            ?: DEFAULT_ANALOG_STEP_TIMEOUT_MS
+        val mapping = entryPoint.settingsRepository().getControllerConfiguration().slot2AnalogMapping
+        val samples = JSONArray()
+        var passed = true
+
+        MelonEmulator.pauseEmulation()
+        DebugCommandStateStore.setDebugPauseHeld(true)
+
+        for (direction in 0 until ANALOG_SWEEP_DIRECTIONS) {
+            val angle = direction * 2.0 * PI / ANALOG_SWEEP_DIRECTIONS
+            for (magnitude in ANALOG_SWEEP_MAGNITUDES) {
+                val rawX = (cos(angle) * magnitude).toFloat()
+                val rawY = (sin(angle) * magnitude).toFloat()
+                val handled = dispatchControllerMotion(rawX, rawY)
+                val step = stepRendererFrames(entryPoint, 1, timeoutMs)
+                val (processedX, processedY) = mapping.processRadial(rawX, rawY)
+                samples.put(
+                    JSONObject()
+                        .put("direction", direction)
+                        .put("magnitude", magnitude)
+                        .put("rawX", rawX)
+                        .put("rawY", rawY)
+                        .put("processedX", processedX)
+                        .put("processedY", processedY)
+                        .put("handled", handled)
+                        .put("startFrame", step.startFrame)
+                        .put("endFrame", step.endFrame)
+                        .put("frameReady", step.ready)
+                        .put("frameAdvanced", step.advanced),
+                )
+                passed = passed && handled && step.ready && step.advanced
+            }
+        }
+
+        val deadzoneSamples = JSONArray()
+        val deadzone = mapping.normalizedDeadzone()
+        for (rawX in floatArrayOf(deadzone * 0.5f, deadzone, (deadzone + 0.01f).coerceAtMost(1f))) {
+            val handled = dispatchControllerMotion(rawX, 0f)
+            val step = stepRendererFrames(entryPoint, 1, timeoutMs)
+            val (processedX, processedY) = mapping.processRadial(rawX, 0f)
+            deadzoneSamples.put(
+                JSONObject()
+                    .put("rawX", rawX)
+                    .put("processedX", processedX)
+                    .put("processedY", processedY)
+                    .put("handled", handled)
+                    .put("startFrame", step.startFrame)
+                    .put("endFrame", step.endFrame)
+                    .put("frameReady", step.ready)
+                    .put("frameAdvanced", step.advanced),
+            )
+            passed = passed && handled && step.ready && step.advanced
+        }
+
+        val cameraSteps = JSONArray()
+        suspend fun cameraStep(
+            name: String,
+            cameraX: Float,
+            hatX: Float = 0f,
+        ): Boolean {
+            val handled = dispatchControllerMotion(cameraX = cameraX, hatX = hatX)
+            val step = stepRendererFrames(entryPoint, 1, timeoutMs)
+            cameraSteps.put(
+                JSONObject()
+                    .put("name", name)
+                    .put("handled", handled)
+                    .put("startFrame", step.startFrame)
+                    .put("endFrame", step.endFrame)
+                    .put("frameReady", step.ready)
+                    .put("frameAdvanced", step.advanced),
+            )
+            return handled && step.ready && step.advanced
+        }
+
+        passed = cameraStep("camera_left_press", cameraX = -0.8f) && passed
+        val dpadDownHandled = cameraStep("camera_left_with_dpad", cameraX = -0.8f, hatX = -1f)
+        passed = dpadDownHandled && passed
+        passed = cameraStep("camera_neutral_dpad_held", cameraX = 0f, hatX = -1f) && passed
+        val dpadUpHandled = cameraStep("all_neutral", cameraX = 0f)
+        passed = dpadUpHandled && passed
+
+        val refreshed = DebugCommandStateStore.requestSettingsRefresh()
+        if (refreshed) {
+            delay(250L)
+        }
+        val recreatedHandled = dispatchControllerMotion(0f, 0f)
+        val recreatedStep = stepRendererFrames(entryPoint, 1, timeoutMs)
+        passed = passed && refreshed && recreatedHandled && recreatedStep.ready && recreatedStep.advanced
+
+        val output = JSONObject()
+            .put("schemaVersion", 1)
+            .put("directions", ANALOG_SWEEP_DIRECTIONS)
+            .put("magnitudes", JSONArray(ANALOG_SWEEP_MAGNITUDES.toList()))
+            .put("deadzone", deadzone)
+            .put("samples", samples)
+            .put("deadzoneSamples", deadzoneSamples)
+            .put("cameraSteps", cameraSteps)
+            .put("dpadDownHandled", dpadDownHandled)
+            .put("dpadUpHandled", dpadUpHandled)
+            .put("pipelineRefreshRequested", refreshed)
+            .put("pipelineNeutralHandled", recreatedHandled)
+            .put("pipelineFrameReady", recreatedStep.ready)
+            .put("pipelineFrameAdvanced", recreatedStep.advanced)
+            .put("result", if (passed) "PASS" else "PARTIAL")
+
+        val outputFile = File(context.cacheDir, ANALOG_SWEEP_OUTPUT_FILE)
+        outputFile.writeText(output.toString(2))
+        Log.w(
+            TAG,
+            "action=run_analog_sweep samples=${samples.length()} deadzoneSamples=${deadzoneSamples.length()} refreshed=${if (refreshed) 1 else 0} result=${if (passed) "PASS" else "PARTIAL"}",
+        )
+        return passed
+    }
+
+    private suspend fun dispatchControllerMotion(
+        leftX: Float = 0f,
+        leftY: Float = 0f,
+        cameraX: Float = 0f,
+        cameraY: Float = 0f,
+        hatX: Float = 0f,
+        hatY: Float = 0f,
+    ): Boolean {
+        val event = createControllerMotionEvent(leftX, leftY, cameraX, cameraY, hatX, hatY)
+        return try {
+            DebugCommandStateStore.dispatchGenericMotionEvent(event)
+        } finally {
+            event.recycle()
+        }
+    }
+
+    private suspend fun handleRunAnalogGameplayTrial(
+        context: Context,
+        entryPoint: DebugCommandEntryPoint,
+        intent: Intent,
+    ): Boolean {
+        if (!DebugCommandStateStore.isRunningRom()) {
+            Log.w(TAG, "action=run_analog_gameplay_trial ready=0 result=PARTIAL")
+            return false
+        }
+
+        val rawX = (intent.firstFloatExtra(EXTRA_X, EXTRA_VALUE_X) ?: 0f).coerceIn(-1f, 1f)
+        val rawY = (intent.firstFloatExtra(EXTRA_Y, EXTRA_VALUE_Y) ?: 0f).coerceIn(-1f, 1f)
+        val cameraX = (intent.firstFloatExtra(EXTRA_CAMERA_X) ?: 0f).coerceIn(-1f, 1f)
+        val cameraY = (intent.firstFloatExtra(EXTRA_CAMERA_Y) ?: 0f).coerceIn(-1f, 1f)
+        val frames = (intent.firstNullableIntExtra(EXTRA_FRAMES, EXTRA_STEP_FRAMES) ?: 30).coerceIn(1, 600)
+        val timeoutMs = (intent.firstNullableIntExtra(EXTRA_TIMEOUT_MS) ?: 8_000)
+            .coerceIn(250, MAX_RECEIVER_WAIT_TIMEOUT_MS)
+        val mapping = entryPoint.settingsRepository().getControllerConfiguration().slot2AnalogMapping
+
+        MelonEmulator.pauseEmulation()
+        DebugCommandStateStore.setDebugPauseHeld(true)
+        val neutralBeforeHandled = dispatchControllerMotion()
+        val warmup = stepRendererFrames(entryPoint, 1, timeoutMs)
+        val before = RendererDebugBridge.captureCurrentFrame()
+        val inputHandled = dispatchControllerMotion(rawX, rawY, cameraX, cameraY)
+        val motion = stepRendererFrames(entryPoint, frames, timeoutMs)
+        val neutralAfterHandled = dispatchControllerMotion()
+        val after = RendererDebugBridge.captureCurrentFrame()
+
+        val expectedPixels = RendererDebugBridge.CAPTURE_WIDTH * RendererDebugBridge.CAPTURE_HEIGHT
+        val frameShapeValid = before?.size == expectedPixels && after?.size == expectedPixels
+        val topPixels = RendererDebugBridge.CAPTURE_WIDTH * (RendererDebugBridge.CAPTURE_HEIGHT / 2)
+        val topReport = if (frameShapeValid) {
+            RendererParityComparator.compareFrames(
+                before.copyOfRange(0, topPixels),
+                after.copyOfRange(0, topPixels),
+            )
+        } else {
+            null
+        }
+        val bottomReport = if (frameShapeValid) {
+            RendererParityComparator.compareFrames(
+                before.copyOfRange(topPixels, expectedPixels),
+                after.copyOfRange(topPixels, expectedPixels),
+            )
+        } else {
+            null
+        }
+        val passed = neutralBeforeHandled &&
+            inputHandled &&
+            neutralAfterHandled &&
+            warmup.ready &&
+            warmup.advanced &&
+            motion.ready &&
+            motion.advanced &&
+            frameShapeValid
+        val (processedX, processedY) = mapping.processRadial(rawX, rawY)
+
+        val output = JSONObject()
+            .put("schemaVersion", 1)
+            .put("rawX", rawX)
+            .put("rawY", rawY)
+            .put("cameraX", cameraX)
+            .put("cameraY", cameraY)
+            .put("processedX", processedX)
+            .put("processedY", processedY)
+            .put("framesRequested", frames)
+            .put("startFrame", motion.startFrame)
+            .put("endFrame", motion.endFrame)
+            .put("inputHandled", inputHandled)
+            .put("neutralBeforeHandled", neutralBeforeHandled)
+            .put("neutralAfterHandled", neutralAfterHandled)
+            .put("frameReady", motion.ready)
+            .put("frameAdvanced", motion.advanced)
+            .put("frameShapeValid", frameShapeValid)
+            .put("topChangedPixels", topReport?.mismatchedPixels ?: -1)
+            .put("topMeanChannelDelta", topReport?.meanChannelDelta ?: -1.0)
+            .put("bottomChangedPixels", bottomReport?.mismatchedPixels ?: -1)
+            .put("bottomMeanChannelDelta", bottomReport?.meanChannelDelta ?: -1.0)
+            .put("beforeFrameHash", before?.contentHashCode() ?: 0)
+            .put("afterFrameHash", after?.contentHashCode() ?: 0)
+            .put("responseObserved", (topReport?.mismatchedPixels ?: 0) > 0)
+            .put("result", if (passed) "PASS" else "PARTIAL")
+        File(context.cacheDir, ANALOG_GAMEPLAY_TRIAL_OUTPUT_FILE).writeText(output.toString(2))
+        Log.w(
+            TAG,
+            "action=run_analog_gameplay_trial frames=$frames changedTop=${topReport?.mismatchedPixels ?: -1} result=${if (passed) "PASS" else "PARTIAL"}",
+        )
+        return passed
+    }
+
+    private fun createControllerMotionEvent(
+        leftX: Float,
+        leftY: Float,
+        cameraX: Float,
+        cameraY: Float,
+        hatX: Float,
+        hatY: Float,
+    ): MotionEvent {
+        val now = SystemClock.uptimeMillis()
+        val pointerProperties = MotionEvent.PointerProperties().apply {
+            id = 0
+            toolType = MotionEvent.TOOL_TYPE_UNKNOWN
+        }
+        val pointerCoords = MotionEvent.PointerCoords().apply {
+            setAxisValue(MotionEvent.AXIS_X, leftX.coerceIn(-1f, 1f))
+            setAxisValue(MotionEvent.AXIS_Y, leftY.coerceIn(-1f, 1f))
+            setAxisValue(MotionEvent.AXIS_Z, cameraX.coerceIn(-1f, 1f))
+            setAxisValue(MotionEvent.AXIS_RZ, cameraY.coerceIn(-1f, 1f))
+            setAxisValue(MotionEvent.AXIS_HAT_X, hatX.coerceIn(-1f, 1f))
+            setAxisValue(MotionEvent.AXIS_HAT_Y, hatY.coerceIn(-1f, 1f))
+        }
+        return MotionEvent.obtain(
+            now,
+            now,
+            MotionEvent.ACTION_MOVE,
+            1,
+            arrayOf(pointerProperties),
+            arrayOf(pointerCoords),
+            0,
+            0,
+            1f,
+            1f,
+            0,
+            0,
+            InputDevice.SOURCE_JOYSTICK,
+            0,
         )
     }
 
@@ -415,6 +698,19 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         val timeoutMs = intent.firstNullableIntExtra(EXTRA_TIMEOUT_MS, EXTRA_DURATION_MS, EXTRA_RESUME_MS)
             ?.coerceAtLeast(1)
             ?: 5_000
+        val step = stepRendererFrames(entryPoint, frames, timeoutMs)
+        Log.w(
+            TAG,
+            "action=step_frame renderer=${step.renderer.name.lowercase(Locale.US)} frames=$frames startFrame=${step.startFrame} endFrame=${step.endFrame} ready=${if (step.ready) 1 else 0} advanced=${if (step.advanced) 1 else 0}",
+        )
+        return step.ready && step.advanced
+    }
+
+    private suspend fun stepRendererFrames(
+        entryPoint: DebugCommandEntryPoint,
+        frames: Int,
+        timeoutMs: Int,
+    ): DebugFrameStep {
         val renderer = entryPoint.settingsRepository().getCurrentVideoRenderer()
         val startFrame = RendererDebugBridge.getCurrentFrameIndexForDebug()
 
@@ -436,11 +732,13 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
 
         val endFrame = RendererDebugBridge.getCurrentFrameIndexForDebug()
         val ready = renderer != VideoRenderer.VULKAN || RendererDebugBridge.isCurrentFrameReadyForDebug()
-        Log.w(
-            TAG,
-            "action=step_frame renderer=${renderer.name.lowercase(Locale.US)} frames=$frames startFrame=$startFrame endFrame=$endFrame ready=${if (ready) 1 else 0}",
+        return DebugFrameStep(
+            renderer = renderer,
+            startFrame = startFrame,
+            endFrame = endFrame,
+            ready = ready,
+            advanced = startFrame < 0 || endFrame >= startFrame + frames,
         )
-        return ready
     }
 
     private suspend fun handleDumpRendererCapture(
@@ -1154,6 +1452,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val EXTRA_AXIS = "axis"
         private const val EXTRA_AXIS_X = "axis_x"
         private const val EXTRA_AXIS_Y = "axis_y"
+        private const val EXTRA_CAMERA_X = "camera_x"
+        private const val EXTRA_CAMERA_Y = "camera_y"
         private const val EXTRA_INVERT_X = "invert_x"
         private const val EXTRA_INVERT_Y = "invert_y"
         private const val EXTRA_DEADZONE = "deadzone"
@@ -1202,6 +1502,11 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val DEFAULT_TOUCH_Y = 96
         private const val DEFAULT_TOUCH_DURATION_MS = 80
         private const val DEFAULT_INPUT_DURATION_MS = 80
+        private const val DEFAULT_ANALOG_STEP_TIMEOUT_MS = 1_000
+        private const val ANALOG_SWEEP_DIRECTIONS = 16
+        private const val ANALOG_SWEEP_OUTPUT_FILE = "analog-end-to-end.json"
+        private const val ANALOG_GAMEPLAY_TRIAL_OUTPUT_FILE = "analog-gameplay-trial.json"
+        private val ANALOG_SWEEP_MAGNITUDES = floatArrayOf(0.25f, 0.50f, 0.75f, 1.00f)
 
         private val receiverScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -1214,6 +1519,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_SET_THORDS_SAFE_MODE_SUFFIX = "SET_THORDS_SAFE_MODE"
         private const val ACTION_SET_SLOT2_ANALOG_SUFFIX = "SET_SLOT2_ANALOG"
         private const val ACTION_SET_SLOT2_ANALOG_MAPPING_SUFFIX = "SET_SLOT2_ANALOG_MAPPING"
+        private const val ACTION_RUN_ANALOG_SWEEP_SUFFIX = "RUN_ANALOG_SWEEP"
+        private const val ACTION_RUN_ANALOG_GAMEPLAY_TRIAL_SUFFIX = "RUN_ANALOG_GAMEPLAY_TRIAL"
         private const val ACTION_SET_VULKAN_FALLBACKS_SUFFIX = "SET_VULKAN_FALLBACKS"
         private const val ACTION_TOUCH_SCREEN_SUFFIX = "TOUCH_SCREEN"
         private const val ACTION_TAP_INPUT_SUFFIX = "TAP_INPUT"
@@ -1227,6 +1534,14 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_STEP_FRAMES_SUFFIX = "STEP_FRAMES"
         private const val ACTION_DUMP_RENDERER_CAPTURE_SUFFIX = "DUMP_RENDERER_CAPTURE"
     }
+
+    private data class DebugFrameStep(
+        val renderer: VideoRenderer,
+        val startFrame: Int,
+        val endFrame: Int,
+        val ready: Boolean,
+        val advanced: Boolean,
+    )
 
     private fun Context.debugCommandAction(suffix: String): String {
         return "$packageName.$suffix"

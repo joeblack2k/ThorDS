@@ -1814,6 +1814,9 @@ class EmulatorActivity : AppCompatActivity() {
     }
 
     private fun setupInputHandling(controllerConfiguration: ControllerConfiguration) {
+        if (::nativeInputListener.isInitialized) {
+            nativeInputListener.releaseAllInputs()
+        }
         nativeInputListener = InputProcessor(controllerConfiguration, melonTouchHandler, frontendInputHandler)
     }
 
@@ -3579,6 +3582,9 @@ class EmulatorActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         cancelStartupPresentationRefreshes()
+        if (::nativeInputListener.isInitialized) {
+            nativeInputListener.releaseAllInputs()
+        }
         frontendInputHandler.clearFastForwardHold()
         enableScreenTimeOut()
         choreographerFrameRenderer.stopRendering()
@@ -3609,6 +3615,9 @@ class EmulatorActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        if (::nativeInputListener.isInitialized) {
+            nativeInputListener.releaseAllInputs()
+        }
         super.onDestroy()
         releaseEmulatorUiResources()
     }

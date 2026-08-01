@@ -3,8 +3,11 @@ package me.magnum.melonds.debug
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.view.MotionEvent
 import androidx.core.content.edit
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import me.magnum.melonds.MelonEmulator
 import me.magnum.melonds.ui.emulator.EmulatorActivity
 import me.magnum.melonds.ui.emulator.EmulatorViewModel
@@ -73,6 +76,12 @@ internal object DebugCommandStateStore {
 
     fun hasEmulatorActivity(): Boolean {
         return currentEmulatorActivity.get() != null
+    }
+
+    suspend fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
+        return withContext(Dispatchers.Main.immediate) {
+            currentEmulatorActivity.get()?.dispatchGenericMotionEvent(event) ?: false
+        }
     }
 
     fun onRunningRomReady(romUri: Uri, romName: String) {

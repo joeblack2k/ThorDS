@@ -14,7 +14,12 @@ import me.magnum.melonds.domain.model.enhancement.CameraDpadInputState
 import java.util.Locale
 import kotlin.math.absoluteValue
 
-class InputProcessor(private val controllerConfiguration: ControllerConfiguration, private val systemInputListener: IInputListener, private val frontendInputListener: IInputListener) : INativeInputListener {
+class InputProcessor(
+    private val controllerConfiguration: ControllerConfiguration,
+    private val systemInputListener: IInputListener,
+    private val frontendInputListener: IInputListener,
+    private val slot2AnalogInput: (Float, Float) -> Unit = MelonEmulator::setSlot2AnalogInput,
+) : INativeInputListener {
     companion object {
         private const val TAG = "InputProcessor"
         private const val SLOT2_ANALOG_LOG_INTERVAL_MS = 1500L
@@ -184,7 +189,7 @@ class InputProcessor(private val controllerConfiguration: ControllerConfiguratio
             else -> 1f
         }
 
-        MelonEmulator.setSlot2AnalogInput(digitalX, digitalY)
+        slot2AnalogInput(digitalX, digitalY)
         if ((digitalX.absoluteValue > 0f || digitalY.absoluteValue > 0f)
             && now - lastSlot2AnalogLogAtMs >= SLOT2_ANALOG_LOG_INTERVAL_MS
         ) {
@@ -221,7 +226,7 @@ class InputProcessor(private val controllerConfiguration: ControllerConfiguratio
             fallbackAxisCodes = slot2YAxisFallbackCodes,
         ).coerceIn(-1f, 1f)
         val (analogX, analogY) = slot2Mapping.processRadial(rawAnalogX, rawAnalogY)
-        MelonEmulator.setSlot2AnalogInput(analogX, analogY)
+        slot2AnalogInput(analogX, analogY)
         val now = SystemClock.uptimeMillis()
         lastSlot2RawAnalogEventAtMs = now
         if ((analogX.absoluteValue > 0f || analogY.absoluteValue > 0f)
@@ -234,6 +239,27 @@ class InputProcessor(private val controllerConfiguration: ControllerConfiguratio
             )
         }
         return true
+    }
+
+    override fun releaseAllInputs() {
+        profileCamera.reset()
+        profileCameraInputState.releaseAll().forEach { input ->
+            if (input.isSystemInput) {
+                systemInputListener.onKeyReleased(input)
+            } else {
+                frontendInputListener.onKeyReleased(input)
+            }
+        }
+        axisStates.values.forEach { axisState ->
+            axisState.value = 0f
+            axisState.active = false
+        }
+        slot2DigitalLeftPressed = false
+        slot2DigitalRightPressed = false
+        slot2DigitalUpPressed = false
+        slot2DigitalDownPressed = false
+        lastSlot2RawAnalogEventAtMs = 0L
+        slot2AnalogInput(0f, 0f)
     }
 
     private fun resolveSlot2AxisValue(

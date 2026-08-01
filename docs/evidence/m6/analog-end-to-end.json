@@ -1,0 +1,144 @@
+{
+  "date": "2026-08-01",
+  "commit": "input: harden and trace Slot-2 analog lifecycle (not yet committed at evidence authoring time)",
+  "apkSha256": "cab47c10ea7b9388cf580a46ebaae4d1ea10a2f916de500bf7cbc69168213a3e",
+  "deviceClass": "AYN Thor (serial omitted)",
+  "scope": "G1 deterministic post-Android analog, lifecycle neutralization, gameplay response, pipeline recreation, and Original/Enhanced relaunch",
+  "method": [
+    "Synthetic Android joystick MotionEvents were dispatched through EmulatorActivity and the production InputProcessor.",
+    "Every direction, deadzone, ownership, and recreation sample required a ready and advanced Vulkan renderer frame.",
+    "Castle Garden gameplay trials restored the same app-private checkpoint before each 30-frame input hold.",
+    "Gameplay response used renderer-internal before/after pixel aggregates; no private image was published."
+  ],
+  "result": "PARTIAL",
+  "limitations": [
+    "The deterministic G1 code and harness slice passed, but full M6 remains PARTIAL.",
+    "Swim, fly, and slide gameplay are not witnessed.",
+    "Physical feel and a literal controller disconnect/reconnect remain blocked by the owner's observed 180-degree top-screen defect and approximately 20fps gameplay.",
+    "AndroidJUnitRunner could not start the compiled connected test because the existing test APK lacks androidx.tracing.Trace; the in-app Thor sweep replaced that failed method."
+  ],
+  "cleanupSafety": [
+    "No ROM, save, save state, device serial, private screenshot, credential, or token is included.",
+    "The app-private checkpoint and raw captures remained on the device.",
+    "The owner-requested melon.zip remained untracked and unstaged."
+  ],
+  "build": {
+    "gitDiffCheck": "PASS",
+    "vulkanSpirv": "PASS",
+    "githubProdReleaseUnitTests": "PASS",
+    "githubProdDebugApk": "PASS",
+    "adbInstallReplace": "PASS",
+    "filteredCrashAnrLog": "PASS"
+  },
+  "androidInputSweep": {
+    "result": "PASS",
+    "directions": 16,
+    "magnitudes": [
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "samples": 64,
+    "allMotionEventsHandled": true,
+    "allRendererFramesReady": true,
+    "allRendererFramesAdvanced": true,
+    "deadzone": {
+      "configured": 0.1,
+      "samples": [
+        {
+          "raw": 0.05,
+          "processed": 0.0
+        },
+        {
+          "raw": 0.1,
+          "processed": 0.0
+        },
+        {
+          "raw": 0.11,
+          "processed": 0.0111111095
+        }
+      ]
+    },
+    "cameraDpadOwnershipSteps": [
+      "camera_left_press",
+      "camera_left_with_dpad",
+      "camera_neutral_dpad_held",
+      "all_neutral"
+    ],
+    "cameraDpadOwnership": "PASS",
+    "pipelineRecreation": "PASS",
+    "pipelineNeutral": "PASS"
+  },
+  "castleGardenTrials": {
+    "result": "PASS",
+    "framesPerTrial": 30,
+    "frameShape": "256x384",
+    "trials": [
+      {
+        "name": "neutral_control",
+        "processedMagnitude": 0.0,
+        "topChangedPixels": 1387,
+        "topMeanChannelDelta": 1.03741455078125,
+        "bottomChangedPixels": 3204,
+        "bottomMeanChannelDelta": 5.164133707682292
+      },
+      {
+        "name": "low_left_stick",
+        "processedMagnitude": 0.16666667,
+        "topChangedPixels": 44909,
+        "topMeanChannelDelta": 14.057942708333334,
+        "bottomChangedPixels": 24817,
+        "bottomMeanChannelDelta": 19.28204345703125
+      },
+      {
+        "name": "mid_left_stick",
+        "processedMagnitude": 0.44444448,
+        "topChangedPixels": 48616,
+        "topMeanChannelDelta": 23.954671223958332,
+        "bottomChangedPixels": 35756,
+        "bottomMeanChannelDelta": 42.92674255371094
+      },
+      {
+        "name": "full_left_stick",
+        "processedMagnitude": 1.0,
+        "topChangedPixels": 48594,
+        "topMeanChannelDelta": 24.033421834309895,
+        "bottomChangedPixels": 35318,
+        "bottomMeanChannelDelta": 41.7430165608724
+      },
+      {
+        "name": "right_stick_camera_left",
+        "cameraX": -0.8,
+        "topChangedPixels": 48438,
+        "topMeanChannelDelta": 19.598342895507812,
+        "bottomChangedPixels": 34207,
+        "bottomMeanChannelDelta": 40.91301981608073
+      }
+    ],
+    "interpretation": "All controlled inputs produced distinct game-frame response above the neutral control; low input was materially below mid/full input, and the right-stick camera route produced a separate response."
+  },
+  "lifecycleNeutralization": {
+    "inputRelease": "PASS",
+    "activityPause": "PASS",
+    "inputPipelineReplacement": "PASS",
+    "nativeReset": "PASS_SOURCE",
+    "nativeStop": "PASS_SOURCE"
+  },
+  "profileRelaunch": {
+    "original": {
+      "result": "PASS",
+      "integrity": "ORIGINAL",
+      "curatedCodes": 0,
+      "slot2Analog": false,
+      "camera": false
+    },
+    "enhanced": {
+      "result": "PASS",
+      "integrity": "ENHANCED",
+      "curatedCodes": 1,
+      "slot2Analog": true,
+      "camera": true
+    }
+  }
+}
