@@ -1865,3 +1865,12 @@ Evidence:
 - Automated evidence cannot establish physical axis direction or feel; that
   remains a manual Thor check.
 - Evidence: `docs/evidence/m13/f3-camera-route-audit.json`.
+## 2026-08-01 - M13 60 FPS stability window
+
+- Loaded the private 60-FPS gameplay checkpoint and ran a 60-second native
+  telemetry window on the AYN Thor.
+- Observed 59 complete windows, all at 60 or 61 unique updates per second,
+  minimum 60, maximum 61, mean 60.61, with cadence value `1` throughout.
+- Emulator-frame counts matched the unique-update counts and no crash or ANR
+  was found.
+- Evidence: `docs/evidence/m13/f4-60fps-stability-window.json`.
