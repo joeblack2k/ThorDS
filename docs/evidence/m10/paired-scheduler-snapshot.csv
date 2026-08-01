@@ -1,0 +1,3 @@
+date,device,profile,requested_percent,effective_percent,wall_seconds,base_cycles,scaled_cycles,sys_timestamp,arm9_timestamp,arm9_target,arm7_timestamp,frame_count,qualification
+2026-08-01,AYN_Thor,sm64ds.eu.thor-enhanced,100,100,12,417601213,417601213,286257090,572514180,572514180,286257090,511,exploratory_baseline
+2026-08-01,AYN_Thor,sm64ds.eu.thor-enhanced,125,125,12,436132147,348905717,282895950,565791900,565791900,282895950,505,exploratory_ratio_probe

@@ -89,6 +89,28 @@
   or 125% comparison. Paired same-state runs and subsystem counters remain.
 - Evidence: `docs/evidence/m10/telemetry-100.csv`.
 
+## 2026-08-01 - M10 paired scheduler snapshot
+
+### Result
+
+- Captured the same fixed-duration fresh-launch procedure at effective 100%
+  and temporary effective 125% using the native snapshot action.
+- 100%: `baseCycles=417601213`, `scaledCycles=417601213`,
+  `sysTimestamp=286257090`, `frameCount=511`.
+- 125%: `baseCycles=436132147`, `scaledCycles=348905717`,
+  `sysTimestamp=282895950`, `frameCount=505`.
+- The 125% `scaled/base` relationship is approximately 0.80, confirming the
+  rational ratio path is active.
+
+### Boundary
+
+- The fresh launches were not identical save-state checkpoints and the base
+  work increase was only approximately 4.4%, so this is exploratory evidence,
+  not proof of 25% more ARM9 work or subsystem equivalence.
+- Temporary capability and device preference were restored to
+  `PLUMBING_ONLY` and 100%.
+- Evidence: `docs/evidence/m10/paired-scheduler-snapshot.csv`.
+
 ## 2026-08-01 - M10 100% Thor stability slice
 
 ### Result
