@@ -70,7 +70,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   unverified 60fps code is shipped; implementation and full timing validation
   remain open. Evidence:
   `docs/evidence/m13/timing/core-hook-audit.txt`,
-  `docs/research/sm64ds-60fps-decomp-map.md`.
+  `docs/research/sm64ds-60fps-decomp-map.md`,
+  `docs/evidence/m13/timing/eu-overlay-original-hashes.txt`.
 - Thor GUI: PARTIAL
 - Stability: NOT_STARTED
 

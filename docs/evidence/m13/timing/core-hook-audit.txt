@@ -48,6 +48,9 @@ Findings:
   `dScEntry_c::Render` is `0x0211a26c`.
 - Detailed mapping is recorded in
   `docs/research/sm64ds-60fps-decomp-map.md`.
+- Original EU overlay-75 function digests and offsets are recorded in
+  `docs/evidence/m13/timing/eu-overlay-original-hashes.txt`; no ROM bytes are
+  included.
 - The pinned European decomp now provides a concrete game-side scheduling map
   in `docs/research/sm64ds-60fps-decomp-map.md`: `IRQ::VBlankHandler` at
   `0x0201a534`, the `data_0208ee44` tick, and the render/lag callback split.

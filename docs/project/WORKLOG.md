@@ -68,6 +68,9 @@
 - The follow-up dispatch audit separates IRQ graph slots 2/3 from semantic
   lifecycle slots 6/9; `dScEntry_c::Behavior` is `0x0211a2b8` and
   `dScEntry_c::Render` is `0x0211a26c`.
+- Local ignored EU overlay extraction produced original-reference SHA-256
+  digests and file offsets for the entry behavior/render/init functions;
+  only metadata is committed.
 - Independent review confirms that animation, stage, actor-timer, message and
   HUD code consume the same cadence value.
 
@@ -79,6 +82,8 @@
 - This is a stronger M13 reverse-engineering basis, not a 60fps
   implementation or validation pass.
 - Evidence: `docs/research/sm64ds-60fps-decomp-map.md`.
+- Original-function metadata:
+  `docs/evidence/m13/timing/eu-overlay-original-hashes.txt`.
 
 ## 2026-08-01 - M10 native launch telemetry baseline
 

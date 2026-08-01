@@ -1,0 +1,39 @@
+M13 EU overlay original-function hashes
+Date: 2026-08-01
+Profile: ASMP / revision 0
+Source: local ignored extraction of the owner's original ROM
+Overlay: ARM9 overlay 75
+Overlay load base used for file offsets: 0x02113ee0
+
+Only offsets, sizes and SHA-256 digests are recorded. No ROM bytes or patched
+image are stored in the repository.
+
+name: dScEntry_c::Render
+runtime: 0x0211a26c
+overlay_file_offset: 0x638c
+size: 0x4c
+sha256: 0ce9abdd7dc2b496575fd6fdff85ebd0b04eea38be01f141f4910442ddafef32
+
+name: dScEntry_c::Behavior
+runtime: 0x0211a2b8
+overlay_file_offset: 0x63d8
+size: 0x158
+sha256: f2edfb9901dcba0510613e89acd214e12512b75506c6e9ed4620ab9ab70b377d
+
+name: dScEntry_c::InitResources
+runtime: 0x0211a410
+overlay_file_offset: 0x6530
+size: 0x324
+sha256: d19b7a7ac25da4925bf9f8048790c163de66d745cd777bba4813d5526bfd24bf
+
+name: dScEntry_c::BeforeInitResources
+runtime: 0x0211a734
+overlay_file_offset: 0x6854
+size: 0xc
+sha256: b15fef07b98220082734871c191af90ed447440b17b51d5ea4687f749130db6a
+
+Boundary:
+- These are original-reference digests, not patch words.
+- The ARM9 overlay table/load behavior and runtime residency still need to be
+  validated before an Action Replay conditional write can be designed.
+- A digest does not prove gameplay cadence, unique updates or 60fps behavior.
