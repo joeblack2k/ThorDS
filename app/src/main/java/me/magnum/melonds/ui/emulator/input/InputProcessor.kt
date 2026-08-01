@@ -156,9 +156,22 @@ class InputProcessor(
     }
 
     private fun updateProfileCamera(motionEvent: MotionEvent) {
+        val preferredX = motionEvent.getAxisValue(MotionEvent.AXIS_Z)
+        val preferredY = motionEvent.getAxisValue(MotionEvent.AXIS_RZ)
+        // Android exposes the Thor's right stick as Z/RZ on some layouts and RX/RY on others.
+        val rawX = if (preferredX.absoluteValue > 0.001f || preferredY.absoluteValue > 0.001f) {
+            preferredX
+        } else {
+            motionEvent.getAxisValue(MotionEvent.AXIS_RX)
+        }
+        val rawY = if (preferredX.absoluteValue > 0.001f || preferredY.absoluteValue > 0.001f) {
+            preferredY
+        } else {
+            motionEvent.getAxisValue(MotionEvent.AXIS_RY)
+        }
         val yaw = smoothCameraInput.yaw(
-            rawX = motionEvent.getAxisValue(MotionEvent.AXIS_Z).coerceIn(-1f, 1f),
-            rawY = motionEvent.getAxisValue(MotionEvent.AXIS_RZ).coerceIn(-1f, 1f),
+            rawX = rawX.coerceIn(-1f, 1f),
+            rawY = rawY.coerceIn(-1f, 1f),
         )
         sendSmoothCameraState(yaw)
     }
