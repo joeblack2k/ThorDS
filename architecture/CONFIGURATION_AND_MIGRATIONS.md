@@ -73,7 +73,8 @@ analog: on
 true widescreen: on when validated/capable
 RA: preserve user global choice, prompt once
 OC: 100%
-60fps: required product mode, hidden until validated
+60fps: required product and release mode, not implemented until the M13
+timing and gameplay acceptance matrix is validated
 ```
 
 Op niet-Thor: upstreamachtige defaults.

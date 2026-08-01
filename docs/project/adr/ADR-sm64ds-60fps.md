@@ -9,7 +9,8 @@ Use a guarded, exact-ROM runtime patch as the first implementation route.
 Prefer the existing Action Replay path because it already applies curated
 codes at the ARM7 VBlank boundary without changing the pinned emulator core.
 
-The 60fps mode remains hidden or experimental until the complete M13 matrix is
+The 60fps mode is a required M13 product and release gate. It must not be
+reported as complete or enabled for release until the complete M13 matrix is
 green. A presenter rate, `NDS::RunFrame()` count, or VBlank count alone is not
 gameplay proof.
 
@@ -34,7 +35,7 @@ The measurement harness must report these independently:
 
 ## Consequences
 
-- No frontend-only 60fps toggle is implemented.
+- No frontend-only 60fps toggle is accepted as the implementation.
 - No community binary or patched ROM is committed or distributed.
 - If the binary/decomp map proves that Action Replay cannot express the
   required changes, make a separate public `melonDS-android-lib` core commit
@@ -43,4 +44,3 @@ The measurement harness must report these independently:
 - A validated implementation must pass the exact EU profile, normal timing,
   stress-scene, save/relaunch, RetroAchievements Casual and 60-minute
   stability gates.
-

@@ -76,7 +76,7 @@ M10–M12 bewijzen:
 M13 mag op drie manieren eindigen:
 
 1. `RESEARCH_READY` — diff/decomp/testharness klaar;
-2. `EXPERIMENTAL` — 60fps toggle werkt maar niet releasewaardig;
+2. `REQUIRED / NOT STARTED` — 60fps is een verplichte product- en releasegate;
 3. `VALIDATED` — volledige matrix groen.
 
 Alleen status 3 mag default of productclaim worden. V0.1 kan met status 1 releasen.
