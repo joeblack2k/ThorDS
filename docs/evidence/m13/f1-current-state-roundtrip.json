@@ -1,0 +1,30 @@
+{
+  "milestone": "M13",
+  "gate": "current savestate format",
+  "device": "AYN Thor",
+  "state": "app-private m13-current.ml0",
+  "profile": {
+    "requestedArm9Percent": 125,
+    "effectiveArm9Percent": 125
+  },
+  "roundTrip": {
+    "saveSuccess": true,
+    "loadSuccess": true,
+    "sizeBytes": 19312687
+  },
+  "telemetryAfterLoad": {
+    "valid": true,
+    "uniqueUpdates": 61,
+    "emulatorFrames": 61,
+    "cadenceValue": 1,
+    "stageTimer": 0,
+    "cameraBehaviorCalls": 0
+  },
+  "surface": "BLACK_NON_GAMEPLAY",
+  "result": "FORMAT_PASS_NON_GAMEPLAY",
+  "notes": [
+    "The current-format state can be saved and loaded with the active ARM9 profile.",
+    "The black surface and zero stage timer prevent this from counting as F1 gameplay evidence.",
+    "The state remains app-private and is not included in the repository."
+  ]
+}

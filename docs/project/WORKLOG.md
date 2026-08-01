@@ -1730,6 +1730,15 @@ Evidence:
 - F1 still needs a fresh current-format gameplay state. Evidence:
   `docs/evidence/m13/f1-legacy-state-format.json`.
 
+### 2026-08-01 - M13 current savestate round-trip
+
+- Saved the currently running Thor session using the active runtime and
+  ARM9=125 profile; save returned `success=1`.
+- Reloaded the newly created current-format state; load returned `success=1`.
+- This confirms the current savestate format and ARM9 compatibility path. The
+  display was still black with `stageTimer=0`, so it is not gameplay evidence.
+- Evidence: `docs/evidence/m13/f1-current-state-roundtrip.json`.
+
 ### 2026-08-01 - M13 F3 developer cadence probe definition
 
 - Added the hidden, default-off exact-profile `60fps-dev-cadence` definition for
