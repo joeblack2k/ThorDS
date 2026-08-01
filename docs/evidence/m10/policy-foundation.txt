@@ -3,9 +3,9 @@ Date: 2026-08-01
 Base: 94e5cc19cddaad44f0f7843a79299d9255b72dd8
 Worktree: parent checkout
 Result: PASS_WITH_BOUNDS
-Scope note: the policy-foundation slice passes; the full M10 milestone remains
-IN_PROGRESS because native/JNI plumbing, telemetry, UI and effective over-100
-runtime behavior are intentionally not implemented yet.
+Scope note: the policy-foundation and guarded native/JNI telemetry slice passes;
+the full M10 milestone remains IN_PROGRESS because 100% equivalence, drift,
+and effective over-100 runtime behavior are not yet proven.
 
 Policy:
 - Allowed requested ARM9 percentages are 100, 125, 150, 175 and 200.
@@ -41,6 +41,9 @@ Focused validation:
   :app:assembleGitHubProdDebug`
 - Full parent result: `BUILD SUCCESSFUL`; SPIR-V headers were up to date,
   release unit tests passed and the GitHubProdDebug APK assembled.
+- `docs/evidence/m10/telemetry-100.csv` records the first physical native
+  telemetry sample after resuming the enhanced SM64DS profile on the Thor:
+  effective 100%, remainder 0, and no crash/ANR in the filtered run.
 - `git diff --check`: PASS before commit.
 
 Device/package smoke:
@@ -67,6 +70,7 @@ Publication safety:
   These are not credentials and are outside the staged parent diff.
 
 Boundaries:
-- No melonDS-android-lib core submodule, JNI, native configuration, UI
-  toggle, telemetry or effective over-100 runtime behavior was changed.
+- No UI toggle or effective over-100 runtime behavior is exposed. The native
+  configuration and JNI telemetry plumbing are now present; the capability
+  remains PLUMBING_ONLY.
 - No commit was created at evidence authoring time.

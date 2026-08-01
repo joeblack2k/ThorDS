@@ -1,0 +1,2 @@
+date,device,profile,requested_percent,effective_percent,remainder,base_cycles,scaled_cycles,crash_or_anr
+2026-08-01,AYN_Thor,sm64ds.eu.thor-enhanced,100,100,0,1854214500,1852424410,no

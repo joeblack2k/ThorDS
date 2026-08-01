@@ -1,5 +1,23 @@
 # Worklog
 
+## 2026-08-01 - M10 native launch telemetry baseline
+
+### Result
+
+- The resolved ARM9 percentage now reaches the native emulator configuration
+  at ROM launch; the safe default remains 100%.
+- A physical Thor run of the enhanced SM64DS profile resumed successfully and
+  reported native telemetry at 100% with zero remainder:
+  `baseCycles=1854214500`, `scaledCycles=1852424410`.
+- The filtered run showed no crash, SIGSEGV or ANR.
+
+### Boundary
+
+- This is a telemetry baseline, not an M10 green pass. 100% equivalence,
+  long-run drift, audio/RTC/event correctness and effective >100% execution
+  remain open. The capability stays `PLUMBING_ONLY`.
+- Evidence: `docs/evidence/m10/telemetry-100.csv`.
+
 ## 2026-08-01 - M9 RetroAchievements closeout
 
 ### Result
