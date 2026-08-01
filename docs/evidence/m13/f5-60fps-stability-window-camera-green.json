@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "gate": "M13 60fps stability window with green camera hook",
+  "date": "2026-08-01",
+  "profile": "sm64ds.eu.thor-enhanced",
+  "checkpoint": "thords-camera-generic-hook-green.ml5",
+  "probe": {
+    "id": "60fps-dev-cadence",
+    "enabledForMeasurementOnly": true,
+    "disabledAfterMeasurement": true,
+    "effectiveArm9Percent": 125
+  },
+  "window": {
+    "durationSeconds": 60,
+    "logWindows": 49,
+    "fullWindowsAt60OrAbove": 48,
+    "uniqueUpdatesMin": 50,
+    "uniqueUpdatesMax": 61,
+    "emulatorFramesMin": 50,
+    "emulatorFramesMax": 61,
+    "cadenceValues": [1]
+  },
+  "stability": {
+    "crash": false,
+    "anr": false
+  },
+  "interpretation": "The Enhanced profile produced stable 60/61-update game-loop windows while the green generic camera hook checkpoint was loaded. One boundary window contained 50 updates. This is a timing stability result, not by itself the complete semantic 60fps product acceptance gate.",
+  "privacy": {
+    "romBytesPublished": false,
+    "savestatePublished": false,
+    "rawDeviceLogPublished": false,
+    "deviceIdentifierPublished": false
+  }
+}

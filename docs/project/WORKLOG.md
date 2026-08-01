@@ -1,5 +1,25 @@
 # Worklog
 
+## 2026-08-01 - M13 F5 60fps stability window with camera hook
+
+### Result
+
+- Enabled the exact-EU debug cadence probe for one bounded measurement and
+  loaded the private green generic-camera checkpoint.
+- Across 60 seconds there were 49 game-loop log windows; 48 complete windows
+  reported 60 or 61 unique updates/sec. The single boundary window reported
+  50 updates.
+- All observed cadence values were `1`; no crash or ANR was observed.
+- The debug cadence probe was disabled again and the profile relaunched with
+  `curatedCodes=3`, `slot2Analog=1` and `camera=1`.
+
+### Boundary
+
+- This is a stronger timing-stability result with the camera hook active, not
+  the complete semantic 60fps product acceptance gate. Physics, animation,
+  audio and longer physical-play equivalence remain open.
+- Evidence: `docs/evidence/m13/f5-60fps-stability-window-camera-green.json`.
+
 ## 2026-08-01 - M13 F4 generic camera hook runtime validation
 
 ### Result

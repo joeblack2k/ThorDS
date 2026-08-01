@@ -92,6 +92,12 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   launch planning and adds the fourth curated runtime code; the probe was
   disabled again after the check. Evidence:
   `docs/evidence/m13/f3-cadence-probe-activation.json`.
+- F5 now records a bounded 60-second timing window with the green generic
+  camera hook active: 48 of 49 observed windows reported 60/61 updates/sec,
+  all cadence values were `1`, and no crash or ANR occurred. The debug probe
+  was disabled again after measurement. This does not close the semantic
+  60fps product gate. Evidence:
+  `docs/evidence/m13/f5-60fps-stability-window-camera-green.json`.
 - The existing native one-second game-loop sampler is now exposed through the
   debug-only `DUMP_SM64DS_GAME_LOOP` action. Title-screen validation returned
   `valid=false`, correctly preventing a menu from becoming gameplay evidence.
