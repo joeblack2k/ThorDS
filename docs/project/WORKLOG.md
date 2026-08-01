@@ -1646,3 +1646,13 @@ Evidence:
   Casual unlock must not be repeated. The broader M11 acceptance remains
   open for the missing Analog, requested/effective widescreen, ARM9 ratio,
   60 FPS labeling, conflict-recovery and full physical-flow gates.
+### 2026-08-01 - M13 F1 semantic execution monitor
+
+- Added the core monitor at actual ARM9 JIT dispatch and interpreter execution
+  boundaries, with nine independent EU target counters.
+- Added a debug-only JNI/ADB enable and JSON dump path.
+- Thor title-screen run produced VBlank `66 -> 133` in approximately one
+  second; all semantic gameplay targets were zero as expected for the title.
+- The slot-0 state path was unavailable after reinstall, so no gameplay claim
+  was made.
+- Evidence: `docs/evidence/m13/f1-thor-semantic-run.json`.

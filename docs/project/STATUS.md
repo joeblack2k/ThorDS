@@ -93,3 +93,13 @@ validation workstream. Over-100% ARM9 behavior remains disabled until timing
 evidence proves it safe. Remaining independent gaps, including M6 physical
 movement coverage and the later M11-M12 release gates, remain explicitly
 tracked above.
+## M13 / F1 semantic execution telemetry
+
+- Core monitor is implemented at the ARM9 JIT block-dispatch boundary and the
+  interpreter instruction boundary.
+- The debug-only enable/dump bridge is built and installed on the AYN Thor.
+- Title-screen run: VBlank handler delta `67` in approximately one second;
+  semantic gameplay targets remained zero.
+- This is valid monitor-liveness evidence, not 60 FPS gameplay evidence.
+- Evidence: `docs/evidence/m13/f1-thor-semantic-run.json`.
+- F1 gameplay validation and F2 cadence-consumer classification remain open.

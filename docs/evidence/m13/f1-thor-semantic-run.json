@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "device": "AYN Thor",
+  "apkVariant": "GitHubProdDebug",
+  "monitor": "enabled",
+  "scene": "SM64DS title screen",
+  "windowSecondsApprox": 1,
+  "snapshotBefore": {
+    "vblankHandler": 66,
+    "mainLoopSlot1": 0,
+    "cadenceRender": 0,
+    "lagCallback": 0,
+    "stageBehavior": 0,
+    "stageRender": 0,
+    "entryBehavior": 0,
+    "entryRender": 0,
+    "entryInit": 0
+  },
+  "snapshotAfter": {
+    "vblankHandler": 133,
+    "mainLoopSlot1": 0,
+    "cadenceRender": 0,
+    "lagCallback": 0,
+    "stageBehavior": 0,
+    "stageRender": 0,
+    "entryBehavior": 0,
+    "entryRender": 0,
+    "entryInit": 0
+  },
+  "result": "PARTIAL_TITLE_ONLY",
+  "notes": [
+    "The execution-boundary monitor is active and counts VBlank dispatches.",
+    "The title screen is not semantic gameplay evidence.",
+    "The existing slot-0 state was unavailable in this APK package path.",
+    "No ROM, save, state, screenshot or device identifier is included."
+  ]
+}
