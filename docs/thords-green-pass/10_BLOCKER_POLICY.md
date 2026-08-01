@@ -34,7 +34,8 @@ Valid:
 
 - expose 125% and hide 150/175/200 when only 125% passes;
 - use safe 4:3 fallback for a proven unsafe scene;
-- keep 60fps off by default after it passes;
+- keep 60fps as a required product mode after it passes; do not downgrade it
+  to an optional or explicitly disabled status;
 - defer an online unlock only when no authenticated account exists, while completing every offline/runtime/UI gate.
 
 Invalid:

@@ -117,7 +117,8 @@ For the remaining M7 gates, add the smallest debug-only instrumentation necessar
 - ARM9 overclock is extra ARM9 work inside normal DS wall time, not fast-forward.
 - An overclock feature is green when at least one ratio above 100%, normally 125%, is genuinely effective and passes its gate. Expose only ratios that pass individually; do not force 175% or 200% to appear.
 - The renderer reporting 60 FPS is not proof of 60fps gameplay. M13 must prove 60 unique game updates per second, normal timers, normal physics and normal audio.
-- The 60fps toggle remains off by default, but this goal is not complete until the mode itself is validated.
+- 60fps is a required product mode and release gate. It must be implemented
+  and validated; it must not be relabeled as optional or explicitly disabled.
 
 ## Implementation discipline
 

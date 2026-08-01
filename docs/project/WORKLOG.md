@@ -1,5 +1,18 @@
 # Worklog
 
+## 2026-08-01 - 60fps requirement wording corrected
+
+### Result
+
+- ThorDS Enhanced 60fps is explicitly recorded as a required product mode and
+  release gate.
+- Project guidance no longer describes 60fps as explicitly disabled or merely
+  optional.
+- The `Original` profile remains a separate compatibility profile with its
+  native timing behavior; this does not waive the Enhanced 60fps requirement.
+- M13 implementation and semantic timing validation remain open. Existing
+  loop-counter evidence is not promoted to a gameplay 60fps claim.
+
 ## 2026-08-01 - M11 pre-launch Hardcore recovery choice
 
 ### Result

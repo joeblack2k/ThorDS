@@ -11,8 +11,9 @@ codes at the ARM7 VBlank boundary without changing the pinned emulator core.
 
 The 60fps mode is a required M13 product and release gate. It must not be
 reported as complete or enabled for release until the complete M13 matrix is
-green. A presenter rate, `NDS::RunFrame()` count, or VBlank count alone is not
-gameplay proof.
+green, but it must remain an active implementation target rather than an
+explicitly disabled product status. A presenter rate, `NDS::RunFrame()` count,
+or VBlank count alone is not gameplay proof.
 
 ## Evidence boundary
 
