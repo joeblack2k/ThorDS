@@ -1,0 +1,43 @@
+{
+  "milestone": "M13",
+  "step": "F3",
+  "identity": {
+    "gameCode": "ASMP",
+    "revision": 0,
+    "retroAchievementsHash": "ba3c4052e00c5cc31df5d5534c39de1b"
+  },
+  "device": "AYN Thor",
+  "build": "GitHubProdDebug",
+  "activation": {
+    "debugAction": "SET_SM64DS_CADENCE_PROBE",
+    "enabled": true,
+    "relaunchRequired": true,
+    "profileLog": {
+      "profile": "sm64ds.eu.thor-enhanced",
+      "requestedArm9": 125,
+      "effectiveArm9": 125,
+      "curatedCodes": 4,
+      "planHash": "2baa801223aefbc4bf79f9df25df79817394fd7ca1cb6c2ec1e2e678a13b95ff"
+    }
+  },
+  "probe": {
+    "id": "sm64ds.eu.60fps-dev-cadence.v1",
+    "codeWords": [
+      "5208EE44 00000002",
+      "0208EE44 00000001",
+      "D0000000 00000000",
+      "D2000000 00000000"
+    ],
+    "defaultEnabled": false,
+    "experimental": true
+  },
+  "cleanup": {
+    "enabled": false,
+    "relaunchRequested": true
+  },
+  "result": "PASS_FOR_HIDDEN_PROBE_WIRING_ONLY",
+  "notes": [
+    "The probe was not claimed as 60fps gameplay validation.",
+    "The Thor preference was returned to disabled after the wiring check."
+  ]
+}

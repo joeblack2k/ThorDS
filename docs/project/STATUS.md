@@ -83,6 +83,10 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - F3 now has a hidden exact-profile `60fps-dev-cadence` Action Replay definition
   with default-off and relaunch-required semantics. It is experimental only;
   no product or 60fps validation claim is made.
+- F3 wiring is now Thor-verified: the debug-only preference action survives
+  launch planning and adds the fourth curated runtime code; the probe was
+  disabled again after the check. Evidence:
+  `docs/evidence/m13/f3-cadence-probe-activation.json`.
 - M13 now also contains a timed, read-only sampler for the mapped EU main-loop
   counter. It reports one-second `uniqueUpdates` windows for runtime
   validation; this is not yet 60fps acceptance evidence.

@@ -1693,3 +1693,16 @@ Evidence:
   `EXPERIMENTAL` capability and verified the new probe remains disabled by
   default.
 - Focused GitHubProdRelease profile unit tests: PASS, 17 tests.
+
+### 2026-08-01 - M13 F3 probe wiring and relaunch validation
+
+- Added a debug-only `SET_SM64DS_CADENCE_PROBE` action bound to the exact
+  ASMP/EU/hash identity. It writes the existing hash-bound enhancement map and
+  requests a full current-ROM relaunch.
+- Fixed `ProfileLaunchPlanner` to preserve hash-bound enhancement preferences
+  instead of replacing them with a temporary widescreen-only map.
+- Thor log evidence changed `curatedCodes=3` to `curatedCodes=4` after enabling
+  the probe, with `requestedArm9=125` and `effectiveArm9=125` preserved.
+- Disabled the probe again after the wiring check; no product 60fps claim was
+  made because the device was still at course selection, not gameplay.
+- Evidence: `docs/evidence/m13/f3-cadence-probe-activation.json`.

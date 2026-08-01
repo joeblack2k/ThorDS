@@ -70,6 +70,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_SET_IR_SUFFIX) -> { handleSetInternalResolution(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_JIT_SUFFIX) -> { handleSetJit(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_ARM9_PERCENT_SUFFIX) -> { handleSetArm9Percent(context, intent); true }
+            context.debugCommandAction(ACTION_SET_SM64DS_CADENCE_PROBE_SUFFIX) -> { handleSetSm64dsCadenceProbe(context, intent); true }
             context.debugCommandAction(ACTION_DUMP_ARM9_TELEMETRY_SUFFIX) -> { handleDumpArm9Telemetry(); true }
             context.debugCommandAction(ACTION_SET_SM64DS_SEMANTIC_MONITOR_SUFFIX) -> { handleSetSm64dsSemanticMonitor(intent); true }
             context.debugCommandAction(ACTION_DUMP_SM64DS_SEMANTIC_TELEMETRY_SUFFIX) -> { handleDumpSm64dsSemanticTelemetry(); true }
@@ -148,6 +149,25 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         Log.w(
             TAG,
             "action=set_arm9_percent romKey=$romKey percent=$percent relaunched=${if (relaunched) 1 else 0}",
+        )
+    }
+
+    private fun handleSetSm64dsCadenceProbe(context: Context, intent: Intent) {
+        val romKey = intent.firstStringExtra(EXTRA_ROM_KEY)
+            ?: throw IllegalArgumentException("Missing rom_key extra")
+        require(romKey == SM64DS_EU_ROM_KEY) { "Cadence probe requires the exact EU SM64DS identity" }
+        val enabled = intent.firstBooleanExtra(EXTRA_ENABLED, EXTRA_VALUE)
+            ?: throw IllegalArgumentException("Missing enabled extra")
+        val repository = SharedPreferencesProfilePreferencesRepository(context)
+        val current = repository.read(romKey)
+        repository.write(
+            romKey,
+            current.copy(enabledEnhancements = current.enabledEnhancements + ("60fps-dev-cadence" to enabled)),
+        )
+        val relaunched = DebugCommandStateStore.requestCurrentRomRelaunch()
+        Log.w(
+            TAG,
+            "action=set_sm64ds_cadence_probe enabled=${if (enabled) 1 else 0} relaunched=${if (relaunched) 1 else 0}",
         )
     }
 
@@ -1981,6 +2001,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_SET_IR_SUFFIX = "SET_IR"
         private const val ACTION_SET_JIT_SUFFIX = "SET_JIT"
         private const val ACTION_SET_ARM9_PERCENT_SUFFIX = "SET_ARM9_PERCENT"
+        private const val ACTION_SET_SM64DS_CADENCE_PROBE_SUFFIX = "SET_SM64DS_CADENCE_PROBE"
         private const val ACTION_DUMP_ARM9_TELEMETRY_SUFFIX = "DUMP_ARM9_TELEMETRY"
         private const val ACTION_SET_SM64DS_SEMANTIC_MONITOR_SUFFIX = "SET_SM64DS_SEMANTIC_MONITOR"
         private const val ACTION_DUMP_SM64DS_SEMANTIC_TELEMETRY_SUFFIX = "DUMP_SM64DS_SEMANTIC_TELEMETRY"
@@ -2007,6 +2028,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_GRANT_M7_CASTLE_KEY_SUFFIX = "GRANT_M7_CASTLE_KEY"
         private const val ACTION_RUN_M7_SURFACE_SEQUENCE_SUFFIX = "RUN_M7_SURFACE_SEQUENCE"
         private const val ACTION_DUMP_RENDERER_CAPTURE_SUFFIX = "DUMP_RENDERER_CAPTURE"
+        private const val SM64DS_EU_ROM_KEY = "asmp:0:ba3c4052e00c5cc31df5d5534c39de1b"
     }
 
     private data class DebugFrameStep(
