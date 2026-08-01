@@ -31,6 +31,20 @@ Findings:
 - The repository has no proven European 60fps Action Replay code or patched
   reference copy.
 - No 60fps runtime code was invented or added.
+- Independent decomp review confirms the same EU game-side hook and identifies
+  the unresolved vtable dispatch behind `data_0209d4a8->vt[3]` and `func8`.
+- The decomp also shows that animation advancement, fixed-frame actor timers,
+  stage updates and message/HUD updates consume the cadence value; changing
+  the VBlank threshold alone is therefore not yet a safe product patch.
+- No reliable EU ASMP ROM offsets, original instruction words or conditional
+  Action Replay preconditions have been established.
+- Detailed mapping is recorded in
+  `docs/research/sm64ds-60fps-decomp-map.md`.
+- The pinned European decomp now provides a concrete game-side scheduling map
+  in `docs/research/sm64ds-60fps-decomp-map.md`: `IRQ::VBlankHandler` at
+  `0x0201a534`, the `data_0208ee44` tick, and the render/lag callback split.
+- The map also shows that scene/overlay initialization can restore the tick,
+  so a one-time boot write is not an adequate implementation.
 
 Next evidence required:
 - legal local original/patched comparison or a source-level equivalent;

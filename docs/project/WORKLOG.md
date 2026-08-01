@@ -54,6 +54,27 @@
   semantic game-update counter are still required.
 - Evidence: `docs/evidence/m13/timing/core-hook-audit.txt`.
 
+## 2026-08-01 - M13 EU game-side cadence map
+
+### Result
+
+- The pinned EU decomp maps `IRQ::VBlankHandler` at `0x0201a534`, the
+  `data_0209d514` VBlank counter and `data_0208ee44` cadence threshold.
+- The render/lag split is visible through `func_02019144` and
+  `func_02019100`, with the active scene object dispatched through
+  `data_0209d4a8`.
+- Independent review confirms that animation, stage, actor-timer, message and
+  HUD code consume the same cadence value.
+
+### Boundary
+
+- Scene/overlay initialization can restore the cadence value.
+- The vtable methods, EU ROM offsets, original words and conditional runtime
+  patch preconditions are not yet proven.
+- This is a stronger M13 reverse-engineering basis, not a 60fps
+  implementation or validation pass.
+- Evidence: `docs/research/sm64ds-60fps-decomp-map.md`.
+
 ## 2026-08-01 - M10 native launch telemetry baseline
 
 ### Result
