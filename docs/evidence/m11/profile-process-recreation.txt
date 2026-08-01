@@ -1,0 +1,28 @@
+M11 staged profile process-recreation witness
+Date: 2026-08-01
+Status: PASS_WITH_BOUNDS
+
+Flow:
+1. Used `Original + restart` and pressed Play once to establish Original as
+   the persisted profile preference.
+2. Returned to ROM details and selected Thor Enhanced without pressing Play.
+3. Captured the pending Enhanced details state.
+4. Force-stopped the ThorDS process before validation/relaunch.
+5. Relaunched ThorDS, reopened the same SM64DS Details screen and resolved the
+   profile state.
+
+Result:
+- The reopened details screen showed `Original`, `MATCH_EXACT`,
+  `ORIGINAL / RA CASUAL` and Analog Controls `Off`.
+- The uncommitted Enhanced edit was not persisted.
+- `topResumedActivity` remained `RomDetailsActivity`.
+- No emulator launch was caused by process recreation.
+
+Evidence:
+- Pending state: `/tmp/thor-pending-enhanced-baseline-original.png`
+- Reopened state: `/tmp/thor-after-pending-process-recreate-correct.png`
+
+Boundary:
+- This proves staged profile edits survive process recreation without an
+  accidental commit. Safe-mode recovery, both-display flow and full
+  pause/Reset/Exit acceptance remain open.

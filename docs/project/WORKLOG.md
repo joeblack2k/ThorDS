@@ -19,13 +19,17 @@
 - A second physical run selected `Original + restart`; the details screen
   resolved to `Original / MATCH_EXACT`, showed Analog Controls `Off` and the
   relaunch-required toast, and did not launch the emulator.
+- Process recreation was then tested with a correct persisted baseline:
+  Original was committed through Play, Enhanced was staged without Play, the
+  process was force-stopped, and the reopened details screen still showed
+  Original. The staged Enhanced edit was discarded.
 - GitHubProdDebug compilation, focused Profile/RA tests, APK build, Thor
   installation and launcher smoke passed.
 
 ### Boundary
 
-- This closes both physical recovery-dialog branches, not the complete
-  physical M11 matrix. Safe-mode recovery,
+- This closes both physical recovery-dialog branches and staged-edit process
+  recreation, not the complete physical M11 matrix. Safe-mode recovery,
   process-recreation and both-display acceptance remain open.
 
 ## 2026-08-01 - M13 60fps timing-hook audit
