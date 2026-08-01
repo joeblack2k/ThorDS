@@ -21,6 +21,7 @@ import me.magnum.melonds.ui.emulator.EmulatorActivity
 import me.magnum.melonds.ui.romdetails.ui.RomDetailsScreen
 import me.magnum.melonds.ui.theme.MelonTheme
 import me.magnum.melonds.ui.romdetails.model.RomDetailsToastEvent
+import me.magnum.melonds.ui.romdetails.model.RomConfigUpdateEvent
 
 @AndroidEntryPoint
 class RomDetailsActivity : AppCompatActivity() {
@@ -113,6 +114,15 @@ class RomDetailsActivity : AppCompatActivity() {
                     },
                     onRomConfigUpdate = {
                         romDetailsViewModel.onRomConfigUpdateEvent(it)
+                        if (it is RomConfigUpdateEvent.ThorProfileModeUpdate ||
+                            it is RomConfigUpdateEvent.ThorProfileRaModeUpdate
+                        ) {
+                            Toast.makeText(
+                                this@RomDetailsActivity,
+                                R.string.thords_profile_relaunch_required,
+                                Toast.LENGTH_LONG,
+                            ).show()
+                        }
                     },
                     onCustomInputConfigEdited = {
                         romDetailsViewModel.refreshRom()

@@ -1423,6 +1423,8 @@ Evidence:
 - Added per-ROM Original/Thor Enhanced and RetroAchievements mode controls.
   These write the existing hash-bound preferences and are applied by the
   normal launch path after relaunch.
+- Profile changes now show an explicit relaunch-required message in the ROM
+  details screen.
 - No second settings store, ROM database field or new toggle was introduced.
 
 ### Validation
