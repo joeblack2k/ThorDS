@@ -70,6 +70,25 @@
   correctness remain open.
 - Evidence: `docs/evidence/m10/savestate-ratio-mismatch.txt`.
 
+## 2026-08-01 - M10 scheduler telemetry snapshot
+
+### Result
+
+- Extended native ARM9 telemetry with `sysTimestamp`, `arm9Timestamp`,
+  `arm9Target`, `arm7Timestamp` and `frameCount`.
+- Added a debug-only `DUMP_ARM9_TELEMETRY` action for fixed-interval paired
+  runs.
+- On the Thor at effective 100%, a live snapshot reported
+  `baseCycles=408614392` and `scaledCycles=408614392`,
+  `sysTimestamp=270011580`, `arm9Timestamp=540023160`,
+  `arm7Timestamp=270011580` and `frameCount=482`.
+
+### Boundary
+
+- This is the first usable scheduler snapshot, not yet a complete equivalence
+  or 125% comparison. Paired same-state runs and subsystem counters remain.
+- Evidence: `docs/evidence/m10/telemetry-100.csv`.
+
 ## 2026-08-01 - M10 100% Thor stability slice
 
 ### Result
