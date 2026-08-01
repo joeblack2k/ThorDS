@@ -1513,6 +1513,14 @@ Java_me_magnum_melonds_MelonEmulator_getArm9OverclockTelemetry(JNIEnv* env, jobj
     return env->NewStringUTF(telemetry.c_str());
 }
 
+JNIEXPORT jstring JNICALL
+Java_me_magnum_melonds_MelonEmulator_getSm64dsGameLoopTelemetry(JNIEnv* env, jobject thiz)
+{
+    (void)thiz;
+    const std::string telemetry = MelonDSAndroid::getSm64dsGameLoopTelemetryJson();
+    return env->NewStringUTF(telemetry.c_str());
+}
+
 JNIEXPORT jintArray JNICALL
 Java_me_magnum_melonds_impl_emulator_debug_RendererDebugBridge_captureCurrentFrame(JNIEnv* env, jobject thiz)
 {

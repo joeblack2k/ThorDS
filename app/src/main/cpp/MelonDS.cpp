@@ -700,6 +700,14 @@ namespace MelonDSAndroid
             : currentInstance->getArm9OverclockTelemetryJson();
     }
 
+    std::string getSm64dsGameLoopTelemetryJson()
+    {
+        auto currentInstance = GetInstanceSnapshot();
+        return currentInstance == nullptr
+            ? "{\"valid\":false,\"source\":\"sm64ds-eu-decomp-main-loop\"}"
+            : currentInstance->getSm64dsGameLoopTelemetryJson();
+    }
+
     u32 loop()
     {
         MPInterface::Get().Process();

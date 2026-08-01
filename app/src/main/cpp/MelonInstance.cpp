@@ -1133,6 +1133,26 @@ std::string MelonInstance::getArm9OverclockTelemetryJson() const
         + "}";
 }
 
+std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
+{
+    constexpr u32 kMainRamBase = 0x02000000;
+    constexpr u32 kGameLoopCounterAddress = 0x020A0DB0;
+    if (nds == nullptr || nds->MainRAM == nullptr)
+        return "{\"valid\":false,\"source\":\"sm64ds-eu-decomp-main-loop\"}";
+
+    const u32 offset = (kGameLoopCounterAddress - kMainRamBase) & nds->MainRAMMask;
+    if (offset > nds->MainRAMMask - 3)
+        return "{\"valid\":false,\"source\":\"sm64ds-eu-decomp-main-loop\"}";
+
+    const u8* bytes = nds->MainRAM + offset;
+    const u32 counter = static_cast<u32>(bytes[0])
+        | (static_cast<u32>(bytes[1]) << 8)
+        | (static_cast<u32>(bytes[2]) << 16)
+        | (static_cast<u32>(bytes[3]) << 24);
+    return "{\"valid\":true,\"source\":\"sm64ds-eu-decomp-main-loop\",\"address\":\"0x020A0DB0\",\"counter\":"
+        + std::to_string(counter) + "}";
+}
+
 MelonInstance::~MelonInstance()
 {
     VulkanSurfacePresenter::clearPrewarmedRetroArchFilters();

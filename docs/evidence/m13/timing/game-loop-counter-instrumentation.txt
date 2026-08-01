@@ -1,0 +1,29 @@
+M13 semantic game-loop counter instrumentation
+Date: 2026-08-01
+Status: INSTRUMENTED_NOT_VALIDATED
+Profile target: ASMP / revision 0
+
+Source mapping:
+- SM64DS decomp `func_020197b8.c` increments `data_020a0db0` once per
+  iteration of the main game loop.
+- The mapped address is `0x020A0DB0` in the ARM9 main RAM address space.
+
+Implementation:
+- `MelonInstance::getSm64dsGameLoopTelemetryJson()`
+- `MelonDSAndroid::getSm64dsGameLoopTelemetryJson()`
+- JNI `MelonEmulator.getSm64dsGameLoopTelemetry()`
+- reads the existing `NDS::MainRAM` buffer without modifying emulation state;
+- returns validity, source, mapped address and the current counter value.
+
+Build evidence:
+- `:app:compileGitHubProdDebugKotlin`
+- `:app:assembleGitHubProdDebug`
+- GitHub Prod Debug CMake/native compilation
+- result: `BUILD SUCCESSFUL`
+
+Boundary:
+- This is an internal read-only measurement path, not a 60fps toggle.
+- It is not yet wired to a timed sampler or unique-update report.
+- It does not prove that the counter remains semantic through all scene,
+  overlay, pause, transition and save/relaunch paths.
+- The 60fps mode remains unimplemented and unvalidated.

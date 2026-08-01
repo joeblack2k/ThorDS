@@ -71,7 +71,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   remain open. Evidence:
   `docs/evidence/m13/timing/core-hook-audit.txt`,
   `docs/research/sm64ds-60fps-decomp-map.md`,
-  `docs/evidence/m13/timing/eu-overlay-original-hashes.txt`.
+  `docs/evidence/m13/timing/eu-overlay-original-hashes.txt`,
+  `docs/evidence/m13/timing/game-loop-counter-instrumentation.txt`.
 - Thor GUI: PARTIAL
 - Stability: NOT_STARTED
 

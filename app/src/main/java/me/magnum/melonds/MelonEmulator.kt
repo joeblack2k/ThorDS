@@ -127,6 +127,7 @@ object MelonEmulator {
     external fun getFPS(): Float
 
     external fun getArm9OverclockTelemetry(): String
+    external fun getSm64dsGameLoopTelemetry(): String
 
     external fun getCurrentRenderer(): Int
 

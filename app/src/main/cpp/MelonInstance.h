@@ -46,6 +46,7 @@ public:
     void reset();
     u32 getArm9OverclockPercent() const;
     std::string getArm9OverclockTelemetryJson() const;
+    std::string getSm64dsGameLoopTelemetryJson() const;
     melonDS::u32 runFrame();
     void stop();
 

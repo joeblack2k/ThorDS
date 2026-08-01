@@ -71,6 +71,9 @@
 - Local ignored EU overlay extraction produced original-reference SHA-256
   digests and file offsets for the entry behavior/render/init functions;
   only metadata is committed.
+- A read-only native/Kotlin getter now samples the mapped `data_020a0db0`
+  game-loop counter without changing emulator state. GitHub Prod Debug native
+  and Kotlin compilation plus APK packaging passed.
 - Independent review confirms that animation, stage, actor-timer, message and
   HUD code consume the same cadence value.
 
@@ -84,6 +87,8 @@
 - Evidence: `docs/research/sm64ds-60fps-decomp-map.md`.
 - Original-function metadata:
   `docs/evidence/m13/timing/eu-overlay-original-hashes.txt`.
+- Counter instrumentation:
+  `docs/evidence/m13/timing/game-loop-counter-instrumentation.txt`.
 
 ## 2026-08-01 - M10 native launch telemetry baseline
 
