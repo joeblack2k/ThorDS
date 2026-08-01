@@ -1,0 +1,34 @@
+M7 W-01 Castle Garden object-aspect probe
+Date: 2026-08-01
+Scope: native/probe paired renderer capture only
+
+Result: BLOCKED
+
+Route:
+- Native launch reached ROM ready with widescreenProbe=0.
+- Probe launch reached ROM ready with widescreenProbe=1.
+- The requested Castle Garden slot-2 state load returned success=0 in both
+  launches. The visible scene was Castle Garden, but checkpoint restoration was
+  not proven.
+
+Renderer captures:
+- Native capture success=1/1 at frame 55265.
+- Probe capture success=1/1 at frame 55329.
+- Both renderer PNGs were valid 256x192 RGBA images.
+- Both images were fully opaque black: 49,152/49,152 pixels, nonBlack=0.
+- Both renderer bounding boxes were none; width=0, height=0, ratio=undefined.
+- No identifiable round or square 3D object was present for measurement.
+- Companion screen frames showed Castle Garden but are composite frames and
+  cannot prove renderer-object aspect.
+
+Stability and cleanup:
+- No capture timeout, FATAL EXCEPTION or ANR in the bounded attempt.
+- Device capture files and local temporary captures were deleted.
+- No ROM bytes, save files, private screenshots or device identifiers are
+  retained in this evidence.
+
+Decision:
+- W-01 remains BLOCKED because the renderer source was black and the
+  checkpoint load was not proven.
+- No object-aspect ratio or M7 geometry claim is made.
+- W-03 side-region culling and exact HUD/glyph/bottom geometry remain open.

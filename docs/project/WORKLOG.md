@@ -768,3 +768,20 @@ W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
   `docs/evidence/m7/castle-garden-w20-transition.txt`.
 - Next runnable gate: W-01 object aspect using a paired native/probe
   Castle Garden renderer frame and bounding-box ratio.
+
+## M7 W-01 Castle Garden object-aspect probe - 2026-08-01
+
+- Ran paired native (`widescreenProbe=0`) and probe
+  (`widescreenProbe=1`) launches on the connected Thor.
+- The requested Castle Garden slot-2 restore returned `success=0` in both
+  launches, so checkpoint restoration was not proven.
+- Both one-frame renderer captures completed successfully at 256x192, but
+  every pixel in both renderer PNGs was opaque black. No identifiable object
+  or bounding box existed; the composite screen frames were not suitable
+  object sources.
+- No capture timeout, filtered FATAL or ANR occurred in the bounded attempt.
+  Temporary device and local artifacts were deleted.
+- Decision: W-01 is `BLOCKED`, not a geometry pass. Evidence:
+  `docs/evidence/m7/castle-garden-w01-object-aspect.txt`.
+- The next M7 action is a valid Castle Garden renderer checkpoint, followed by
+  a retry of W-01; no object-aspect claim is made.
