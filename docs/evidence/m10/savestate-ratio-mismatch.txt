@@ -1,0 +1,21 @@
+M10 incompatible ARM9-ratio savestate gate
+Date: 2026-08-01
+Device: AYN Thor
+Profile: sm64ds.eu.thor-enhanced
+State: app-private slot 8, not published
+
+Procedure:
+1. Run the temporary local 125% capability build.
+2. Save slot 8 successfully:
+   `action=save_state ... success=1`
+3. Install the restored safe product build with effective 100%.
+4. Attempt to load the same slot 8.
+
+Observed result:
+- launch: requestedArm9=100 effectiveArm9=100 arm9Capability=PLUMBING_ONLY
+- load result: `success=0`
+- native log:
+  `savestate: ARM9 overclock mismatch (current=100 state=125). cannot load.`
+
+Result: PASS for the incompatible-ratio load guard.
+The state remained app-private and was not copied into the repository.

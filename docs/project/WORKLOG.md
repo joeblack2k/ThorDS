@@ -53,6 +53,23 @@
 - This closes only a temporary 125% crash/stability slice. It does not prove
   equivalence, drift, audio/RTC/ARM7/IPC/GPU correctness or product readiness.
 
+## 2026-08-01 - M10 incompatible-ratio savestate gate
+
+### Result
+
+- Saved a state under temporary effective 125% and then installed/launched the
+  restored safe 100% product build.
+- Loading the state returned `success=0`.
+- Native log explicitly reported:
+  `savestate: ARM9 overclock mismatch (current=100 state=125). cannot load.`
+
+### Boundary
+
+- The incompatible-ratio load guard is now physically green. The state stayed
+  app-private and was not published. M10 equivalence, drift and subsystem
+  correctness remain open.
+- Evidence: `docs/evidence/m10/savestate-ratio-mismatch.txt`.
+
 ## 2026-08-01 - M10 100% Thor stability slice
 
 ### Result
