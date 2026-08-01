@@ -1217,14 +1217,15 @@ void MelonInstance::sampleSm64dsGameLoopCounter()
         sm64dsGameLoopLatestStageTimer = stageTimer;
         Platform::Log(
             Platform::LogLevel::Debug,
-            "SM64DS game-loop window wallNs=%llu uniqueUpdates=%u emulatorFrames=%llu counter=%u lastDelta=%u cadence=%u stageTimer=%u",
+            "SM64DS game-loop window wallNs=%llu uniqueUpdates=%u emulatorFrames=%llu counter=%u lastDelta=%u cadence=%u stageTimer=%u cameraBehaviorCalls=%u",
             static_cast<unsigned long long>(sm64dsGameLoopLatestWallNs),
             sm64dsGameLoopLatestUpdates,
             static_cast<unsigned long long>(sm64dsGameLoopLatestFrames),
             sm64dsGameLoopLatestCounter,
             sm64dsGameLoopLatestDelta,
             sm64dsGameLoopLatestCadence,
-            sm64dsGameLoopLatestStageTimer);
+            sm64dsGameLoopLatestStageTimer,
+            nds->GetSm64dsCameraBehaviorCalls());
         sm64dsGameLoopWindowStartNs = nowNs;
         sm64dsGameLoopWindowFrames = 0;
         sm64dsGameLoopWindowUpdates = 0;
