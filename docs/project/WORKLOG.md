@@ -18,6 +18,25 @@
   remain open. The capability stays `PLUMBING_ONLY`.
 - Evidence: `docs/evidence/m10/telemetry-100.csv`.
 
+## 2026-08-01 - M10 temporary 125% runtime probe
+
+### Result
+
+- A local, uncommitted debug override allowed one short 125% Thor probe.
+- After pause/resume the native telemetry reported
+  `percent=125`, `remainder=25`, `baseCycles=1507950794` and
+  `scaledCycles=1205103924`.
+- The observed screen reported 60 FPS and the filtered run showed no crash,
+  SIGSEGV or ANR.
+
+### Boundary
+
+- This is exploratory evidence only: it is not a 10-minute drift,
+  equivalence, audio/RTC/IPC/GPU or generic-DS acceptance result.
+- The temporary capability/request override was removed immediately and was
+  not committed. Product code remains `PLUMBING_ONLY` with effective 100%.
+- Evidence: `docs/evidence/m10/telemetry-ratios.csv`.
+
 ## 2026-08-01 - M9 RetroAchievements closeout
 
 ### Result
