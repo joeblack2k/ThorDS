@@ -604,6 +604,7 @@ private fun Content(
     SingleChoiceDialog(videoFilteringDialogState)
     SingleChoiceDialog(retroAchievementsDialogState)
     SingleChoiceDialog(thorRaModeDialogState)
+    SingleChoiceDialog(thorHardcoreRecoveryDialogState)
     TextInputDialog(
         title = stringResource(R.string.video_retroarch_shader_preset_title),
         dialogState = retroArchPresetPathDialogState,

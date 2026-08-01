@@ -10,13 +10,19 @@
   `Enhanced + Casual`.
 - No preference is committed until the normal validated Play path, preserving
   the existing pending-edit behavior.
+- Physical Thor validation initially found that the recovery dialog state was
+  not rendered; the missing `SingleChoiceDialog` binding was fixed and the
+  flow was repeated successfully.
+- The repeated physical flow displayed both recovery choices, selected
+  `Enhanced + Casual`, returned to the details screen and did not launch the
+  emulator.
 - GitHubProdDebug compilation, focused Profile/RA tests, APK build, Thor
   installation and launcher smoke passed.
 
 ### Boundary
 
-- This is a source-level and smoke-validated recovery slice, not a complete
-  physical M11 matrix. Physical dialog selection, safe-mode recovery,
+- This closes the physical recovery-dialog slice, not the complete physical
+  M11 matrix. Original + restart selection, safe-mode recovery,
   process-recreation and both-display acceptance remain open.
 
 ## 2026-08-01 - M13 60fps timing-hook audit

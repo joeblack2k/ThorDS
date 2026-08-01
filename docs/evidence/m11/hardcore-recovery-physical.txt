@@ -1,0 +1,33 @@
+M11 Enhanced + Hardcore recovery witness
+Date: 2026-08-01
+Status: PASS_WITH_BOUNDS
+
+Device:
+- AYN Thor, package io.github.joeblack2k.thords.dev
+- exact SM64DS Europe ROM card
+
+Flow:
+1. Opened the SM64DS card context menu with a long press.
+2. Selected Details.
+3. Confirmed the resolved profile was Thor Enhanced and MATCH_EXACT.
+4. Scrolled to Requested RetroAchievements mode.
+5. Opened the Off/Casual/Hardcore selector.
+6. Selected Hardcore.
+7. The pre-launch recovery dialog displayed both:
+   - Original + restart
+   - Enhanced + Casual
+8. Selected Enhanced + Casual.
+9. The dialog closed and the details screen remained visible with Enhanced
+   and Casual; no emulator session was launched.
+
+Evidence:
+- Screenshot of recovery choices: /tmp/thor-hardcore-recovery-fixed.png
+- Screenshot after Enhanced + Casual: /tmp/thor-hardcore-recovery-casual-selected.png
+- topResumedActivity remained RomDetailsActivity after the flow.
+- Filtered logcat contained no FATAL EXCEPTION or ANR in.
+
+Boundary:
+- This proves the physical conflict dialog and Enhanced + Casual recovery.
+- Original + restart was visibly offered but not selected in this witness.
+- Full M11 safe-mode, process-recreation, both-display and complete
+  Reset/Exit matrix remain open.
