@@ -1118,13 +1118,18 @@ u32 MelonInstance::getArm9OverclockPercent() const
 std::string MelonInstance::getArm9OverclockTelemetryJson() const
 {
     if (nds == nullptr)
-        return "{\"percent\":100,\"remainder\":0,\"baseCycles\":0,\"scaledCycles\":0}";
+        return "{\"percent\":100,\"remainder\":0,\"baseCycles\":0,\"scaledCycles\":0,\"sysTimestamp\":0,\"arm9Timestamp\":0,\"arm9Target\":0,\"arm7Timestamp\":0,\"frameCount\":0}";
 
     const auto telemetry = nds->GetARM9OverclockTelemetry();
     return "{\"percent\":" + std::to_string(telemetry.percent)
         + ",\"remainder\":" + std::to_string(telemetry.remainder)
         + ",\"baseCycles\":" + std::to_string(telemetry.baseCycles)
         + ",\"scaledCycles\":" + std::to_string(telemetry.scaledCycles)
+        + ",\"sysTimestamp\":" + std::to_string(telemetry.sysTimestamp)
+        + ",\"arm9Timestamp\":" + std::to_string(telemetry.arm9Timestamp)
+        + ",\"arm9Target\":" + std::to_string(telemetry.arm9Target)
+        + ",\"arm7Timestamp\":" + std::to_string(telemetry.arm7Timestamp)
+        + ",\"frameCount\":" + std::to_string(telemetry.frameCount)
         + "}";
 }
 

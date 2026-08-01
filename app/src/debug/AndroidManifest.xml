@@ -16,6 +16,7 @@
                 <action android:name="${applicationId}.SET_IR" />
                 <action android:name="${applicationId}.SET_JIT" />
                 <action android:name="${applicationId}.SET_ARM9_PERCENT" />
+                <action android:name="${applicationId}.DUMP_ARM9_TELEMETRY" />
                 <action android:name="${applicationId}.SET_VULKAN_FALLBACKS" />
                 <action android:name="${applicationId}.TOUCH_SCREEN" />
                 <action android:name="${applicationId}.LAUNCH_ROM" />
