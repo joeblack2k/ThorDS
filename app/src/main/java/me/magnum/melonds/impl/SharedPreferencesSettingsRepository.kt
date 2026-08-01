@@ -1418,6 +1418,10 @@ class SharedPreferencesSettingsRepository(
         return preferences.getBoolean(ThorDeviceDefaults.SAFE_MODE_KEY, false)
     }
 
+    override fun isThorDSTrueWidescreenEnabled(): Boolean {
+        return preferences.getBoolean(ThorDeviceDefaults.TRUE_WIDESCREEN_KEY, false)
+    }
+
     override fun getSelectedLayoutId(): UUID {
         val id = preferences.getString("input_layout_id", null)
         val selectedLayoutId = id?.let { UUID.fromString(it) } ?: LayoutConfiguration.DEFAULT_ID

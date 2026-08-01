@@ -94,6 +94,16 @@ class InputProcessor(
             deviceAxis.forEach {
                 val axis = it.key
                 val axisState = it.value
+                if (slot2Handled && isProfileSlot2Axis(axis.axisCode)) {
+                    if (axisState.active) {
+                        controllerConfiguration.axisToInput(axis.axisCode, axis.direction)?.let { input ->
+                            dispatchInputReleased(input, fromController = true)
+                        }
+                    }
+                    axisState.value = 0f
+                    axisState.active = false
+                    return@forEach
+                }
 
                 val newValue = motionEvent.getAxisValue(axis.axisCode)
                 val clampedValue = when (axis.direction) {
@@ -121,6 +131,14 @@ class InputProcessor(
         } else {
             return false
         }
+    }
+
+    private fun isProfileSlot2Axis(axisCode: Int): Boolean {
+        if (!controllerConfiguration.profileCameraEnabled) {
+            return false
+        }
+        val mapping = controllerConfiguration.slot2AnalogMapping
+        return axisCode == mapping.axisXCode || axisCode == mapping.axisYCode
     }
 
     private fun updateProfileCamera(motionEvent: MotionEvent) {
@@ -161,7 +179,7 @@ class InputProcessor(
     }
 
     private fun updateSlot2DigitalFallback(input: Input, pressed: Boolean, fromController: Boolean) {
-        if (!fromController) {
+        if (!fromController || controllerConfiguration.profileCameraEnabled) {
             return
         }
 
@@ -280,6 +298,11 @@ class InputProcessor(
         var bestAxisAbs = preferredValue.absoluteValue
         fallbackAxisCodes.forEach { axisCode ->
             if (axisCode == preferredAxisCode) {
+                return@forEach
+            }
+            if (controllerConfiguration.profileCameraEnabled
+                && (axisCode == MotionEvent.AXIS_HAT_X || axisCode == MotionEvent.AXIS_HAT_Y)
+            ) {
                 return@forEach
             }
             val axisValue = motionEvent.getAxisValue(axisCode)

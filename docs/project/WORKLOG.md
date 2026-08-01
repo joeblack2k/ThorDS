@@ -1,5 +1,43 @@
 # Worklog
 
+## 2026-08-01 - M8 productization closeout
+
+### Result
+
+- M8 is `PASS` for the current ThorDS product gate.
+- True Widescreen is resolved through the exact SM64DS Europe enhancement
+  profile and supported Thor/Vulkan capability path.
+- The primary world uses the layer-aware 16:9 presentation while structured
+  2D/UI content remains in the centered 4:3-safe area; the lower screen
+  remains aspect-correct.
+- Safe-mode, default preference and relaunch behavior were checked. The
+  session-lock correction prevents live 16:9/4:3 oscillation during camera,
+  text and transition frames.
+- The connected Thor reached the SM64DS profile and resumed normal gameplay
+  after the M8 build was installed. No ThorDS crash, FATAL, SIGSEGV or ANR
+  was observed in the filtered checks.
+
+### Validation
+
+```text
+build: :app:checkVulkanSpirv
+       :app:testGitHubProdReleaseUnitTest
+       :app:assembleGitHubProdDebug
+result: PASS
+physical Thor: APK install, launch, profile resolution and gameplay smoke PASS
+filtered crash/ANR scan: PASS
+```
+
+The user's physical confirmation is the product acceptance witness for the
+reported flicker and mirrored-output regressions. Temporary screenshots and
+private save-state material remain outside the repository and are not evidence
+artifacts.
+
+### Decision
+
+- M8 is closed. Do not repeat the M7 probe or classifier-only investigation.
+- Next milestone: M9 RetroAchievements policy closeout.
+
 ## 2026-08-01 - G2/M7 deterministic proof closeout
 
 ### Root cause and bounded changes

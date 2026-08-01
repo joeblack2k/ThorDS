@@ -46,6 +46,13 @@ enum class RetroArchSourceResolution : u32
     Native = 1,
 };
 
+enum class VulkanWidescreenPresentationMode : u32
+{
+    Native4x3 = 0,
+    TrueWidescreen = 1,
+    DeveloperDiagnostic = 2,
+};
+
 struct VulkanSurfaceConfig
 {
     VulkanPresenterRect topScreen;
@@ -66,7 +73,8 @@ struct VulkanSurfaceConfig
     u32 retroShaderPassCount = 0;
     std::vector<std::pair<std::string, float>> retroShaderParameterOverrides;
     bool retroShaderClearHistory = false;
-    bool developerWidescreenProbe = false;
+    VulkanWidescreenPresentationMode widescreenPresentationMode =
+        VulkanWidescreenPresentationMode::Native4x3;
     bool rotatePrimaryVulkan180 = false;
 };
 
@@ -176,7 +184,8 @@ private:
         u32 screenSwap = 0;
         bool directPresent = false;
         bool retroArchApplied = false;
-        bool developerWidescreenProbe = false;
+        VulkanWidescreenPresentationMode widescreenPresentationMode =
+            VulkanWidescreenPresentationMode::Native4x3;
         bool rotatePrimaryVulkan180 = false;
         bool widescreenWorldSafe = false;
         bool widescreenCapture3d = false;
@@ -184,6 +193,7 @@ private:
         bool previousBottomSourceValid = false;
         bool currentSourceHasHighres3d = false;
         bool topSourceHasStructured3d = false;
+        u32 topStructuredAboveVisiblePixels = 0;
         bool capture3dSourceValid = false;
         bool liveSourceScreenSwap = false;
         bool needsReadback = false;
@@ -312,8 +322,11 @@ private:
         DescriptorSetCacheState backgroundDescriptorCache{};
         bool cachedDirectPresent = false;
         bool cachedRetroArchApplied = false;
-        bool cachedDeveloperWidescreenWorldSafe = false;
-        bool cachedDeveloperWidescreenCapture3d = false;
+        bool cachedWidescreenWorldSafe = false;
+        bool cachedWidescreenCapture3d = false;
+        bool widescreenWorldSafe = false;
+        u32 widescreenSafeFrameStreak = 0;
+        bool widescreenSessionLocked = false;
         std::vector<DrawCall> cachedDrawCalls;
         VkQueryPool timestampQueryPool = VK_NULL_HANDLE;
         bool timestampPending = false;
@@ -359,8 +372,8 @@ private:
         const BackgroundResource* backgroundResource,
         bool directPresent,
         bool retroArchApplied,
-        bool developerWidescreenWorldSafe,
-        bool developerWidescreenCapture3d,
+        bool widescreenWorldSafe,
+        bool widescreenCapture3d,
         std::vector<DrawCall>& drawCalls
     );
     bool recordSurfaceCommands(

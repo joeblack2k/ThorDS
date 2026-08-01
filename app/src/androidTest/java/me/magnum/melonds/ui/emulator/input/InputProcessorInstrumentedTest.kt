@@ -52,31 +52,40 @@ class InputProcessorInstrumentedTest {
     }
 
     @Test
-    fun cameraAndDpadOwnershipReleaseOnceAndPipelineResetNeutralizesAnalog() {
+    fun leftStickMovesWithoutCameraWhileRightStickAndPhysicalDpadControlCamera() {
         val outputs = mutableListOf<Pair<Float, Float>>()
         val systemInputs = RecordingInputListener()
         val processor = createProcessor(outputs, systemInputs)
 
-        controllerMotion(0.75f, 0f, cameraX = -0.8f).useEvent(processor::onMotionEvent)
-        assertEquals(listOf(Input.LEFT), systemInputs.pressed)
+        controllerMotion(0.75f, 0f).useEvent(processor::onMotionEvent)
+        assertEquals((0.75f - 0.1f) / 0.9f, outputs.last().first, 0.0001f)
+        assertTrue(systemInputs.pressed.isEmpty())
 
-        assertTrue(processor.onKeyEvent(controllerKey(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_LEFT)))
+        controllerMotion(0f, 0f, cameraX = -0.8f).useEvent(processor::onMotionEvent)
         assertEquals(listOf(Input.LEFT), systemInputs.pressed)
-
         controllerMotion(0f, 0f).useEvent(processor::onMotionEvent)
-        assertTrue(systemInputs.released.isEmpty())
-
-        assertTrue(processor.onKeyEvent(controllerKey(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_LEFT)))
         assertEquals(listOf(Input.LEFT), systemInputs.released)
 
-        controllerMotion(0.75f, 0f, cameraX = 0.8f).useEvent(processor::onMotionEvent)
+        controllerMotion(0f, 0f, hatX = -1f).useEvent(processor::onMotionEvent)
+        assertEquals(listOf(Input.LEFT, Input.LEFT), systemInputs.pressed)
+        assertEquals(0f to 0f, outputs.last())
+        controllerMotion(0f, 0f).useEvent(processor::onMotionEvent)
+        assertEquals(listOf(Input.LEFT, Input.LEFT), systemInputs.released)
+
+        assertTrue(processor.onKeyEvent(controllerKey(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_LEFT)))
+        assertEquals(listOf(Input.LEFT, Input.LEFT, Input.LEFT), systemInputs.pressed)
+        assertEquals(0f to 0f, outputs.last())
+        assertTrue(processor.onKeyEvent(controllerKey(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_LEFT)))
+        assertEquals(listOf(Input.LEFT, Input.LEFT, Input.LEFT), systemInputs.released)
+
+        controllerMotion(0f, 0f, cameraX = 0.8f).useEvent(processor::onMotionEvent)
         assertEquals(Input.RIGHT, systemInputs.pressed.last())
         processor.releaseAllInputs()
         assertEquals(0f to 0f, outputs.last())
         assertEquals(Input.RIGHT, systemInputs.released.last())
 
         controllerMotion(0.75f, 0f).useEvent(processor::onMotionEvent)
-        assertEquals(listOf(Input.LEFT, Input.RIGHT, Input.RIGHT), systemInputs.pressed)
+        assertEquals(listOf(Input.LEFT, Input.LEFT, Input.LEFT, Input.RIGHT), systemInputs.pressed)
 
         val recreatedOutputs = mutableListOf<Pair<Float, Float>>()
         val recreated = createProcessor(recreatedOutputs)
@@ -93,6 +102,11 @@ class InputProcessorInstrumentedTest {
                 InputConfig(
                     input = Input.LEFT,
                     assignment = InputConfig.Assignment.Key(null, KeyEvent.KEYCODE_DPAD_LEFT),
+                    altAssignment = InputConfig.Assignment.Axis(
+                        null,
+                        MotionEvent.AXIS_HAT_X,
+                        InputConfig.Assignment.Axis.Direction.NEGATIVE,
+                    ),
                 ),
                 InputConfig(
                     input = Input.RIGHT,
@@ -119,6 +133,7 @@ class InputProcessorInstrumentedTest {
         leftY: Float,
         cameraX: Float = 0f,
         cameraY: Float = 0f,
+        hatX: Float = 0f,
     ): MotionEvent {
         val now = SystemClock.uptimeMillis()
         val properties = MotionEvent.PointerProperties().apply {
@@ -130,6 +145,7 @@ class InputProcessorInstrumentedTest {
             setAxisValue(MotionEvent.AXIS_Y, leftY)
             setAxisValue(MotionEvent.AXIS_Z, cameraX)
             setAxisValue(MotionEvent.AXIS_RZ, cameraY)
+            setAxisValue(MotionEvent.AXIS_HAT_X, hatX)
         }
         return MotionEvent.obtain(
             now,

@@ -2,6 +2,7 @@ package me.magnum.melonds.impl.emulator
 
 import me.magnum.melonds.domain.model.ConsoleType
 import me.magnum.melonds.domain.model.enhancement.ProfileIntegrity
+import me.magnum.melonds.domain.model.enhancement.WidescreenPresentationMode
 import me.magnum.melonds.domain.model.retroachievements.RetroAchievementsEffectiveMode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -15,6 +16,8 @@ class EmulatorSessionTest {
             profileIntegrity = ProfileIntegrity.ENHANCED,
             effectiveArm9Percent = 125,
             retroAchievementsMode = RetroAchievementsEffectiveMode.CASUAL,
+            requestedWidescreenMode = WidescreenPresentationMode.TRUE_WIDESCREEN,
+            effectiveWidescreenMode = WidescreenPresentationMode.TRUE_WIDESCREEN,
         )
         val sessionType = EmulatorSession.SessionType.FirmwareSession(ConsoleType.DS)
 

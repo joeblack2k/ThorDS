@@ -10,7 +10,11 @@
     <string name="thords_about_privacy">Privacy and RetroAchievements</string>
     <string name="thords_about_privacy_summary">RetroAchievements and its optional offline proxy use the network only when enabled; credentials remain local</string>
     <string name="thords_safe_mode">ThorDS safe mode</string>
-    <string name="thords_safe_mode_summary">Keep ThorDS enhancements disabled when they are added in later milestones</string>
+    <string name="thords_safe_mode_summary">Disable ThorDS enhancements and use software-rendered 4:3 defaults</string>
+    <string name="thords_true_widescreen">True Widescreen</string>
+    <string name="thords_true_widescreen_summary">Use layer-aware 16:9 for supported exact profiles; other sessions stay 4:3</string>
+    <string name="thords_true_widescreen_unavailable_device">Unavailable on this device; sessions stay 4:3</string>
+    <string name="thords_true_widescreen_unavailable_renderer">Unavailable with the current renderer; select Vulkan or use 4:3</string>
 
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
@@ -191,13 +195,18 @@
     <string name="choose_component">Choose component</string>
 
     <string name="pause">Pause</string>
-    <string name="pause_session_status">Profile: %1$s\nARM9: %2$d%%\nRetroAchievements: %3$s</string>
+    <string name="pause_session_status">Profile: %1$s\nARM9: %2$d%%\nRetroAchievements: %3$s\nTrue Widescreen requested: %4$s\nTrue Widescreen effective: %5$s</string>
     <string name="pause_session_profile_original">Original</string>
     <string name="pause_session_profile_enhanced">Enhanced</string>
     <string name="pause_session_ra_off">Off</string>
     <string name="pause_session_ra_casual">Casual</string>
     <string name="pause_session_ra_hardcore">Hardcore</string>
     <string name="pause_session_ra_blocked">Blocked</string>
+    <string name="pause_session_widescreen_off">Off</string>
+    <string name="pause_session_widescreen_on">On</string>
+    <string name="pause_session_widescreen_diagnostic">Developer diagnostic</string>
+    <string name="pause_session_widescreen_native">4:3</string>
+    <string name="pause_session_widescreen_true">Layer-aware 16:9</string>
     <string name="achievements">Achievements</string>
     <string name="reset">Reset</string>
     <string name="exit">Exit</string>

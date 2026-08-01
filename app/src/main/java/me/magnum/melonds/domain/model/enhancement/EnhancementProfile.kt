@@ -1,5 +1,6 @@
 package me.magnum.melonds.domain.model.enhancement
 
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 import me.magnum.melonds.domain.model.Cheat
 import java.security.MessageDigest
@@ -87,6 +88,13 @@ enum class ProfileRaMode {
 enum class ProfileIntegrity {
     ORIGINAL,
     ENHANCED,
+}
+
+@Keep
+enum class WidescreenPresentationMode {
+    NATIVE_4_3,
+    TRUE_WIDESCREEN,
+    DEVELOPER_DIAGNOSTIC,
 }
 
 @Serializable

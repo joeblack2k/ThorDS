@@ -162,6 +162,7 @@ struct VulkanCompositionInputs
     bool currentSourceHasHighres3d{};
     bool topSourceHasHighres3d{};
     bool topSourceHasStructured3d{};
+    u32 topStructuredAboveVisiblePixels{};
     bool capture3dSourceValid{};
     bool capture3dSourceScreenSwapValid{};
     bool capture3dSourceScreenSwap{};

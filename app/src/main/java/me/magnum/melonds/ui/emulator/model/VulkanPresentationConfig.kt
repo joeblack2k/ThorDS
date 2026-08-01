@@ -3,6 +3,7 @@ package me.magnum.melonds.ui.emulator.model
 import androidx.annotation.Keep
 import me.magnum.melonds.domain.model.Rect
 import me.magnum.melonds.domain.model.VideoFiltering
+import me.magnum.melonds.domain.model.enhancement.WidescreenPresentationMode
 import me.magnum.melonds.domain.model.layout.BackgroundMode
 
 @Keep
@@ -25,6 +26,6 @@ data class VulkanPresentationConfig(
     val retroShaderPassCount: Int,
     val retroShaderParameterOverrides: Map<String, Float>,
     val retroShaderClearHistory: Boolean,
-    val developerWidescreenProbe: Boolean = false,
+    val widescreenPresentationMode: WidescreenPresentationMode = WidescreenPresentationMode.NATIVE_4_3,
     val rotatePrimaryVulkan180: Boolean = false,
 )

@@ -3,6 +3,7 @@ package me.magnum.melonds.ui.emulator
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -58,6 +59,7 @@ import kotlinx.coroutines.withTimeout
 import me.magnum.melonds.MelonDSAndroidInterface
 import me.magnum.melonds.MelonEmulator
 import me.magnum.melonds.R
+import me.magnum.melonds.common.ThorDeviceCapabilities
 import me.magnum.melonds.common.romprocessors.RomFileProcessorFactory
 import me.magnum.melonds.common.runtime.ScreenshotFrameBufferProvider
 import me.magnum.melonds.common.network.RETROACHIEVEMENTS_USER_AGENT
@@ -74,6 +76,7 @@ import me.magnum.melonds.domain.model.FpsCounterPosition
 import me.magnum.melonds.domain.model.RomInfo
 import me.magnum.melonds.domain.model.enhancement.ProfileLaunchPlanner
 import me.magnum.melonds.domain.model.enhancement.ProfileRaMode
+import me.magnum.melonds.domain.model.enhancement.WidescreenPresentationMode
 import me.magnum.melonds.domain.model.RuntimeBackground
 import me.magnum.melonds.domain.model.Rect
 import me.magnum.melonds.domain.model.SaveStateSlot
@@ -263,7 +266,8 @@ class EmulatorViewModel @Inject constructor(
 
     private val sessionCoroutineScope = EmulatorSessionCoroutineScope()
     private val profileLaunchPlanner by lazy { ProfileLaunchPlanner(EmbeddedProfileCatalog(context).catalog) }
-    private val developerWidescreenProbe = savedStateHandle.get<Boolean>(EmulatorActivity.KEY_DEVELOPER_WIDESCREEN_PROBE) == true
+    private val developerWidescreenDiagnostic =
+        savedStateHandle.get<Boolean>(EmulatorActivity.KEY_DEVELOPER_WIDESCREEN_PROBE) == true
     private var raBootstrapJob: Job? = null
     private var raSessionJob: Job? = null
 
@@ -444,6 +448,9 @@ class EmulatorViewModel @Inject constructor(
 
     private val _runtimeRendererConfiguration = MutableStateFlow<RuntimeRendererConfiguration?>(null)
     val runtimeRendererConfiguration = _runtimeRendererConfiguration.asStateFlow()
+
+    private val _widescreenPresentationMode = MutableStateFlow(WidescreenPresentationMode.NATIVE_4_3)
+    val widescreenPresentationMode = _widescreenPresentationMode.asStateFlow()
 
     private val _mainScreenBackground = MutableStateFlow(RuntimeBackground.None)
     val mainScreenBackground = _mainScreenBackground.asStateFlow()
@@ -741,14 +748,17 @@ class EmulatorViewModel @Inject constructor(
                 romInfo = romInfo,
                 userCheats = userCheats,
                 enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
-                developerWidescreenProbe = developerWidescreenProbe,
+                trueWidescreenRequested = settingsRepository.isThorDSTrueWidescreenEnabled(),
+                trueWidescreenProductSupported = isTrueWidescreenProductSupported(),
+                developerWidescreenDiagnostic = developerWidescreenDiagnostic,
+                developerWidescreenDiagnosticSupported = isDeveloperWidescreenDiagnosticSupported(),
                 requestedRaMode = requestedRaMode,
                 saveStateResumeEnabled = settingsRepository.isAutoLoadStateOnLaunchEnabled(),
             )
             val policy = plannedLaunch.retroAchievementsPolicy
             Log.i(
                 "ProfileLaunch",
-                "profile=${plannedLaunch.plan.profileId} integrity=${plannedLaunch.plan.profileIntegrity} requestedRa=${plannedLaunch.plan.requestedRaMode} effectiveRa=${policy.effectiveMode} planSha256=${plannedLaunch.plan.planHash} curatedCodes=${plannedLaunch.plan.curatedRuntimeCodes.size} slot2Analog=${if (plannedLaunch.rom.config.gbaSlotConfig is RomGbaSlotConfig.AnalogInput) 1 else 0} camera=${if (plannedLaunch.plan.enhancements.any { it.id == "right-stick-camera" && it.enabled }) 1 else 0}",
+                "profile=${plannedLaunch.plan.profileId} integrity=${plannedLaunch.plan.profileIntegrity} requestedRa=${plannedLaunch.plan.requestedRaMode} effectiveRa=${policy.effectiveMode} requestedWidescreen=${plannedLaunch.requestedWidescreenMode} effectiveWidescreen=${plannedLaunch.effectiveWidescreenMode} planSha256=${plannedLaunch.plan.planHash} curatedCodes=${plannedLaunch.plan.curatedRuntimeCodes.size} slot2Analog=${if (plannedLaunch.rom.config.gbaSlotConfig is RomGbaSlotConfig.AnalogInput) 1 else 0} camera=${if (plannedLaunch.plan.enhancements.any { it.id == "right-stick-camera" && it.enabled }) 1 else 0}",
             )
             if (policy.effectiveMode == RetroAchievementsEffectiveMode.BLOCKED) {
                 Log.w(
@@ -759,6 +769,7 @@ class EmulatorViewModel @Inject constructor(
                 return@coroutineScope
             }
 
+            _widescreenPresentationMode.value = plannedLaunch.effectiveWidescreenMode
             currentRom = plannedLaunch.rom
             activeRomConfig.value = plannedLaunch.rom
             profileCameraEnabled.value = plannedLaunch.plan.enhancements.any { it.id == "right-stick-camera" && it.enabled }
@@ -811,6 +822,8 @@ class EmulatorViewModel @Inject constructor(
                     profileIntegrity = plannedLaunch.plan.profileIntegrity,
                     effectiveArm9Percent = plannedLaunch.plan.effectiveArm9Percent,
                     retroAchievementsMode = policy.effectiveMode,
+                    requestedWidescreenMode = plannedLaunch.requestedWidescreenMode,
+                    effectiveWidescreenMode = plannedLaunch.effectiveWidescreenMode,
                 ),
             )
             startObservingMainScreenBackground()
@@ -1594,6 +1607,19 @@ class EmulatorViewModel @Inject constructor(
         return settingsRepository.getCurrentVideoRenderer()
     }
 
+    private fun isTrueWidescreenProductSupported(): Boolean {
+        return ThorDeviceCapabilities.supportsTrueWidescreen(
+            Build.MANUFACTURER,
+            Build.MODEL,
+            settingsRepository.getCurrentVideoRenderer(),
+        )
+    }
+
+    private fun isDeveloperWidescreenDiagnosticSupported(): Boolean {
+        return developerWidescreenDiagnostic &&
+            settingsRepository.getCurrentVideoRenderer() == VideoRenderer.VULKAN
+    }
+
     fun onCheatsChanged() {
         val rom = (_emulatorState.value as? EmulatorState.RunningRom)?.rom ?: return
 
@@ -1605,7 +1631,10 @@ class EmulatorViewModel @Inject constructor(
                     romInfo = it,
                     userCheats = userCheats,
                     enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
-                    developerWidescreenProbe = developerWidescreenProbe,
+                    trueWidescreenRequested = settingsRepository.isThorDSTrueWidescreenEnabled(),
+                    trueWidescreenProductSupported = isTrueWidescreenProductSupported(),
+                    developerWidescreenDiagnostic = developerWidescreenDiagnostic,
+                    developerWidescreenDiagnosticSupported = isDeveloperWidescreenDiagnosticSupported(),
                     requestedRaMode = when {
                         !emulatorSession.isRetroAchievementsEnabledForSession() -> ProfileRaMode.OFF
                         emulatorSession.isRetroAchievementsHardcoreModeEnabled -> ProfileRaMode.HARDCORE
@@ -2706,6 +2735,7 @@ class EmulatorViewModel @Inject constructor(
         lastEndpointRestartNoticeGeneration = null
         activeRomConfig.value = null
         profileCameraEnabled.value = false
+        _widescreenPresentationMode.value = WidescreenPresentationMode.NATIVE_4_3
         currentRetroAchievementsGameId = null
         offlineSyncChoiceDeferred?.cancel()
         offlineSyncChoiceDeferred = null

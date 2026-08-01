@@ -2,6 +2,7 @@ package me.magnum.melonds.impl.emulator
 
 import me.magnum.melonds.domain.model.ConsoleType
 import me.magnum.melonds.domain.model.enhancement.ProfileIntegrity
+import me.magnum.melonds.domain.model.enhancement.WidescreenPresentationMode
 import me.magnum.melonds.domain.model.rom.Rom
 import me.magnum.melonds.domain.model.emulator.EmulatorSessionUpdateAction
 import me.magnum.melonds.domain.model.retroachievements.GameAchievementData
@@ -11,6 +12,8 @@ data class SessionStatusSnapshot(
     val profileIntegrity: ProfileIntegrity,
     val effectiveArm9Percent: Int,
     val retroAchievementsMode: RetroAchievementsEffectiveMode,
+    val requestedWidescreenMode: WidescreenPresentationMode,
+    val effectiveWidescreenMode: WidescreenPresentationMode,
 )
 
 class EmulatorSession {

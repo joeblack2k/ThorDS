@@ -1,0 +1,32 @@
+M8 True Widescreen product acceptance
+Date: 2026-08-01
+Project: ThorDS Enhanced
+Branch: thords/enhancement-platform-v1
+
+Result: PASS
+
+Product checks:
+- Exact Super Mario 64 DS Europe profile resolves on the supported AYN Thor.
+- True Widescreen requested/effective state is exposed through the product
+  path; no developer-only launch extra is required.
+- Primary 3D world uses the full 16:9 presentation.
+- Structured 2D/UI content remains in the centered 4:3-safe area.
+- Lower screen remains aspect-correct.
+- Safe mode and default-off/relaunch behavior were checked.
+- Session presentation stays stable instead of switching every frame between
+  16:9 and 4:3 during camera/text/transition activity.
+
+Automated checks:
+- :app:checkVulkanSpirv: PASS
+- :app:testGitHubProdReleaseUnitTest: PASS
+- :app:assembleGitHubProdDebug: PASS
+
+Physical Thor:
+- APK install: PASS
+- ROM launch and profile resolution: PASS
+- Gameplay smoke after launch: PASS
+- Filtered ThorDS FATAL/ANR check: PASS
+
+Scope note:
+This is M8 product acceptance. M6 physical movement coverage and the
+remaining M9-M12 release gates are not silently promoted to PASS.

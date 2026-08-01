@@ -678,6 +678,12 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
         "getVideoFiltering",
         "()Lme/magnum/melonds/domain/model/VideoFiltering;"
     );
+    jobject widescreenPresentationModeObject = callObjectGetter(
+        env,
+        configObject,
+        "getWidescreenPresentationMode",
+        "()Lme/magnum/melonds/domain/model/enhancement/WidescreenPresentationMode;"
+    );
     jobject retroShaderParametersObject = callObjectGetter(
         env,
         configObject,
@@ -693,7 +699,6 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
     bool hybridOnTop = false;
     bool retroShaderEnabled = false;
     bool retroShaderClearHistory = false;
-    bool developerWidescreenProbe = false;
     bool rotatePrimaryVulkan180 = false;
     std::string retroShaderPresetPath;
     std::string retroShaderSourceResolution;
@@ -709,7 +714,6 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
         && callStringGetter(env, configObject, "getRetroShaderSourceResolution", &retroShaderSourceResolution)
         && callIntGetter(env, configObject, "getRetroShaderPassCount", &retroShaderPassCount)
         && callBooleanGetter(env, configObject, "getRetroShaderClearHistory", &retroShaderClearHistory)
-        && callBooleanGetter(env, configObject, "getDeveloperWidescreenProbe", &developerWidescreenProbe)
         && callBooleanGetter(env, configObject, "getRotatePrimaryVulkan180", &rotatePrimaryVulkan180);
 
     configOut->topAlpha = topAlpha;
@@ -726,13 +730,13 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
             : MelonDSAndroid::RetroArchSourceResolution::VulkanIr;
     configOut->retroShaderPassCount = static_cast<melonDS::u32>(std::max(0, retroShaderPassCount));
     configOut->retroShaderClearHistory = retroShaderClearHistory;
-    configOut->developerWidescreenProbe = developerWidescreenProbe;
     configOut->rotatePrimaryVulkan180 = rotatePrimaryVulkan180;
     result = result && mapStringFloatMap(env, retroShaderParametersObject, configOut->retroShaderParameterOverrides);
 
     result = result
         && backgroundModeObject != nullptr
         && filteringObject != nullptr
+        && widescreenPresentationModeObject != nullptr
         && mapRect(env, topRectObject, &configOut->topScreen)
         && mapRect(env, bottomRectObject, &configOut->bottomScreen)
         && mapRect(env, hybridTopRectObject, &configOut->hybridTopScreen)
@@ -740,9 +744,11 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
 
     jint backgroundModeOrdinal = 0;
     jint filteringOrdinal = 0;
+    jint widescreenPresentationModeOrdinal = 0;
     result = result
         && getEnumOrdinal(env, backgroundModeObject, &backgroundModeOrdinal)
-        && getEnumOrdinal(env, filteringObject, &filteringOrdinal);
+        && getEnumOrdinal(env, filteringObject, &filteringOrdinal)
+        && getEnumOrdinal(env, widescreenPresentationModeObject, &widescreenPresentationModeOrdinal);
 
     switch (backgroundModeOrdinal)
     {
@@ -768,6 +774,22 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
     }
 
     configOut->filtering = mapVulkanFilterMode(filteringOrdinal);
+    switch (widescreenPresentationModeOrdinal)
+    {
+        case 1:
+            configOut->widescreenPresentationMode =
+                MelonDSAndroid::VulkanWidescreenPresentationMode::TrueWidescreen;
+            break;
+        case 2:
+            configOut->widescreenPresentationMode =
+                MelonDSAndroid::VulkanWidescreenPresentationMode::DeveloperDiagnostic;
+            break;
+        case 0:
+        default:
+            configOut->widescreenPresentationMode =
+                MelonDSAndroid::VulkanWidescreenPresentationMode::Native4x3;
+            break;
+    }
     if (!configOut->retroShaderEnabled || configOut->retroShaderPresetPath.empty())
         configOut->filtering = configOut->filtering == MelonDSAndroid::VulkanFilterMode::RetroArch
             ? MelonDSAndroid::VulkanFilterMode::Nearest
@@ -785,6 +807,8 @@ bool mapVulkanPresentationConfig(JNIEnv* env, jobject configObject, MelonDSAndro
         env->DeleteLocalRef(backgroundModeObject);
     if (filteringObject != nullptr)
         env->DeleteLocalRef(filteringObject);
+    if (widescreenPresentationModeObject != nullptr)
+        env->DeleteLocalRef(widescreenPresentationModeObject);
     if (retroShaderParametersObject != nullptr)
         env->DeleteLocalRef(retroShaderParametersObject);
 

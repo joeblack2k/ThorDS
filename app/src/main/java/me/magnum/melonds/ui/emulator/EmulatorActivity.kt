@@ -80,6 +80,7 @@ import me.magnum.melonds.domain.model.SaveStateSlot
 import me.magnum.melonds.domain.model.VideoFiltering
 import me.magnum.melonds.domain.model.VideoRenderer
 import me.magnum.melonds.domain.model.enhancement.ProfileIntegrity
+import me.magnum.melonds.domain.model.enhancement.WidescreenPresentationMode
 import me.magnum.melonds.domain.model.retroachievements.RaPendingCounts
 import me.magnum.melonds.domain.model.retroachievements.RetroAchievementsEffectiveMode
 import me.magnum.melonds.domain.model.layout.Insets
@@ -182,7 +183,7 @@ class EmulatorActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityEmulatorBinding
-    private val developerWidescreenProbe
+    private val developerWidescreenDiagnostic
         get() = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0 &&
             intent.getBooleanExtra(EXTRA_DEVELOPER_WIDESCREEN_PROBE, false)
     private val rotatePrimaryVulkan180: Boolean
@@ -197,7 +198,7 @@ class EmulatorActivity : AppCompatActivity() {
             intent.data?.let { dataUri ->
                 existingExtras.putString(KEY_URI, dataUri.toString())
             }
-            existingExtras.putBoolean(KEY_DEVELOPER_WIDESCREEN_PROBE, developerWidescreenProbe)
+            existingExtras.putBoolean(KEY_DEVELOPER_WIDESCREEN_PROBE, developerWidescreenDiagnostic)
             extras[DEFAULT_ARGS_KEY] = existingExtras
             extras
         }
@@ -672,6 +673,14 @@ class EmulatorActivity : AppCompatActivity() {
                     ensurePresentationBackend(it?.renderer ?: viewModel.getConfiguredVideoRenderer())
                     mainScreenRenderer.updateRendererConfiguration(it)
                     presentation?.updateRendererConfiguration(it)
+                    updateRendererScreenAreas()
+                    scheduleStartupPresentationRefreshes()
+                }
+            }
+        }
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.widescreenPresentationMode.collectLatest {
                     updateRendererScreenAreas()
                     scheduleStartupPresentationRefreshes()
                 }
@@ -1693,8 +1702,9 @@ class EmulatorActivity : AppCompatActivity() {
             surfaceHeight = surfaceHeight,
             fallbackWhenEmpty = hybridTopScreenRect == null && hybridBottomScreenRect == null,
         )
-        val developerProbeTopScreenRect = if (
-            developerWidescreenProbe
+        val widescreenPresentationMode = viewModel.widescreenPresentationMode.value
+        val presentationTopScreenRect = if (
+            widescreenPresentationMode != WidescreenPresentationMode.NATIVE_4_3
             && resolvedTopScreenRect != null
             && resolvedBottomScreenRect == null
             && surfaceWidth > 0
@@ -1706,7 +1716,7 @@ class EmulatorActivity : AppCompatActivity() {
         }
 
         return VulkanPresentationConfig(
-            topScreenRect = developerProbeTopScreenRect,
+            topScreenRect = presentationTopScreenRect,
             bottomScreenRect = resolvedBottomScreenRect,
             topAlpha = topAlpha,
             bottomAlpha = bottomAlpha,
@@ -1724,7 +1734,7 @@ class EmulatorActivity : AppCompatActivity() {
             retroShaderPassCount = rendererConfiguration.retroArchShader.passCount,
             retroShaderParameterOverrides = rendererConfiguration.retroArchShader.parameterOverrides,
             retroShaderClearHistory = rendererConfiguration.retroArchShader.clearHistory,
-            developerWidescreenProbe = developerWidescreenProbe,
+            widescreenPresentationMode = widescreenPresentationMode,
             rotatePrimaryVulkan180 = rotatePrimaryVulkan180,
         )
     }
@@ -1907,11 +1917,23 @@ class EmulatorActivity : AppCompatActivity() {
             RetroAchievementsEffectiveMode.HARDCORE -> getString(R.string.pause_session_ra_hardcore)
             RetroAchievementsEffectiveMode.BLOCKED -> getString(R.string.pause_session_ra_blocked)
         }
+        val requestedWidescreen = when (status.requestedWidescreenMode) {
+            WidescreenPresentationMode.NATIVE_4_3 -> getString(R.string.pause_session_widescreen_off)
+            WidescreenPresentationMode.TRUE_WIDESCREEN -> getString(R.string.pause_session_widescreen_on)
+            WidescreenPresentationMode.DEVELOPER_DIAGNOSTIC -> getString(R.string.pause_session_widescreen_diagnostic)
+        }
+        val effectiveWidescreen = when (status.effectiveWidescreenMode) {
+            WidescreenPresentationMode.NATIVE_4_3 -> getString(R.string.pause_session_widescreen_native)
+            WidescreenPresentationMode.TRUE_WIDESCREEN -> getString(R.string.pause_session_widescreen_true)
+            WidescreenPresentationMode.DEVELOPER_DIAGNOSTIC -> getString(R.string.pause_session_widescreen_diagnostic)
+        }
         return getString(
             R.string.pause_session_status,
             profile,
             status.effectiveArm9Percent,
             retroAchievements,
+            requestedWidescreen,
+            effectiveWidescreen,
         )
     }
 

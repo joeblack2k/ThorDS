@@ -1,5 +1,11 @@
 # G3 — M8 product True Widescreen
 
+Status: PASS (2026-08-01)
+
+The productization gate is complete. The remaining items below are retained
+as the acceptance contract and regression coverage, not as a reason to reopen
+M7 or restart the developer-probe workstream.
+
 ## Goal
 
 Convert the M7 developer probe into a normal exact-profile feature.

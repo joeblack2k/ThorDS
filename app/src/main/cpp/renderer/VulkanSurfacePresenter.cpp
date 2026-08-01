@@ -113,7 +113,7 @@ bool surfaceConfigsEqual(const VulkanSurfaceConfig& left, const VulkanSurfaceCon
         && left.retroShaderPassCount == right.retroShaderPassCount
         && left.retroShaderParameterOverrides == right.retroShaderParameterOverrides
         && left.retroShaderClearHistory == right.retroShaderClearHistory
-        && left.developerWidescreenProbe == right.developerWidescreenProbe
+        && left.widescreenPresentationMode == right.widescreenPresentationMode
         && left.rotatePrimaryVulkan180 == right.rotatePrimaryVulkan180;
 }
 
@@ -921,10 +921,19 @@ bool VulkanSurfacePresenter::configureSurface(int surfaceId, const VulkanSurface
     if (retroArchConfigChanged)
         destroyRetroArchResources(surfaceState);
 
+    const bool widescreenModeChanged =
+        !surfaceState.configured
+        || surfaceState.config.widescreenPresentationMode != config.widescreenPresentationMode;
     surfaceState.config = config;
     surfaceState.configured = true;
     surfaceState.vertexBufferDirty = true;
     surfaceState.backgroundDescriptorDirty = true;
+    if (widescreenModeChanged)
+    {
+        surfaceState.widescreenWorldSafe = false;
+        surfaceState.widescreenSafeFrameStreak = 0;
+        surfaceState.widescreenSessionLocked = false;
+    }
 
     if (backgroundImage.pixels != nullptr && backgroundImage.width > 0 && backgroundImage.height > 0)
     {
@@ -1138,6 +1147,36 @@ bool VulkanSurfacePresenter::presentFrame(Frame* frame, VulkanOutput& output, co
         }
         descriptorCpuNs += PerfNowNs() - descriptorStartNs;
 
+        const bool widescreenRequested =
+            surfaceState.config.widescreenPresentationMode
+            != VulkanWidescreenPresentationMode::Native4x3;
+        constexpr u32 kSmallStructuredOverlayVisiblePixelLimit = 4096;
+        const bool rawWidescreenWorldSafe =
+            inputs.topSourceHasStructured3d
+            && inputs.liveSourceScreenSwap
+            // ponytail: small text overlays are already drawn in the centered
+            // UI-safe quad; retain 4:3 only for larger mixed 3D overlays.
+            && inputs.topStructuredAboveVisiblePixels
+                <= kSmallStructuredOverlayVisiblePixelLimit
+            && !inputs.capture3dSourceValid;
+        if (!widescreenRequested)
+        {
+            surfaceState.widescreenWorldSafe = false;
+            surfaceState.widescreenSafeFrameStreak = 0;
+            surfaceState.widescreenSessionLocked = false;
+        }
+        else if (!surfaceState.widescreenSessionLocked && rawWidescreenWorldSafe)
+        {
+            constexpr u32 kWidescreenEnterSafeFrames = 2;
+            surfaceState.widescreenSafeFrameStreak = std::min(
+                kWidescreenEnterSafeFrames,
+                surfaceState.widescreenSafeFrameStreak + 1);
+            surfaceState.widescreenWorldSafe =
+                surfaceState.widescreenSafeFrameStreak >= kWidescreenEnterSafeFrames;
+            if (surfaceState.widescreenWorldSafe)
+                surfaceState.widescreenSessionLocked = true;
+        }
+
         std::vector<DrawCall> drawCalls;
         const u64 vertexStartNs = PerfNowNs();
         if (!updateVertexBuffer(
@@ -1146,7 +1185,7 @@ bool VulkanSurfacePresenter::presentFrame(Frame* frame, VulkanOutput& output, co
                 surfaceState.background.imageView != VK_NULL_HANDLE ? &surfaceState.background : nullptr,
                 directPresent,
                 retroArchApplied,
-                inputs.topSourceHasStructured3d && !inputs.capture3dSourceValid,
+                surfaceState.widescreenWorldSafe,
                 inputs.capture3dSourceValid,
                 drawCalls))
         {
@@ -1244,7 +1283,7 @@ bool VulkanSurfacePresenter::presentFrame(Frame* frame, VulkanOutput& output, co
             inputs,
             directPresent,
             retroArchApplied,
-            inputs.topSourceHasStructured3d && !inputs.capture3dSourceValid,
+            surfaceState.widescreenWorldSafe,
             inputs.capture3dSourceValid,
             drawCalls);
     }
@@ -1366,7 +1405,12 @@ std::string VulkanSurfacePresenter::getDebugMetadataCaptureJson() const
              << ",\"screenSwap\":" << record.screenSwap
              << ",\"directPresent\":" << boolJson(record.directPresent)
              << ",\"retroArchApplied\":" << boolJson(record.retroArchApplied)
-             << ",\"developerWidescreenProbe\":" << boolJson(record.developerWidescreenProbe)
+             << ",\"widescreenPresentationMode\":"
+             << static_cast<u32>(record.widescreenPresentationMode)
+             << ",\"developerWidescreenProbe\":"
+             << boolJson(
+                    record.widescreenPresentationMode
+                    == VulkanWidescreenPresentationMode::DeveloperDiagnostic)
              << ",\"rotatePrimaryVulkan180\":" << boolJson(record.rotatePrimaryVulkan180)
              << ",\"widescreenWorldSafe\":" << boolJson(record.widescreenWorldSafe)
              << ",\"widescreenCapture3d\":" << boolJson(record.widescreenCapture3d)
@@ -1374,6 +1418,8 @@ std::string VulkanSurfacePresenter::getDebugMetadataCaptureJson() const
              << ",\"previousBottomSourceValid\":" << boolJson(record.previousBottomSourceValid)
              << ",\"currentSourceHasHighres3d\":" << boolJson(record.currentSourceHasHighres3d)
              << ",\"topSourceHasStructured3d\":" << boolJson(record.topSourceHasStructured3d)
+             << ",\"topStructuredAboveVisiblePixels\":"
+             << record.topStructuredAboveVisiblePixels
              << ",\"capture3dSourceValid\":" << boolJson(record.capture3dSourceValid)
              << ",\"liveSourceScreenSwap\":" << boolJson(record.liveSourceScreenSwap)
              << ",\"needsReadback\":" << boolJson(record.needsReadback)
@@ -1426,7 +1472,7 @@ void VulkanSurfacePresenter::recordDebugMetadata(
     record.screenSwap = inputs.screenSwap;
     record.directPresent = directPresent;
     record.retroArchApplied = retroArchApplied;
-    record.developerWidescreenProbe = surfaceState.config.developerWidescreenProbe;
+    record.widescreenPresentationMode = surfaceState.config.widescreenPresentationMode;
     record.rotatePrimaryVulkan180 = surfaceState.config.rotatePrimaryVulkan180;
     record.widescreenWorldSafe = widescreenWorldSafe;
     record.widescreenCapture3d = widescreenCapture3d;
@@ -1434,6 +1480,7 @@ void VulkanSurfacePresenter::recordDebugMetadata(
     record.previousBottomSourceValid = inputs.previousBottomSourceValid;
     record.currentSourceHasHighres3d = inputs.currentSourceHasHighres3d;
     record.topSourceHasStructured3d = inputs.topSourceHasStructured3d;
+    record.topStructuredAboveVisiblePixels = inputs.topStructuredAboveVisiblePixels;
     record.capture3dSourceValid = inputs.capture3dSourceValid;
     record.liveSourceScreenSwap = inputs.liveSourceScreenSwap;
     record.needsReadback = inputs.needsReadback;
@@ -3347,15 +3394,15 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
     const BackgroundResource* backgroundResource,
     bool directPresent,
     bool retroArchApplied,
-    bool developerWidescreenWorldSafe,
-    bool developerWidescreenCapture3d,
+    bool widescreenWorldSafe,
+    bool widescreenCapture3d,
     std::vector<DrawCall>& drawCalls)
 {
     if (!surfaceState.vertexBufferDirty
         && surfaceState.cachedDirectPresent == directPresent
         && surfaceState.cachedRetroArchApplied == retroArchApplied
-        && surfaceState.cachedDeveloperWidescreenWorldSafe == developerWidescreenWorldSafe
-        && surfaceState.cachedDeveloperWidescreenCapture3d == developerWidescreenCapture3d)
+        && surfaceState.cachedWidescreenWorldSafe == widescreenWorldSafe
+        && surfaceState.cachedWidescreenCapture3d == widescreenCapture3d)
     {
         drawCalls = surfaceState.cachedDrawCalls;
         return true;
@@ -3525,7 +3572,7 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
 
         melonDS::Platform::Log(
             melonDS::Platform::LogLevel::Info,
-            "M7Probe: dual-uv direct=%d rect=%dx%d safeX=%d safeWidth=%d",
+            "TrueWidescreen: structured direct=%d rect=%dx%d safeX=%d safeWidth=%d",
             directPresent ? 1 : 0,
             rect.width,
             rect.height,
@@ -3569,13 +3616,15 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
         if (!screen.rect.enabled || screen.rect.width <= 0 || screen.rect.height <= 0)
             return;
 
-        if (!surfaceState.config.developerWidescreenProbe || !screen.topScreen)
+        if (surfaceState.config.widescreenPresentationMode
+                == VulkanWidescreenPresentationMode::Native4x3
+            || !screen.topScreen)
         {
             appendScreen(screen.rect, screen.topScreen, screen.alpha);
             return;
         }
 
-        if (developerWidescreenWorldSafe)
+        if (widescreenWorldSafe)
         {
             appendWidescreenProbe(screen.rect, screen.alpha);
             return;
@@ -3586,10 +3635,10 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
         safeRect.x += (screen.rect.width - safeRect.width) / 2;
         melonDS::Platform::Log(
             melonDS::Platform::LogLevel::Info,
-            "M7Probe: fallback direct=%d top3d=%d capture3d=%d rect=%dx%d safeX=%d safeWidth=%d",
+            "TrueWidescreen: fallback direct=%d top3d=%d capture3d=%d rect=%dx%d safeX=%d safeWidth=%d",
             directPresent ? 1 : 0,
-            developerWidescreenWorldSafe ? 1 : 0,
-            developerWidescreenCapture3d ? 1 : 0,
+            widescreenWorldSafe ? 1 : 0,
+            widescreenCapture3d ? 1 : 0,
             screen.rect.width,
             screen.rect.height,
             safeRect.x,
@@ -3607,11 +3656,11 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
 
     if (config.rotatePrimaryVulkan180)
     {
-        // Rotate the output quads once; the source UV mapping is already
-        // normalized for each draw mode.
+        // The historical flag name is retained for M7 trace compatibility.
+        // Thor's high-resolution Vulkan source needs only a vertical flip.
         melonDS::Platform::Log(
             melonDS::Platform::LogLevel::Info,
-            "M7Probe: rotate180 surface=%d vertices=%zu",
+            "ThorPresentation: flipY surface=%d vertices=%zu",
             surfaceState.id,
             vertices.size()
         );
@@ -3633,7 +3682,6 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
             for (size_t vertexIndex = firstVertex; vertexIndex < endVertex; vertexIndex++)
             {
                 SurfaceVertex& vertex = vertices[vertexIndex];
-                vertex.x = -vertex.x;
                 vertex.y = -vertex.y;
             }
         }
@@ -3710,8 +3758,8 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
     surfaceState.cachedDrawCalls = drawCalls;
     surfaceState.cachedDirectPresent = directPresent;
     surfaceState.cachedRetroArchApplied = retroArchApplied;
-    surfaceState.cachedDeveloperWidescreenWorldSafe = developerWidescreenWorldSafe;
-    surfaceState.cachedDeveloperWidescreenCapture3d = developerWidescreenCapture3d;
+    surfaceState.cachedWidescreenWorldSafe = widescreenWorldSafe;
+    surfaceState.cachedWidescreenCapture3d = widescreenCapture3d;
     surfaceState.vertexBufferDirty = false;
 
     return true;

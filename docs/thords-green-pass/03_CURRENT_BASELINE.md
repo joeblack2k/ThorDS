@@ -27,7 +27,7 @@ SM64DS EU RA:  ba3c4052e00c5cc31df5d5534c39de1b
 | M0-M5 | PASS | workspace, Thor hardware, product identity, profile engine and exact EU profile are complete |
 | M6 | IN_PROGRESS | analog code and plumbing exist; end-to-end gameplay acceptance is open |
 | M7 | IN_PROGRESS | strong developer widescreen spike; W01/W03/W04/W05/W06/W20 not all closed |
-| M8 | NOT_STARTED | developer probe has not been productized |
+| M8 | PASS | exact-profile product mode, layer-aware fallback and Thor smoke validated; see `docs/evidence/m8/` |
 | M9 | IN_PROGRESS | RA policy and pre-bootstrap gate exist; complete UI/network/device acceptance is open |
 | M10 | IN_PROGRESS | policy-only; effective runtime remains 100% |
 | M11 | IN_PROGRESS | read-only pause status exists; full enhancement UX is open |

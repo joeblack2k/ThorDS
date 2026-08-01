@@ -12,8 +12,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Summary
 
-- Current workstream: G2 / M7 deterministic Castle Garden proof closeout complete
-- Current gate: bounded G2 validation, commit and publication
+- Current workstream: M9 RetroAchievements policy closeout
+- Current gate: bounded M9 native/network/offline validation
 - Overall status: PARTIAL
 - Latest verified result: M7 is `PASS`. W-01/W-03 use named Castle Garden
   geometry across exact frame sequences; W-04/W-05 prove top UI-safe geometry;
@@ -46,7 +46,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
 | M6 | PARTIAL | input: harden and trace Slot-2 analog lifecycle | docs/evidence/m6/ | deterministic post-Android sweep, gameplay response, ownership, lifecycle neutralization, pipeline recreation and Original/Enhanced relaunch pass; swim/fly/slide and usable physical play remain |
 | M7 | PASS | 84ae990d + current G2 closeout | docs/evidence/m7/ | W-01, W-02, W-03, W-04, W-05, W-06 and W-20 pass with deterministic Castle Garden geometry, physical lower-display and continuous transition evidence |
-| M8 | NOT_STARTED | | | |
+| M8 | PASS | uncommitted M8 productization | docs/evidence/m8/ | exact-profile True Widescreen product path, layer-aware fallback, safe-mode/relaunch behavior, build and Thor smoke validated; no per-frame 16:9/4:3 flicker observed after the session-lock correction |
 | M9 | PARTIAL | policy-foundation + M9.2 launch-policy wiring | docs/evidence/m9/ | Android-free policy foundation, unsupported-mode fail-closed handling and pre-bootstrap launch gate verified; native/network/offline validation and full M9 acceptance remain open; publication history has documented legacy bounds |
 | M10 | PARTIAL | | docs/evidence/m10/ | ARM9 overclock policy foundation only; current plumbing resolves effective 100; no native/JNI/UI/runtime over-100 behavior |
 | M11 | PARTIAL | feat: expose latched session status in pause menu | docs/evidence/m11/ | bounded read-only pause/session snapshot is tested and visible on Thor; firmware physical branch and full M11 acceptance remain open |
@@ -66,8 +66,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Run the bounded G2 publication gate, commit and push M7, then begin G3/M8:
-replace developer-only widescreen semantics with the exact-profile product
-mode defined by `ADR-true-widescreen.md`. Keep the owner's physical
-top-orientation and playable-framerate witness separate from captured
-compositor output.
+Continue with M9 RetroAchievements policy closeout. M8 is complete for the
+current product gate; do not restart the M7 developer-probe workstream.
+Remaining independent gaps, including M6 physical movement coverage and the
+later M10-M12 release gates, remain explicitly tracked above.

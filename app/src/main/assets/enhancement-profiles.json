@@ -35,7 +35,7 @@
     {
       "schemaVersion": 1,
       "id": "sm64ds.eu.thor-enhanced",
-      "profileVersion": 1,
+      "profileVersion": 2,
       "displayName": "Super Mario 64 DS - Thor Enhanced",
       "integrity": "ENHANCED",
       "game": {
@@ -52,7 +52,7 @@
           "author": "ThorDS",
           "source": "profiles/SM64DS_EU_PROFILE.md",
           "version": "1",
-          "testStatus": "identity-verified; runtime-code-deferred-to-M6"
+          "testStatus": "identity-verified; M8 product-widescreen-validated"
         }
       ],
       "enhancements": [
@@ -113,21 +113,21 @@
         {
           "id": "true-widescreen",
           "displayName": "True Widescreen",
-          "defaultEnabled": false,
+          "defaultEnabled": true,
           "kind": "ACTION_REPLAY",
           "requiredCapabilities": [
             "ACTION_REPLAY",
             "VULKAN",
-            "VULKAN_STRUCTURED_COMPOSITOR"
+            "VULKAN_STRUCTURED_COMPOSITOR",
+            "THOR_DUAL_INTERNAL_DISPLAY"
           ],
           "conflicts": [
             "RA_HARDCORE"
           ],
           "requiresRelaunch": true,
-          "experimental": true,
-          "provenance": "ThorDS M7 EU semantic derivation; developer probe only",
+          "provenance": "ThorDS M8 exact-profile product mode; accepted by ADR-true-widescreen.md",
           "runtimeCode": {
-            "id": "sm64ds.eu.aspect-16x9.dev.v1",
+            "id": "sm64ds.eu.true-widescreen.v1",
             "codeWords": [
               "5200D03C 00001555",
               "0200D03C 00001C72",

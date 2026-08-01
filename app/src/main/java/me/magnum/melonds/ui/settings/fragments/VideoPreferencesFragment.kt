@@ -22,6 +22,7 @@ import me.magnum.melonds.domain.repositories.SettingsRepository
 import me.magnum.melonds.MelonDSAndroidInterface
 import me.magnum.melonds.R
 import me.magnum.melonds.common.DirectoryAccessValidator
+import me.magnum.melonds.common.ThorDeviceCapabilities
 import me.magnum.melonds.common.UriPermissionManager
 import me.magnum.melonds.domain.model.VideoRenderer
 import me.magnum.melonds.domain.model.VideoFiltering
@@ -89,6 +90,7 @@ class VideoPreferencesFragment : BasePreferenceFragment(), PreferenceFragmentTit
 
         val launchedInGame = requireActivity().intent.getBooleanExtra(SettingsActivity.KEY_IN_GAME, false)
         val rendererPreference = findPreference<InGameLockedListPreference>("video_renderer")!!
+        val trueWidescreenPreference = findPreference<SwitchPreference>("thords_true_widescreen")!!
         val internalResolutionPreference = findPreference<InGameLockedListPreference>("video_internal_resolution")!!
         listOf(rendererPreference, internalResolutionPreference).forEach {
             it.isInGameLocked = launchedInGame
@@ -194,6 +196,11 @@ class VideoPreferencesFragment : BasePreferenceFragment(), PreferenceFragmentTit
                     removePreference = vulkanDriverRemovePreference,
                     launchedInGame = launchedInGame,
                 )
+                updateTrueWidescreenPreference(
+                    preference = trueWidescreenPreference,
+                    renderer = newRenderer,
+                    launchedInGame = launchedInGame,
+                )
                 true
             }
         }
@@ -262,8 +269,33 @@ class VideoPreferencesFragment : BasePreferenceFragment(), PreferenceFragmentTit
             allFilteringValues = allFilteringValues,
             allFilteringEntries = allFilteringEntries,
         )
+        updateTrueWidescreenPreference(
+            preference = trueWidescreenPreference,
+            renderer = enumValueOfIgnoreCase(rendererPreference.value),
+            launchedInGame = launchedInGame,
+        )
         updateDsiCameraImagePreference(dsiCameraImagePreference, dsiCameraSourcePreference.value)
         updateDualScreenPresetSummary()
+    }
+
+    private fun updateTrueWidescreenPreference(
+        preference: SwitchPreference,
+        renderer: VideoRenderer,
+        launchedInGame: Boolean,
+    ) {
+        val supportedDevice = ThorDeviceCapabilities.isThor(Build.MANUFACTURER, Build.MODEL)
+        val available = ThorDeviceCapabilities.supportsTrueWidescreen(
+            Build.MANUFACTURER,
+            Build.MODEL,
+            renderer,
+        )
+        preference.isEnabled = available && !launchedInGame
+        preference.summary = when {
+            !supportedDevice -> getString(R.string.thords_true_widescreen_unavailable_device)
+            renderer != VideoRenderer.VULKAN -> getString(R.string.thords_true_widescreen_unavailable_renderer)
+            launchedInGame -> getString(R.string.video_setting_cannot_change_ingame)
+            else -> getString(R.string.thords_true_widescreen_summary)
+        }
     }
 
     private fun setupVulkanDriverPreferences(

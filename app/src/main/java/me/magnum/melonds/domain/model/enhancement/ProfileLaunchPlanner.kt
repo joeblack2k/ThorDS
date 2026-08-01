@@ -12,12 +12,16 @@ data class PlannedRomLaunch(
     val cheats: List<Cheat>,
     val plan: ResolvedSessionPlan,
     val retroAchievementsPolicy: RetroAchievementsPolicy,
+    val requestedWidescreenMode: WidescreenPresentationMode,
+    val effectiveWidescreenMode: WidescreenPresentationMode,
 )
 
 data class LaunchProfileResolution(
     val plan: ResolvedSessionPlan,
     val useSlot2Analog: Boolean,
     val retroAchievementsPolicy: RetroAchievementsPolicy,
+    val requestedWidescreenMode: WidescreenPresentationMode,
+    val effectiveWidescreenMode: WidescreenPresentationMode,
 )
 
 class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
@@ -29,7 +33,10 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
         romInfo: RomInfo?,
         userCheats: List<Cheat>,
         enhancementsEnabled: Boolean,
-        developerWidescreenProbe: Boolean = false,
+        trueWidescreenRequested: Boolean = true,
+        trueWidescreenProductSupported: Boolean = false,
+        developerWidescreenDiagnostic: Boolean = false,
+        developerWidescreenDiagnosticSupported: Boolean = false,
         requestedRaMode: ProfileRaMode,
         saveStateResumeEnabled: Boolean = false,
         requestedArm9Percent: Int = Arm9OverclockPolicy.DEFAULT_PERCENT,
@@ -40,7 +47,10 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
             currentSlot = rom.config.gbaSlotConfig,
             userCheats = userCheats,
             enhancementsEnabled = enhancementsEnabled,
-            developerWidescreenProbe = developerWidescreenProbe,
+            trueWidescreenRequested = trueWidescreenRequested,
+            trueWidescreenProductSupported = trueWidescreenProductSupported,
+            developerWidescreenDiagnostic = developerWidescreenDiagnostic,
+            developerWidescreenDiagnosticSupported = developerWidescreenDiagnosticSupported,
             requestedRaMode = requestedRaMode,
             saveStateResumeEnabled = saveStateResumeEnabled,
             requestedArm9Percent = requestedArm9Percent,
@@ -55,6 +65,8 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
             cheats = RuntimeActionReplayComposer.compose(resolution.plan),
             plan = resolution.plan,
             retroAchievementsPolicy = resolution.retroAchievementsPolicy,
+            requestedWidescreenMode = resolution.requestedWidescreenMode,
+            effectiveWidescreenMode = resolution.effectiveWidescreenMode,
         )
     }
 
@@ -63,7 +75,10 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
         currentSlot: RomGbaSlotConfig,
         userCheats: List<Cheat>,
         enhancementsEnabled: Boolean = true,
-        developerWidescreenProbe: Boolean = false,
+        trueWidescreenRequested: Boolean = true,
+        trueWidescreenProductSupported: Boolean = false,
+        developerWidescreenDiagnostic: Boolean = false,
+        developerWidescreenDiagnosticSupported: Boolean = false,
         requestedRaMode: ProfileRaMode,
         saveStateResumeEnabled: Boolean = false,
         requestedArm9Percent: Int = Arm9OverclockPolicy.DEFAULT_PERCENT,
@@ -77,17 +92,31 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
             add(EnhancementCapability.NDS_EMULATION)
             add(EnhancementCapability.ACTION_REPLAY)
             if (currentSlot !is RomGbaSlotConfig.GbaRom) add(EnhancementCapability.SLOT2_ANALOG)
-            if (developerWidescreenProbe) {
+            if (
+                trueWidescreenProductSupported ||
+                (developerWidescreenDiagnostic && developerWidescreenDiagnosticSupported)
+            ) {
                 add(EnhancementCapability.VULKAN)
                 add(EnhancementCapability.VULKAN_STRUCTURED_COMPOSITOR)
+                add(EnhancementCapability.THOR_DUAL_INTERNAL_DISPLAY)
             }
+        }
+        val requestedWidescreenMode = when {
+            developerWidescreenDiagnostic -> WidescreenPresentationMode.DEVELOPER_DIAGNOSTIC
+            trueWidescreenRequested -> WidescreenPresentationMode.TRUE_WIDESCREEN
+            else -> WidescreenPresentationMode.NATIVE_4_3
         }
         val resolved = sessionPlanBuilder.build(
             identity = identity,
             device = DeviceProfileContext(capabilities),
             preferences = ProfilePreferences(
                 selectedProfileId = requestedProfile,
-                enabledEnhancements = if (developerWidescreenProbe) mapOf("true-widescreen" to true) else emptyMap(),
+                enabledEnhancements = mapOf(
+                    "true-widescreen" to (
+                        enhancementsEnabled &&
+                            (trueWidescreenRequested || developerWidescreenDiagnostic)
+                        ),
+                ),
                 requestedRaMode = requestedRaMode,
                 requestedArm9Percent = requestedArm9Percent,
             ),
@@ -95,6 +124,12 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
             safeMode = !enhancementsEnabled,
         )
         val analogEnabled = resolved.enhancements.any { it.id == "analog" && it.enabled }
+        val widescreenEnabled = resolved.enhancements.any { it.id == "true-widescreen" && it.enabled }
+        val effectiveWidescreenMode = when {
+            !widescreenEnabled -> WidescreenPresentationMode.NATIVE_4_3
+            developerWidescreenDiagnostic -> WidescreenPresentationMode.DEVELOPER_DIAGNOSTIC
+            else -> WidescreenPresentationMode.TRUE_WIDESCREEN
+        }
         return LaunchProfileResolution(
             plan = resolved,
             useSlot2Analog = analogEnabled,
@@ -103,6 +138,8 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
                 arm9Percent = resolved.effectiveArm9Percent,
                 saveStateResumeEnabled = saveStateResumeEnabled,
             ),
+            requestedWidescreenMode = requestedWidescreenMode,
+            effectiveWidescreenMode = effectiveWidescreenMode,
         )
     }
 }

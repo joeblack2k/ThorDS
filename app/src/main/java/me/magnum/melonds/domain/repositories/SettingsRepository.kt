@@ -121,6 +121,7 @@ interface SettingsRepository {
     fun getControllerConfiguration(): ControllerConfiguration
     fun observeControllerConfiguration(): StateFlow<ControllerConfiguration>
     fun isThorDSSafeModeEnabled(): Boolean
+    fun isThorDSTrueWidescreenEnabled(): Boolean
     fun getSelectedLayoutId(): UUID
     fun getSoftInputBehaviour(): Flow<SoftInputBehaviour>
     fun isTouchHapticFeedbackEnabled(): Flow<Boolean>

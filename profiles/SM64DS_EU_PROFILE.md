@@ -4,7 +4,7 @@
 
 ```text
 profile id:       sm64ds.eu.thor-enhanced
-profile version:  1
+profile version:  2
 system:           Nintendo DS
 game code:        ASMP
 revision:         0 (verifiëren)
@@ -19,7 +19,7 @@ save group:       sm64ds-eu-retail
 |---|---:|---|
 | Slot-2 analog | aan | vereist |
 | Right-stick camera | aan | vereist |
-| True Widescreen | developer probe | M7 diagnostic; production blocked |
+| True Widescreen | aan op ondersteunde Thor+Vulkan | M8 productmodus |
 | Vulkan | voorkeur | vereist voor True WS |
 | High internal resolution | geteste Thorwaarde | vereist |
 | ARM9 overclock | 100% | foundation |
@@ -31,7 +31,7 @@ save group:       sm64ds-eu-retail
 
 ```text
 NDS_EMULATION
-THOR_DUAL_DISPLAY or generic dual layout
+THOR_DUAL_INTERNAL_DISPLAY
 SLOT2_ANALOG
 ACTION_REPLAY
 VULKAN_STRUCTURED_COMPOSITOR for True WS
@@ -41,8 +41,8 @@ RA_INTEGRATION optional
 ## Runtimecodes
 
 1. `sm64ds.eu.am64ds-analog.v1`
-2. `sm64ds.eu.aspect-16x9.dev.v1` (default uit; alleen expliciete
-   debuggable M7-probe)
+2. `sm64ds.eu.true-widescreen.v1` (standaard aan voor deze exacte
+   profielidentiteit wanneer Thor+Vulkan beschikbaar is)
 3. eventuele bewezen HUD/cullingcorrecties als afzonderlijke IDs.
 
 Iedere code:

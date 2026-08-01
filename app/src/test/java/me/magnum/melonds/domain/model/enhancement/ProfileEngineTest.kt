@@ -96,6 +96,8 @@ class ProfileEngineTest {
         )
         assertFalse(safeMode.useSlot2Analog)
         assertEquals("original.sm64ds.eu", safeMode.plan.profileId)
+        assertEquals(WidescreenPresentationMode.TRUE_WIDESCREEN, safeMode.requestedWidescreenMode)
+        assertEquals(WidescreenPresentationMode.NATIVE_4_3, safeMode.effectiveWidescreenMode)
         assertTrue(RuntimeActionReplayComposer.compose(safeMode.plan).isEmpty())
     }
 
@@ -230,22 +232,31 @@ class ProfileEngineTest {
     }
 
     @Test
-    fun developerWidescreenProbeEnablesOnlyTheExactGuardedEuropeAspectCode() {
+    fun trueWidescreenRequiresExactProductCapabilityAndKeepsDiagnosticSeparate() {
         val catalog = ProfileCatalog.parse(File("src/main/assets/enhancement-profiles.json").readText())
         val planner = ProfileLaunchPlanner(catalog)
         val identity = RomIdentity("ASMP", 0, "ba3c4052e00c5cc31df5d5534c39de1b")
 
-        val normal = planner.resolve(identity, RomGbaSlotConfig.None, emptyList(), requestedRaMode = ProfileRaMode.CASUAL)
-        assertTrue(normal.plan.curatedRuntimeCodes.none { it.id == "sm64ds.eu.aspect-16x9.dev.v1" })
+        val unavailable = planner.resolve(
+            identity,
+            RomGbaSlotConfig.None,
+            emptyList(),
+            requestedRaMode = ProfileRaMode.CASUAL,
+        )
+        assertEquals(WidescreenPresentationMode.TRUE_WIDESCREEN, unavailable.requestedWidescreenMode)
+        assertEquals(WidescreenPresentationMode.NATIVE_4_3, unavailable.effectiveWidescreenMode)
+        assertTrue(unavailable.plan.curatedRuntimeCodes.none { it.id == "sm64ds.eu.true-widescreen.v1" })
 
-        val probe = planner.resolve(
+        val product = planner.resolve(
             identity = identity,
             currentSlot = RomGbaSlotConfig.None,
             userCheats = emptyList(),
-            developerWidescreenProbe = true,
+            trueWidescreenProductSupported = true,
             requestedRaMode = ProfileRaMode.CASUAL,
         )
-        val aspect = probe.plan.curatedRuntimeCodes.single { it.id == "sm64ds.eu.aspect-16x9.dev.v1" }
+        assertEquals(WidescreenPresentationMode.TRUE_WIDESCREEN, product.requestedWidescreenMode)
+        assertEquals(WidescreenPresentationMode.TRUE_WIDESCREEN, product.effectiveWidescreenMode)
+        val aspect = product.plan.curatedRuntimeCodes.single { it.id == "sm64ds.eu.true-widescreen.v1" }
         assertEquals(
             listOf(
                 "0200D03C 00001555",
@@ -256,6 +267,54 @@ class ProfileEngineTest {
             aspect.expectedOriginalWords,
         )
         assertEquals("28445a89a887a556b4a0564e21f8ca579eeab437471bff1b38c681efd6a3bbc6", sha256(aspect.codeWords.joinToString("\n") + "\n"))
+
+        val disabled = planner.resolve(
+            identity = identity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            trueWidescreenRequested = false,
+            trueWidescreenProductSupported = true,
+            requestedRaMode = ProfileRaMode.CASUAL,
+        )
+        assertEquals(WidescreenPresentationMode.NATIVE_4_3, disabled.requestedWidescreenMode)
+        assertEquals(WidescreenPresentationMode.NATIVE_4_3, disabled.effectiveWidescreenMode)
+        assertTrue(disabled.plan.curatedRuntimeCodes.none { it.id == "sm64ds.eu.true-widescreen.v1" })
+
+        val diagnostic = planner.resolve(
+            identity = identity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            trueWidescreenRequested = false,
+            developerWidescreenDiagnostic = true,
+            developerWidescreenDiagnosticSupported = true,
+            requestedRaMode = ProfileRaMode.CASUAL,
+        )
+        assertEquals(WidescreenPresentationMode.DEVELOPER_DIAGNOSTIC, diagnostic.requestedWidescreenMode)
+        assertEquals(WidescreenPresentationMode.DEVELOPER_DIAGNOSTIC, diagnostic.effectiveWidescreenMode)
+        assertTrue(diagnostic.plan.curatedRuntimeCodes.any { it.id == "sm64ds.eu.true-widescreen.v1" })
+
+        val unavailableDiagnostic = planner.resolve(
+            identity = identity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            trueWidescreenRequested = false,
+            developerWidescreenDiagnostic = true,
+            developerWidescreenDiagnosticSupported = false,
+            requestedRaMode = ProfileRaMode.CASUAL,
+        )
+        assertEquals(WidescreenPresentationMode.DEVELOPER_DIAGNOSTIC, unavailableDiagnostic.requestedWidescreenMode)
+        assertEquals(WidescreenPresentationMode.NATIVE_4_3, unavailableDiagnostic.effectiveWidescreenMode)
+        assertTrue(unavailableDiagnostic.plan.curatedRuntimeCodes.none { it.id == "sm64ds.eu.true-widescreen.v1" })
+
+        val mismatch = planner.resolve(
+            identity = identity.copy(revision = 1),
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            trueWidescreenProductSupported = true,
+            requestedRaMode = ProfileRaMode.CASUAL,
+        )
+        assertEquals(WidescreenPresentationMode.NATIVE_4_3, mismatch.effectiveWidescreenMode)
+        assertTrue(mismatch.plan.curatedRuntimeCodes.isEmpty())
     }
 
     @Test

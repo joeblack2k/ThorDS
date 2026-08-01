@@ -12,6 +12,13 @@
             android:entryValues="@array/video_renderer_values"
             android:defaultValue="software"/>
 
+    <SwitchPreference
+            android:key="thords_true_widescreen"
+            android:title="@string/thords_true_widescreen"
+            android:summary="@string/thords_true_widescreen_summary"
+            app:iconSpaceReserved="false"
+            android:defaultValue="false" />
+
     <me.magnum.melonds.ui.settings.preferences.InGameLockedListPreference
             android:key="video_internal_resolution"
             android:title="@string/internal_resolution"
