@@ -3421,6 +3421,38 @@ std::vector<u32> MelonInstance::captureCurrent3dCoverageForDebug()
     return {};
 }
 
+std::vector<u32> MelonInstance::setMainRamBitsForDebug(u32 address, u32 setMask)
+{
+    constexpr u32 kMainRamBase = 0x02000000;
+    constexpr u32 kMainRamEnd = 0x02FFFFFF;
+    if (nds == nullptr
+        || nds->MainRAM == nullptr
+        || nds->MainRAMMask < 3
+        || setMask == 0
+        || address < kMainRamBase
+        || address > kMainRamEnd - 3
+        || (address & 3) != 0)
+    {
+        return {};
+    }
+
+    const u32 offset = (address - kMainRamBase) & nds->MainRAMMask;
+    if (offset > nds->MainRAMMask - 3)
+        return {};
+
+    u8* bytes = nds->MainRAM + offset;
+    const u32 oldValue = static_cast<u32>(bytes[0])
+        | (static_cast<u32>(bytes[1]) << 8)
+        | (static_cast<u32>(bytes[2]) << 16)
+        | (static_cast<u32>(bytes[3]) << 24);
+    const u32 newValue = oldValue | setMask;
+    bytes[0] = static_cast<u8>(newValue);
+    bytes[1] = static_cast<u8>(newValue >> 8);
+    bytes[2] = static_cast<u8>(newValue >> 16);
+    bytes[3] = static_cast<u8>(newValue >> 24);
+    return {oldValue, newValue};
+}
+
 void MelonInstance::dumpDebugSnapshot()
 {
     if (!areRendererDebugToolsEnabled())

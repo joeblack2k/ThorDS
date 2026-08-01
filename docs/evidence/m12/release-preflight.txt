@@ -2,7 +2,8 @@ M12 ThorDS release preflight inventory
 Date: 2026-08-01
 Branch: thords/enhancement-platform-v1
 Public source: https://github.com/joeblack2k/ThorDS
-HEAD at inventory: a92ee710b3a6b24210346b5d18d934d4b4d289c6
+Baseline HEAD at inventory: a92ee710b3a6b24210346b5d18d934d4b4d289c6
+M7 refresh parent: 84ae990d51892ed21287ce8266a4abc45862a364
 Result: BLOCKED
 
 Purpose:
@@ -21,29 +22,22 @@ Gate matrix:
 | M3 product identity and offline/default gates | PASS | `docs/evidence/m3/` | No new M3 regression observed in the M11 build |
 | M4/M5 profile catalog and exact identity | PASS | `docs/evidence/m4/`; `docs/evidence/m5/` | Runtime gameplay acceptance remains a later gate |
 | M6 analog/profile runtime | IN_PROGRESS | `docs/evidence/m6/` | Physical walk/run, swim/fly/slide, camera response and reconnect checklist remain |
-| M7 Castle Garden presentation/classifier | PARTIAL | `docs/evidence/m7/launch-probe.txt`; `docs/evidence/m7/castle-garden-live-stability.txt` | Projection/presentation and unique live cadence are evidenced; exact geometry and transition proof remain |
-| M7 W-01 object aspect | PARTIAL | `docs/evidence/m7/castle-garden-w01-object-aspect.txt` | Direct Castle Garden checkpoint restore and paired non-black final-primary captures are proven; formal round/square reference and controlled camera repeat remain |
-| M7 W-03 side-region culling | PARTIAL | `docs/evidence/m7/castle-garden-w03-culling.txt` | 120/120 intact Castle Garden movement frames plus a clean 30-frame exact-step final-primary side sequence are proven; exact tracking of an identifiable landmark wholly within one side ROI remains unproven |
-| M7 W-06 bottom geometry | PARTIAL | `docs/evidence/m7/castle-garden-w06-bottom.txt` | Native `packedBottomPrimary` is measured at `256x192`, opaque and populated; final secondary-display placement, scaling and physical aspect remain unproven |
-| M7 W-20 transition | PARTIAL_WITH_OBSERVED_TRANSITION | `docs/evidence/m7/castle-garden-w20-transition.txt` | Direct final-primary sequence plus a short opaque/non-black soak show Castle Garden world, readable pause overlay and world again; longer no-flash/soak cadence remains |
-| M8 true widescreen release gate | BLOCKED | `docs/project/STATUS.md` | M7 object aspect, side culling, HUD/glyph/bottom geometry and transition gates are open |
+| M7 Castle Garden presentation/classifier | PASS | `docs/evidence/m7/widescreen-proof-analysis.json`; `docs/evidence/m7/presenter-trace-analysis.json` | Deterministic exact-frame W-01 through W-06 evidence is green; owner physical comfort remains separate |
+| M7 W-01 object aspect | PASS | `docs/evidence/m7/castle-garden-w01-object-aspect.txt` | Paired native/probe Yoshi silhouette deltas are at most 1.3158%, within the 2% gate |
+| M7 W-03 side-region culling | PASS | `docs/evidence/m7/castle-garden-w03-culling.txt` | Named waterfall-mist landmark remains wholly inside the right side ROI across ten exact frames with 52.5 px displacement |
+| M7 W-06 bottom geometry | PASS | `docs/evidence/m7/castle-garden-w06-bottom.txt` | Native 256x192 lower source, final 4:3 placement, no primary rotation and touch-grid mapping are green |
+| M7 W-20 transition | PASS | `docs/evidence/m7/transition-proof-analysis.json`; `docs/evidence/m7/castle-garden-w20-transition.txt` | 384 exact Castle Garden door-transition frames are opaque, non-black, non-stale and structurally valid |
+| M8 true widescreen release gate | OPEN | `docs/project/STATUS.md`; `docs/project/adr/ADR-true-widescreen.md` | M7 permits productization; release-default policy, capability fallback and full M8 scene matrix remain |
 | M9 RetroAchievements policy | PASS_WITH_BOUNDS | `docs/evidence/m9/policy-tests.txt`; `docs/evidence/m9/launch-policy-tests.txt` | Native/runtime, network/offline, conflict UI, save-state enforcement and physical session proof remain |
 | M10 ARM9 policy | PASS_WITH_BOUNDS | `docs/evidence/m10/policy-foundation.txt` | Native/JNI plumbing, UI, telemetry and effective over-100 runtime behavior remain; live effective value is 100 |
 | M11 pause session status | PASS_WITH_BOUNDS | `docs/evidence/m11/session-status-pause.txt` | Firmware physical pause branch and broader M11 acceptance remain |
 | Release build/install smoke | PASS | M11 full build and physical smoke evidence | This does not override the blocked feature gates above |
 
 Required next work:
-- Repeat W-01 with an explicit round/square Castle Garden reference object
-  and a controlled camera move; the direct app-private checkpoint route and
-  paired final-primary captures are now usable.
-- Track an identifiable animated Castle Garden landmark wholly within one
-  final-primary side ROI across consecutive exact-step frames to close W-03;
-  the clean 30-frame side sequence proves motion but does not replace this
-  semantic-landmark gate.
-- Measure the remaining Castle Garden side-region culling and HUD/glyph
-  geometry, then validate the physical secondary-display bottom layout.
-- Extend W-20 with longer no-flash/soak cadence evidence between the world,
-  pause and restored-world states.
+- Productize the accepted M7 diagnostic behind the exact M8 capability and
+  profile gate, with requested-versus-effective status and safe 4:3 fallback.
+- Run the complete M8 scene matrix, including unsupported renderer/device
+  fallback and owner physical orientation/performance confirmation.
 - Keep M9 native/offline/physical acceptance and M10 native/JNI/runtime work
   separate from policy-only passes.
 

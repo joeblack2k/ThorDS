@@ -1157,6 +1157,14 @@ namespace MelonDSAndroid
         return instance->captureCurrent3dCoverageForDebug();
     }
 
+    std::vector<u32> setMainRamBitsForDebug(u32 address, u32 setMask)
+    {
+        if (!instance)
+            return {};
+
+        return instance->setMainRamBitsForDebug(address, setMask);
+    }
+
     bool isCurrentFrameReadyForDebug()
     {
         if (!instance)

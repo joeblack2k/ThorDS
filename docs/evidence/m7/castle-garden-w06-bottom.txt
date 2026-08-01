@@ -43,11 +43,8 @@ Touch-grid rerun:
 Decision:
 - W-06 is `PASS`: final lower rect, orientation, aspect and exact touch mapping
   are measured on the current Thor APK.
-- The lower-HUD circle/glyph reference measurements pass, but W-04 and W-05
-  remain `PARTIAL` until the top UI-safe plane is measured through its distinct
-  widescreen draw path.
-- W-01 formal reference geometry, W-03 semantic side-landmark tracking and the
-  remaining W-20 painting/star transition proof remain open.
+- The top UI-safe W-04/W-05 path was subsequently measured and passes
+  independently in `castle-garden-w04-w05-ui-geometry.txt`.
 
 Safety:
 - No ROM bytes, save-state bytes, private screenshots, device identifiers or

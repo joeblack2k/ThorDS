@@ -1,6 +1,6 @@
 # ADR: Layer-Aware True Widescreen
 
-Status: proposed; M7 diagnostic exists, M8 is not approved.
+Status: accepted; M7 proof is green and M8 productization is approved.
 
 ## Context
 
@@ -15,9 +15,11 @@ Use the structured Vulkan presenter path only. It already binds high-resolution
 developer probe renders current top 3D across the top rectangle, then draws
 only the structured top plane-1 overlay within a centered 4:3 rectangle.
 
-The mode is gated by both an app-debuggable build and the explicit
-`io.github.joeblack2k.thords.extra.WIDESCREEN_PROBE` activity extra. Normal
-presentation, release builds, OpenGL and safe mode remain native 4:3.
+The M7 diagnostic remains gated by both an app-debuggable build and the
+explicit `io.github.joeblack2k.thords.extra.WIDESCREEN_PROBE` activity extra.
+M8 may replace that developer-only route with an exact-profile product mode,
+but OpenGL, software rendering, safe mode and unsupported profiles must remain
+native 4:3.
 
 The diagnostic applies only to the primary top presentation. It uses the
 dominant current top structured-3D slot and capture-3D compositor inputs as a
@@ -33,12 +35,25 @@ its ordinary aspect-correct configuration.
 
 ## Consequences
 
-The M7 diagnostic proves that the existing renderer exposes independent 3D and
-UI sources, but it is deliberately incomplete: it does not yet reproduce every
-blend, underlay, capture and HUD path. M7 has a conservative diagnostic
-classifier and fallback, but M8 still requires conditional validated runtime
-writes, a fuller scene classifier and the full physical matrix before using
-the True Widescreen product name.
+The M7 deterministic matrix proves:
 
-Decision gate: `NO_GO_FOR_M8` until the M7 castle-grounds/HUD/transition
-measurements are green.
+- game-side 16:9 projection exposes extra Castle Garden world at the sides;
+- named world geometry remains within `2%` aspect tolerance;
+- a named animated side landmark remains present across exact frames;
+- top UI-safe circle/glyph geometry remains within `2%`;
+- the physical lower display remains exact 4:3 and touch-correct;
+- world-pause-world and an owner-selected Castle Garden key-door
+  cinematic/scene transition present continuously without black or stale-return
+  frames.
+
+M8 may productize the exact ASMP revision-0 profile on supported Thor Vulkan
+sessions using guarded runtime projection/culling code, full-width structured
+3D, centered 4:3 plane-1 UI, the existing conservative capture/ambiguity
+fallback and the physical lower 4:3 path.
+
+M8 must still add normal requested/effective UI state, launch-plan integration,
+scene-classifier hysteresis, release-build availability checks, relaunch
+persistence and its broader product scene matrix. M7 does not by itself make
+the developer extra a shipping feature.
+
+Decision gate: `GO_FOR_M8_PRODUCTIZATION`.

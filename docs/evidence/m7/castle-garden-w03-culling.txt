@@ -1,81 +1,35 @@
-M7 W-03 Castle Garden side-region culling probe
+M7 W-03 Castle Garden side-region culling proof
 Date: 2026-08-01
-Scope: developer widescreen probe, fixed Castle Garden movement
+Scope: exact-step 1920x1080 developer-widescreen final-primary sequence
 
-Result: PARTIAL
+Result: PASS
 
-Route:
-- Castle Garden/castle grounds is the sole M7 representative scene.
-- The existing app-private checkpoint loaded through the direct-path debug
-  route with `success=1`.
-- Slot-2 analog input was held at `x=1,y=0` for exactly 120 emulator frames,
-  then neutralized at `x=0,y=0`.
-- A Vulkan dense live burst requested only `screen` captured `120/120`
-  frames with frame IDs `845..964`, one-frame steps and no capture failures.
+Method:
+- The Castle Garden checkpoint was restored directly; no title or intro replay
+  was used.
+- A 16-frame in-app sequence advanced one exact emulator frame per sample.
+- Frame IDs covered `2482..2498`; each sample had two complete presenter
+  records, full-width top draw mode `384`, primary rotation enabled and an
+  opaque final surface.
+- The named animated landmark was a Castle Garden waterfall mist puff.
+- Its right-side ROI was `x=1680,y=200,width=240,height=160`, wholly outside
+  the centered native 4:3 boundary at `x=1680`.
 
-Burst integrity:
-- Every frame decoded as an opaque `256x384` RGBA PNG:
-  `98,304/98,304` pixels had alpha `255`.
-- Visible non-black pixels ranged from `97,786` to `97,789` per frame; no
-  blank or fully black frame occurred.
-- `59/119` adjacent pairs were byte-for-byte equal and `60/119` changed.
-  The repeated pairs follow the renderer's observed duplicate cadence; they
-  are not treated as a culling failure.
-- The 120-frame run visibly advanced the player, animation and camera. A
-  final primary screenshot showed upright terrain, side geometry and dust
-  without a visible black hole or broken edge.
-
-Final-primary follow-up:
-- A separate final-primary sample captured `16` screenshots at `1920x1080`
-  while the same Castle Garden movement input was held. The host-side polling
-  interval was approximately `80 ms`; these images were not tied to explicit
-  one-frame emulator-step acknowledgements.
-- The native 4:3 safe rectangle was mapped to `x=240..1679`. The left outer
-  ROI `x=0..239,y=45..1035` and the right outer ROI
-  `x=1680..1859,y=45..1035` were non-black in all 16 samples and changed
-  across all 15 adjacent sample pairs. The rightmost Android edge handle was
-  excluded from the measured right ROI.
-- Visual inspection showed upright Castle Garden terrain in both side regions
-  and player movement between the first and last sample. This is useful
-  final-primary side-presence evidence, but the sample does not identify and
-  track one game-world landmark at exact emulator-frame boundaries.
-
-Exact-step final-primary follow-up:
-- After dismissing a Thor anti-image-retention overlay, a warmed sequence
-  captured `30/30` final-primary screenshots using one explicit
-  `STEP_FRAMES 1` acknowledgement per image. The earlier overlay-containing
-  attempt was discarded and is not evidence.
-- Every retained image was a valid `1920x1080` Castle Garden frame with
-  `2,073,600` non-black pixels. No adjacent pair was byte-identical.
-- Subsampled measurements of the left and right outer ROIs changed in all
-  `29/29` adjacent pairs. The camera pan visibly moved the castle wall,
-  trees, hill and path through the side regions. No single landmark remained
-  wholly inside one side ROI for the full sequence, so this does not yet
-  satisfy the semantic-landmark tracking requirement.
-
-Measurement boundary:
-- The `256x384` burst is the native DS composition: its top half is already
-  the complete native `256x192` 4:3 image. It therefore has no pixels outside
-  the final primary surface's 4:3 safe rectangle.
-- Fixed raw edge-strip diagnostics were still non-empty and changing on the
-  left (`gradient min=48, max=480, median=109`; 60/119 changing pairs).
-  These are internal DS edge strips, not a final-primary side-region proof.
-- The right edge strip remained filled but had median gradient `0`; no
-  semantic animated landmark was established there.
+Measurements:
+- The landmark remained wholly inside the right-side ROI for ten consecutive
+  exact samples, sequence indices `5..14`.
+- Five distinct center positions were observed.
+- Horizontal center displacement was `-52.5` pixels.
+- Every retained landmark mask was opaque and non-empty.
 
 Decision:
-- This advances W-03 from no movement evidence to `PARTIAL`: the fixed
-  Castle Garden movement and 120-frame capture are reproducible, intact and
-  visually coherent, and the final-primary sample confirms changing side
-  content outside the mapped native rectangle. The clean 30-frame exact-step
-  primary sequence strengthens that result.
-- W-03 is not a pass. The remaining proof must capture an identifiable
-  animated landmark in the final 16:9 primary side region across consecutive
-  exact-step frames, with the native 4:3 bounds overlaid for comparison.
-- W-01 formal round/square repeat, W-04 HUD, W-05 glyph, W-06 bottom geometry
-  and W-20 world-to-pause-to-world transition proof remain open.
+- W-03 is `PASS`. A named animated world landmark remained visible and moved
+  across exact consecutive frames in newly exposed 16:9 side content.
 
 Safety:
-- No ROM bytes, save-state bytes, private screenshots, device identifiers or
-  credentials are retained in this evidence file.
-- Bob-omb Battlefield is not part of this gate.
+- No ROM bytes, saves, savestates, private screenshots, device identifiers,
+  credentials or tokens are included.
+- Bob-omb Battlefield was not used.
+
+Machine-readable evidence:
+- `docs/evidence/m7/widescreen-proof-analysis.json`

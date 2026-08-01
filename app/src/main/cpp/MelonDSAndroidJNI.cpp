@@ -1731,6 +1731,41 @@ Java_me_magnum_melonds_impl_emulator_debug_RendererDebugBridge_getCurrentFrameIn
     return static_cast<jint>(MelonDSAndroid::getCurrentFrameIndexForDebug());
 }
 
+JNIEXPORT jintArray JNICALL
+Java_me_magnum_melonds_impl_emulator_debug_RendererDebugBridge_setMainRamBitsForDebug(
+    JNIEnv* env,
+    jobject thiz,
+    jint address,
+    jint setMask)
+{
+    (void)thiz;
+    if (!rendererDebugControlsAvailable() || !started)
+        return MakeJavaIntArray(env, std::vector<melonDS::u32>{});
+
+    pthread_mutex_lock(&emuThreadMutex);
+    const bool canWrite = !stop && paused;
+    pthread_mutex_unlock(&emuThreadMutex);
+    if (!canWrite)
+        return MakeJavaIntArray(env, std::vector<melonDS::u32>{});
+
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+    while (started
+        && !stop
+        && !isThreadReallyPaused
+        && std::chrono::steady_clock::now() < deadline)
+    {
+        usleep(1000);
+    }
+    if (!isThreadReallyPaused)
+        return MakeJavaIntArray(env, std::vector<melonDS::u32>{});
+
+    return MakeJavaIntArray(
+        env,
+        MelonDSAndroid::setMainRamBitsForDebug(
+            static_cast<melonDS::u32>(address),
+            static_cast<melonDS::u32>(setMask)));
+}
+
 JNIEXPORT void JNICALL
 Java_me_magnum_melonds_impl_emulator_debug_RendererDebugBridge_requestPreparedRendererSnapshot(JNIEnv* env, jobject thiz)
 {

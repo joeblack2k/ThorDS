@@ -1,5 +1,73 @@
 # Worklog
 
+## 2026-08-01 - G2/M7 deterministic proof closeout
+
+### Root cause and bounded changes
+
+- Fixed the final-primary Vulkan alpha composition. The swapchain blend state
+  had replaced destination alpha with transparent UI fragments; destination
+  alpha now uses `ONE_MINUS_SRC_ALPHA`, matching the color blend and preserving
+  the already rendered world.
+- Extended the existing debug-only exact-frame surface fixture with bounded
+  analog input, warmup frames, summary-only long runs and three retained
+  keyframes. Added an OR-only, paused-emulator Main RAM fixture for the exact
+  European SM64DS initial-castle-key flag; it cannot write ROM or save files.
+- Added dependency-free W-01/W-03/W-04/W-05 and W-20 analyzers with runnable
+  synthetic self-tests.
+
+### Deterministic acceptance
+
+- W-01: PASS. The paired native/probe Yoshi green-head silhouette differs by
+  0.6579% and 1.3158%, inside the 2% object-aspect limit.
+- W-03: PASS. The named Castle Garden waterfall-mist landmark stays wholly in
+  the right side ROI for ten exact frames, spans five distinct centers and
+  moves 52.5 pixels.
+- W-04/W-05: PASS. The pause star-count zero and instruction glyph preserve
+  their paired native/probe ratios within 1.4926%.
+- W-06: PASS. The 256x192 lower source, final secondary-display 4:3 rectangle,
+  unrotated lower surface and touch-grid mapping are green.
+- W-20: PASS. A Castle Garden key-door run captured 384 exact consecutive
+  frames. Every final frame is opaque and non-black; 192 distinct final and
+  source hashes show game-cadence motion with a maximum repeat run of three,
+  no nonconsecutive stale-frame recurrence and valid 4:3 or 16:9 presentation
+  rectangles. First-to-last changed-pixel ratios are 62.6346% final and
+  61.4807% source.
+
+### Build, device and publication gates
+
+```text
+command: CARGO=/tmp/thords-cargo ./gradlew --no-daemon
+  :app:regenerateVulkanSpirv :app:checkVulkanSpirv
+  :app:testGitHubProdReleaseUnitTest :app:assembleGitHubProdDebug
+result: PASS; 145 actionable tasks, 19 executed, 126 up-to-date
+
+GitHubProdDebug SHA-256:
+315574549acb162e9ebeab8c8cbff230006a5e5e37dcf3ce1e95e04761819567
+
+physical Thor install/launch: PASS
+package: io.github.joeblack2k.thords.dev
+coexistence: PASS with both MelonDualDS package variants
+filtered ThorDS FATAL/ANR scan: PASS
+```
+
+- Repository ROM/save scans are green across tracked files and all reachable
+  history. The single local ROM is ignored and unstaged; `melon.zip` remains
+  untracked and excluded.
+- Gitleaks scanned 1,008 reachable commits. The sole history finding is the
+  documented public NIST AES test vector. Five local-source findings and the
+  single expanded-APK finding are reviewed public third-party test or SDK
+  verification constants, not credentials. The final staged scan is green.
+- No owner physical comfort claim is inferred from machine captures. Upright
+  top-panel orientation and sustained play feel remain an explicit owner check
+  during M8 productization.
+
+### Decision
+
+- M7 is PASS and `ADR-true-widescreen.md` is accepted.
+- Decision gate: `GO_FOR_M8_PRODUCTIZATION`.
+- Next milestone: M8 True Widescreen product behavior, exact capability
+  gating, requested-versus-effective status and conservative 4:3 fallback.
+
 ## 2026-07-31 - M7 in progress
 
 ### Findings

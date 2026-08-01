@@ -59,10 +59,12 @@
   },
   "m7": {
     "W20": {
-      "status": "PARTIAL",
+      "status": "PASS",
       "worldPauseWorldTrace": "PASS",
-      "paintingOrStarTransitionTrace": "NOT_MEASURED",
-      "contentBlackOrStaleCheck": "NOT_MEASURED"
+      "paintingOrStarStyleTransitionTrace": "PASS",
+      "representativeTransition": "Castle Garden key-door cinematic and scene transition",
+      "contentBlackOrStaleCheck": "PASS",
+      "combinedEvidence": "transition-proof-analysis.json"
     }
   },
   "errors": [],

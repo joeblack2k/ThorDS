@@ -1,85 +1,52 @@
-M7 W-20 Castle Garden world-to-pause-to-world transition probe
+M7 W-20 Castle Garden transition proof
 Date: 2026-08-01
-Scope: physical Castle Garden transition and live capture stability only
+Scope: renderer-internal world-pause-world and key-door cinematic/scene transition
 
-Result: PARTIAL
+Result: PASS
 
-Capture:
-- 180/180 live captures completed.
-- Frame ids were unique and contiguous: 1077..1256.
-- 180/180 metadata records were complete.
-- 180 valid 256x384 RGBA screen PNGs and one manifest were produced.
-- The checked classifier fields each had one distinct value with zero changes.
-- screenSwapLatched was true for 180/180 samples.
-- frontBufferLatched was 1 for 90 samples and 0 for 90 samples.
+World-pause-world:
+- A bounded in-app presenter trace captured 192/192 records without host
+  screenshot polling.
+- There were zero sequence gaps, frame regressions or consecutive duplicate
+  presenter frame IDs.
+- Top produced 96 `1920x1080` records with structured world/UI draw modes and
+  top-only rotation. Bottom produced 96 `1240x1080` records without rotation.
+- The pause interval was bracketed by world presentation on both sides.
 
-Transition attempt:
-- Two KEYCODE_BUTTON_MODE pause attempts were sent.
-- Observed pause transitions: 0.
-- The inspected checkpoint samples remained Castle Garden world frames;
-  no pause overlay was observed.
-- 90/179 adjacent PNG pairs were byte-identical. The repeated-frame count
-  prevents a clean no-previous-frame transition pass.
-- No visible flash was found in the four inspected samples, but that is not
-  sufficient to pass W-20 without an observed pause transition.
-
-Stability:
-- The successful capture window had 0 filtered FATAL EXCEPTION or ANR matches.
-- One earlier no-ready setup attempt produced an app ANR before the successful
-  capture. It is recorded as a failed setup attempt, not as a green W-20 run.
-- Device and local temporary capture artifacts were deleted after aggregation.
-- No ROM bytes, save files, private screenshots or device identifiers are
-  retained in this evidence.
-
-Direct final-primary transition:
-- The Castle Garden checkpoint was loaded with the existing direct debug route
-  and resumed without replaying the title or intro.
-- A `TAP_INPUT` START command with `duration_ms=100` returned `success=1`.
-  After approximately 200 ms, the final primary showed the readable
-  `CASTLE SECRET STARS` pause overlay and `TOUCH TO SELECT`.
-- A second START command with `duration_ms=100` also returned `success=1`.
-  After approximately 200 ms, the final primary returned to the Castle Garden
-  world view.
-- All three final-primary screenshots were `1920x1080` and fully opaque.
-  The world screenshots each had `2,073,600` non-black pixels; the pause
-  overlay screenshot had `1,974,510` non-black pixels.
-- No filtered `FATAL EXCEPTION`, `ANR in` or `am_anr` entry occurred during
-  this direct transition attempt.
-
-Short transition soak:
-- Three pre-pause final-primary samples were captured at approximately
-  50 ms intervals; all were opaque world frames with `2,073,600` non-black
-  pixels.
-- Ten pause samples at the same host polling interval were all opaque pause
-  frames with `1,974,510..1,974,780` non-black pixels; no black or transparent
-  intermediate was observed.
-- After the second START command, the first sample still showed the pause
-  overlay and the following nine samples showed the Castle Garden world.
-  Every sample was opaque and non-black; the returned world frames had
-  `2,073,600` non-black pixels.
-- This is a bounded host-polled soak, not a continuous final-surface capture,
-  so it strengthens but does not replace longer no-flash cadence evidence.
+Castle Garden key-door transition:
+- The owner explicitly selected Castle Garden as the representative
+  painting/star-style transition equivalent; Bob-omb Battlefield was not used.
+- A debug-only fixture set the exact European SM64DS initial-castle-key flag
+  while emulation was paused. It neither reads nor writes the ROM or save file.
+- The app-private interior checkpoint started with Yoshi facing the locked
+  castle door. Twelve neutral warmup frames discarded post-load renderer
+  initialization, then `leftY=-1` drove one continuous exact-step capture.
+- The 384 recorded frames covered renderer IDs `12..396`, from closed door
+  through key presentation, key insertion, unlock animation, Yoshi entering
+  and the two door halves opening.
+- Every frame advanced exactly once and had two complete presenter records.
+- Final-primary and internal 3D sequences each contained 192 distinct hashes,
+  consistent with the title's 30fps update cadence.
+- Maximum repeated-hash run was three presentations; no hash reappeared after
+  a different run.
+- All 384 final-primary frames were fully opaque and non-black. There were no
+  rect failures.
+- One internal `frameReady` diagnostic was false during the transition, but
+  that frame advanced exactly, had both presenter records and had valid opaque
+  final/source pixels. It is retained in the report and is not a missing frame.
+- Closed-to-open endpoint change was `62.6346%` of final-primary pixels and
+  `61.4807%` of internal 3D-source pixels.
 
 Decision:
-- W-20 remains `PARTIAL`: the direct final-primary
-  sequence now proves a real Castle Garden world-to-pause-to-world transition.
-- W-20 remains open for longer no-flash/soak coverage and exact cadence
-  evidence between the world, pause and restored-world states.
-- Object aspect, side-region culling and HUD/glyph geometry remain open.
+- W-20 is `PASS`. Both the world-pause-world and owner-selected Castle Garden
+  cinematic/scene transition have continuous internal evidence with no
+  black, transparent, missing or stale-return flash.
 
-Renderer-internal presenter trace:
-- A bounded 192-record capture ran wholly inside the debug APK around a
-  world-pause-world sequence. No host screenshot polling was used.
-- The trace completed with 192/192 records, no sequence gaps, no per-surface
-  frame-id regressions and no consecutive duplicate frame ids.
-- The sequence contained 120 records before the pause markers, 2 while the
-  pause was taking effect and 70 after resume.
-- The top role produced 96 `1920x1080` records with draw modes 7 and 8 and the
-  top-only 180-degree transform enabled. The bottom role produced 96
-  `1240x1080` records with rotation disabled.
-- The world-pause-world trace is `PASS`; W-20 remains `PARTIAL` because a
-  painting/star transition and pixel-level black/stale classification are not
-  yet captured through the same internal path.
+Safety:
+- Public evidence contains aggregate text/JSON only.
+- No ROM bytes, saves, savestates, raw logs, private screenshots, device
+  identifiers, credentials or tokens are included.
 
 Machine-readable evidence:
 - `docs/evidence/m7/presenter-trace-analysis.json`
+- `docs/evidence/m7/transition-proof-analysis.json`

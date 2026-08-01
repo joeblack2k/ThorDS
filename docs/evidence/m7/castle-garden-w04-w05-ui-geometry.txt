@@ -1,0 +1,39 @@
+M7 W-04/W-05 Castle Garden UI-safe geometry proof
+Date: 2026-08-01
+Scope: native 4:3, widescreen UI-safe and internal packed-overlay comparison
+
+Result: PASS
+
+Method:
+- The pause UI was captured through native final-primary, widescreen
+  final-primary and renderer-internal packed top plane-1 paths.
+- Segmentation used known masks; OCR was not used.
+- Final and internal source images were opaque. The packed control plane was
+  non-uniform, confirming that the measured overlay came from structured UI
+  data rather than a blank placeholder.
+
+W-04 pause star-count zero ring:
+- Native final bounds: `33x67`, aspect `0.492537`.
+- Probe UI-safe bounds: `33x67`, aspect `0.492537`.
+- Internal overlay bounds: `6x12`, aspect `0.5`.
+- Native-to-probe delta: `0.0%`.
+- Internal-source-to-probe delta: `1.4926%`.
+
+W-05 pause instruction glyph O:
+- Native final bounds: `68x51`, aspect `1.333333`.
+- Probe UI-safe bounds: `68x51`, aspect `1.333333`.
+- Internal overlay bounds: `12x9`, aspect `1.333333`.
+- Native-to-probe delta: `0.0%`.
+- Internal-source-to-probe delta: `0.0%`.
+
+Decision:
+- W-04 and W-05 are `PASS`; every measured aspect delta is within `2.0%`.
+- The result covers the distinct top UI-safe draw path, not only lower-screen
+  reference geometry.
+
+Safety:
+- No ROM bytes, saves, savestates, private screenshots, device identifiers,
+  credentials or tokens are included.
+
+Machine-readable evidence:
+- `docs/evidence/m7/widescreen-proof-analysis.json`

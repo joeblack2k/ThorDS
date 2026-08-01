@@ -1,0 +1,73 @@
+{
+  "schema": "thords.m7-widescreen-proof.v1",
+  "result": "PASS",
+  "gates": {
+    "W01": {
+      "status": "PASS",
+      "structuralPass": true,
+      "referenceObject": "Yoshi green head silhouette",
+      "aspectTolerancePercent": 2.0,
+      "measurements": [
+        {
+          "frameIndex": 9,
+          "emulatorFrame": 22,
+          "nativeAspect": 1.288136,
+          "probeAspect": 1.279661,
+          "aspectDeltaPercent": 0.6579,
+          "opaque": true,
+          "pass": true
+        },
+        {
+          "frameIndex": 15,
+          "emulatorFrame": 28,
+          "nativeAspect": 1.225806,
+          "probeAspect": 1.209677,
+          "aspectDeltaPercent": 1.3158,
+          "opaque": true,
+          "pass": true
+        }
+      ]
+    },
+    "W03": {
+      "status": "PASS",
+      "structuralPass": true,
+      "landmark": "Castle Garden waterfall mist puff",
+      "rightSideRoi": {
+        "x": 1680,
+        "y": 200,
+        "width": 240,
+        "height": 160
+      },
+      "uiSafeBoundaryX": 1680,
+      "consecutiveFrameCount": 10,
+      "distinctCenterCount": 5,
+      "centerDisplacementPixels": -52.5,
+      "firstEmulatorFrame": 2488,
+      "lastEmulatorFrame": 2497
+    },
+    "W04": {
+      "status": "PASS",
+      "reference": "pause star-count zero ring",
+      "nativeBounds": "33x67",
+      "probeUiSafeBounds": "33x67",
+      "internalOverlayBounds": "6x12",
+      "nativeToProbeAspectDeltaPercent": 0.0,
+      "sourceToProbeAspectDeltaPercent": 1.4926,
+      "opaque": true
+    },
+    "W05": {
+      "status": "PASS",
+      "reference": "pause instruction glyph O",
+      "nativeBounds": "68x51",
+      "probeUiSafeBounds": "68x51",
+      "internalOverlayBounds": "12x9",
+      "nativeToProbeAspectDeltaPercent": 0.0,
+      "sourceToProbeAspectDeltaPercent": 0.0,
+      "opaque": true
+    }
+  },
+  "uiSource": {
+    "structuralPass": true,
+    "controlPlaneDiverse": true
+  }
+}

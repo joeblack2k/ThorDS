@@ -91,6 +91,7 @@ public:
     std::vector<u32> captureCurrent3dDepthForDebug();
     std::vector<u32> captureCurrent3dAttrForDebug();
     std::vector<u32> captureCurrent3dCoverageForDebug();
+    std::vector<u32> setMainRamBitsForDebug(u32 address, u32 setMask);
     bool isCurrentFrameReadyForDebug() const;
     int getCurrentFrameIndexForDebug() const;
     void requestPreparedRendererDebugSnapshotForDebug();

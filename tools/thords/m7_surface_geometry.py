@@ -16,7 +16,10 @@ PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 ASPECT_TOLERANCE_PERCENT = 2.0
 
 
-def read_png(path: Path) -> tuple[int, int, list[tuple[int, int, int]]]:
+def read_png(
+    path: Path,
+    include_alpha: bool = False,
+) -> tuple[int, int, list[tuple[int, ...]]]:
     data = path.read_bytes()
     if not data.startswith(PNG_SIGNATURE):
         raise ValueError(f"{path}: invalid PNG signature")
@@ -72,11 +75,13 @@ def read_png(path: Path) -> tuple[int, int, list[tuple[int, int, int]]]:
             row[index] = (value + predictor) & 0xFF
         rows.append(row)
 
-    pixels = [
-        tuple(row[index : index + 3])
-        for row in rows
-        for index in range(0, stride, channels)
-    ]
+    pixels = []
+    for row in rows:
+        for index in range(0, stride, channels):
+            pixel = tuple(row[index : index + 3])
+            if include_alpha:
+                pixel += (row[index + 3] if channels == 4 else 255,)
+            pixels.append(pixel)
     return width, height, pixels
 
 
@@ -318,12 +323,15 @@ def analyze(
     return report, structural_pass and measurement_pass and lower_geometry_pass
 
 
-def write_png(path: Path, width: int, height: int, pixels: list[tuple[int, int, int]]) -> None:
+def write_png(path: Path, width: int, height: int, pixels: list[tuple[int, ...]]) -> None:
+    channels = len(pixels[0])
+    if channels not in (3, 4) or any(len(pixel) != channels for pixel in pixels):
+        raise ValueError("PNG pixels must consistently contain RGB or RGBA channels")
     raw = b"".join(
         b"\x00" + bytes(channel for pixel in pixels[y * width : (y + 1) * width] for channel in pixel)
         for y in range(height)
     )
-    ihdr = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
+    ihdr = struct.pack(">IIBBBBB", width, height, 8, 2 if channels == 3 else 6, 0, 0, 0)
 
     def chunk(kind: bytes, payload: bytes) -> bytes:
         return (

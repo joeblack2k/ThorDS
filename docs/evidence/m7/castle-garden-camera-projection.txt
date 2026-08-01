@@ -2,6 +2,8 @@ M7 Castle Garden camera-projection probe
 Date: 2026-08-01
 Scope: temporary developer-only physical validation
 
+Result: PASS
+
 Representative scene
 
 - The owner-selected M7 scene is controllable Castle Garden/castle grounds.
@@ -42,13 +44,14 @@ Projection-matrix comparison
 - This proves the game-side projection matrix responds to the live aspect
   patch. It is not only a presenter stretch.
 
-Open M7 gates
+Closeout
 
-- New-side-region object culling is not yet measured.
-- Exact HUD circle and glyph aspect are not yet measured.
-- Bottom-screen aspect is not yet measured.
-- Longer transition stability is not yet measured.
-- M7 remains `PARTIAL_PASS_M7_GATES_OPEN`; M8 remains blocked.
+- W-02 is `PASS`: the game-side x projection changed by exactly `0.75` while
+  y remained unchanged, and paired final-primary captures expose additional
+  Castle Garden terrain at both horizontal edges rather than cropping.
+- Subsequent deterministic evidence closes W-01, W-03, W-04, W-05, W-06 and
+  W-20. M7 is green and M8 productization is approved by
+  `docs/project/adr/ADR-true-widescreen.md`.
 
 Safety
 

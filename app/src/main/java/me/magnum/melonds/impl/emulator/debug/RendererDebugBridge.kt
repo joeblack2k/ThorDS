@@ -130,6 +130,7 @@ internal object RendererDebugBridge {
     external fun captureCurrentCompositedFrame(): IntArray?
     external fun isCurrentFrameReadyForDebug(): Boolean
     external fun getCurrentFrameIndexForDebug(): Int
+    external fun setMainRamBitsForDebug(address: Int, setMask: Int): IntArray?
     external fun requestPreparedRendererSnapshot()
     external fun clearPreparedRendererSnapshot()
     external fun startVulkanPresenterMetadataCapture(recordCount: Int)

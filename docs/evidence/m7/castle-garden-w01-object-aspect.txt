@@ -1,46 +1,37 @@
-M7 W-01 Castle Garden object-aspect probe
+M7 W-01 Castle Garden object-aspect proof
 Date: 2026-08-01
-Scope: native/probe paired final-primary capture
+Scope: paired native/probe exact-step final-primary sequences
 
-Result: PARTIAL
+Result: PASS
 
-Route:
-- Castle Garden remains the sole owner-selected M7 representative scene.
-- Both launches used the existing app-private Castle Garden checkpoint through
-  the debug direct-path loader; both state loads returned `success=1`.
-- A paused state load leaves the previous presented framebuffer visible until
-  at least one emulator frame is rendered. The bounded renderer capture route
-  supplied that one-frame warmup before the final-primary screenshot.
+Method:
+- Castle Garden is the owner-selected M7 representative scene.
+- The same app-private checkpoint was loaded for native 4:3 and developer
+  widescreen launches. Private states and captures were not retained here.
+- Each launch produced 16 exact consecutive final-primary frames after a
+  controlled right-camera input of `x=-0.8`.
+- Every frame was opaque. Presenter metadata placed native top output at
+  `x=240,y=0,width=1440,height=1080` and probe output at
+  `x=0,y=0,width=1920,height=1080`.
+- The named reference object was the stable Yoshi green-head silhouette in
+  ROI `x=800,y=520,width=320,height=172`.
 
-Final-primary captures:
-- Native launch (`widescreenProbe=0`) rendered the checkpoint in the centered
-  1440x1080 4:3 rectangle with 240-pixel sidebars and reported `FPS: 60`.
-- Developer probe launch (`widescreenProbe=1`) rendered the world across the
-  1920x1080 primary surface, reported `FPS: 60`, and exposed additional
-  Castle Garden terrain and foliage at both horizontal edges.
-- The player/world geometry, castle wall, sign and terrain were upright in
-  both clean captures. No rotation claim is made for the uncaptured external
-  presentation.
-
-Diagnostic object measurement:
-- The same center-region green-object mask was applied to both final-primary
-  images over ROI `x=700..1249`, `y=500..949`.
-- Native mask bounds: `191x241`, ratio `0.7925`.
-- Probe mask bounds: `195x247`, ratio `0.7895`.
-- Absolute ratio delta: `0.39%`.
-- This is useful bounded evidence that the Castle Garden player/world object
-  is not being stretched by the 16:9 presenter path. It is not yet the
-  formal known round/square reference-object measurement required by W-01.
+Measurements:
+- Paired frame 9: native aspect `1.288136`, probe aspect `1.279661`,
+  delta `0.6579%`.
+- Paired frame 15: native aspect `1.225806`, probe aspect `1.209677`,
+  delta `1.3158%`.
+- Both controlled-camera samples are within the W-01 `2.0%` tolerance.
 
 Decision:
-- W-01 advances from `BLOCKED` to `PARTIAL`; the checkpoint and paired
-  non-black final surfaces are now proven.
-- W-01 is not a formal pass yet: repeat with an explicit round or square
-  reference object and confirm the result across a controlled camera move.
-- W-03 side-region culling, W-04 HUD, W-05 glyph, W-06 bottom geometry and
-  W-20 world-to-pause-to-world transition proof remain open.
+- W-01 is `PASS`. The same named object retained its aspect through the
+  game-side projection and final structured presenter paths across controlled
+  camera movement.
 
 Safety:
-- No ROM bytes, save-state bytes, private screenshots, device identifiers or
-  credentials are retained in this evidence file.
-- Bob-omb Battlefield is not part of this gate.
+- No ROM bytes, saves, savestates, private screenshots, device identifiers,
+  credentials or tokens are included.
+- Bob-omb Battlefield was not used.
+
+Machine-readable evidence:
+- `docs/evidence/m7/widescreen-proof-analysis.json`

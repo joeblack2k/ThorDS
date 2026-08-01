@@ -218,6 +218,7 @@ namespace MelonDSAndroid {
     extern std::vector<u32> captureCurrent3dDepthForDebug();
     extern std::vector<u32> captureCurrent3dAttrForDebug();
     extern std::vector<u32> captureCurrent3dCoverageForDebug();
+    extern std::vector<u32> setMainRamBitsForDebug(u32 address, u32 setMask);
     extern bool isCurrentFrameReadyForDebug();
     extern int getCurrentFrameIndexForDebug();
     extern void requestPreparedRendererDebugSnapshot();

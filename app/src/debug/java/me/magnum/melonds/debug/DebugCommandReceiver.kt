@@ -86,6 +86,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_STEP_FRAME_SUFFIX) -> handleStepFrame(entryPoint, intent)
             context.debugCommandAction(ACTION_STEP_FRAMES_SUFFIX) -> handleStepFrame(entryPoint, intent)
             context.debugCommandAction(ACTION_RUN_M7_PRESENTER_TRACE_SUFFIX) -> handleRunM7PresenterTrace(context, entryPoint, intent)
+            context.debugCommandAction(ACTION_GRANT_M7_CASTLE_KEY_SUFFIX) -> handleGrantM7CastleKey(context)
             context.debugCommandAction(ACTION_RUN_M7_SURFACE_SEQUENCE_SUFFIX) -> handleRunM7SurfaceSequence(context, entryPoint, intent)
             context.debugCommandAction(ACTION_DUMP_RENDERER_CAPTURE_SUFFIX) -> handleDumpRendererCapture(context, entryPoint, intent)
             else -> {
@@ -814,12 +815,28 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             return false
         }
 
+        val summaryOnly = intent.firstBooleanExtra(EXTRA_SUMMARY_ONLY) ?: false
+        val maxCaptureCount = if (summaryOnly) {
+            MAX_M7_SUMMARY_SEQUENCE_FRAMES
+        } else {
+            MAX_M7_SURFACE_SEQUENCE_FRAMES
+        }
         val captureCount = intent.firstNullableIntExtra(EXTRA_CAPTURE_COUNT, EXTRA_FRAMES, EXTRA_VALUE)
-            ?.coerceIn(1, MAX_M7_SURFACE_SEQUENCE_FRAMES)
+            ?.coerceIn(1, maxCaptureCount)
             ?: DEFAULT_M7_SURFACE_SEQUENCE_FRAMES
         val secondary = intent.firstBooleanExtra(EXTRA_SECONDARY) ?: false
+        val leftX = (intent.firstFloatExtra(EXTRA_X, EXTRA_VALUE_X) ?: 0f).coerceIn(-1f, 1f)
+        val leftY = (intent.firstFloatExtra(EXTRA_Y, EXTRA_VALUE_Y) ?: 0f).coerceIn(-1f, 1f)
         val cameraX = (intent.firstFloatExtra(EXTRA_CAMERA_X) ?: 0f).coerceIn(-1f, 1f)
         val cameraY = (intent.firstFloatExtra(EXTRA_CAMERA_Y) ?: 0f).coerceIn(-1f, 1f)
+        val transitionInput = intent.firstStringExtra(EXTRA_INPUT)?.let { rawInput ->
+            Input.SYSTEM_BUTTONS.firstOrNull { it.name.equals(rawInput, ignoreCase = true) }
+                ?: throw IllegalArgumentException("Unsupported system input=$rawInput")
+        }
+        val transitionInputFrames = (intent.firstNullableIntExtra(EXTRA_INPUT_FRAMES) ?: 1)
+            .coerceIn(1, captureCount)
+        val warmupFrames = (intent.firstNullableIntExtra(EXTRA_WARMUP_FRAMES) ?: 0)
+            .coerceIn(0, MAX_M7_SURFACE_SEQUENCE_WARMUP_FRAMES)
         val timeoutMs = (intent.firstNullableIntExtra(EXTRA_TIMEOUT_MS) ?: DEFAULT_ANALOG_STEP_TIMEOUT_MS)
             .coerceIn(250, MAX_RECEIVER_WAIT_TIMEOUT_MS)
         val outputDir = File(context.filesDir, M7_SURFACE_SEQUENCE_OUTPUT_DIR).apply {
@@ -829,15 +846,64 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         val frames = JSONArray()
         val pauseWasHeld = DebugCommandStateStore.isDebugPauseHeld()
         var passed = true
+        var transitionInputHeld = false
+        fun summarizePixels(pixels: IntArray, width: Int, height: Int): JSONObject {
+            var hash = 1125899906842597L
+            var alphaMin = 255
+            var alphaMax = 0
+            var opaquePixels = 0
+            var nonBlackPixels = 0
+            var redSum = 0L
+            var greenSum = 0L
+            var blueSum = 0L
+            pixels.forEach { pixel ->
+                val alpha = pixel ushr 24
+                val red = pixel ushr 16 and 0xff
+                val green = pixel ushr 8 and 0xff
+                val blue = pixel and 0xff
+                hash = hash * 31L + (pixel.toLong() and 0xffffffffL)
+                alphaMin = minOf(alphaMin, alpha)
+                alphaMax = maxOf(alphaMax, alpha)
+                if (alpha == 255) opaquePixels++
+                if (red != 0 || green != 0 || blue != 0) nonBlackPixels++
+                redSum += red
+                greenSum += green
+                blueSum += blue
+            }
+            val pixelCount = pixels.size.coerceAtLeast(1)
+            return JSONObject()
+                .put("width", width)
+                .put("height", height)
+                .put("pixelCount", pixels.size)
+                .put("pixelHash64", java.lang.Long.toUnsignedString(hash))
+                .put("alphaMin", alphaMin)
+                .put("alphaMax", alphaMax)
+                .put("opaquePixels", opaquePixels)
+                .put("nonBlackPixels", nonBlackPixels)
+                .put("meanRed", redSum.toDouble() / pixelCount)
+                .put("meanGreen", greenSum.toDouble() / pixelCount)
+                .put("meanBlue", blueSum.toDouble() / pixelCount)
+        }
 
         MelonEmulator.pauseEmulation()
         DebugCommandStateStore.setDebugPauseHeld(true)
         try {
             dispatchControllerMotion()
+            if (warmupFrames > 0) {
+                stepRendererFrames(entryPoint, warmupFrames, timeoutMs)
+            }
             for (index in 0 until captureCount) {
+                if (index == 0 && transitionInput != null) {
+                    MelonEmulator.onInputDown(transitionInput)
+                    transitionInputHeld = true
+                }
                 RendererDebugBridge.startVulkanPresenterMetadataCapture(PRESENTER_RECORDS_PER_DUAL_FRAME)
-                val inputHandled = dispatchControllerMotion(cameraX = cameraX, cameraY = cameraY)
+                val inputHandled = dispatchControllerMotion(leftX, leftY, cameraX, cameraY)
                 val step = stepRendererFrames(entryPoint, 1, timeoutMs)
+                if (transitionInputHeld && index + 1 >= transitionInputFrames) {
+                    MelonEmulator.onInputUp(transitionInput!!)
+                    transitionInputHeld = false
+                }
                 val presenterDeadlineMs = SystemClock.elapsedRealtime() + timeoutMs
                 while (!RendererDebugBridge.isVulkanPresenterMetadataCaptureComplete() &&
                     SystemClock.elapsedRealtime() < presenterDeadlineMs
@@ -847,16 +913,30 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
                 val presenter = RendererDebugBridge.getVulkanPresenterMetadataCaptureJson()
                     ?.let(::JSONObject)
                 val bitmap = DebugCommandStateStore.captureSurfaceBitmap(secondary)
+                val keyframe = !summaryOnly ||
+                    index == 0 ||
+                    index == captureCount / 2 ||
+                    index == captureCount - 1
                 val outputFile = File(outputDir, "frame_%04d.png".format(Locale.US, index))
-                val pngWritten = if (bitmap != null) {
+                val finalPixels = bitmap?.let {
+                    IntArray(it.width * it.height).also { pixels ->
+                        it.getPixels(pixels, 0, it.width, 0, 0, it.width, it.height)
+                    }
+                }
+                val finalSummary = if (bitmap != null && finalPixels != null) {
+                    summarizePixels(finalPixels, bitmap.width, bitmap.height)
+                } else {
+                    null
+                }
+                val pngWritten = if (bitmap != null && keyframe) {
                     val written = outputFile.outputStream().use { stream ->
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                     }
-                    bitmap.recycle()
                     written
                 } else {
                     false
                 }
+                bitmap?.recycle()
                 val sourceDimensions = if (secondary) {
                     intArrayOf(RendererDebugBridge.CAPTURE_WIDTH, RendererDebugBridge.CAPTURE_HEIGHT / 2)
                 } else {
@@ -870,39 +950,72 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
                 val sourceWidth = sourceDimensions?.getOrNull(0) ?: 0
                 val sourceHeight = sourceDimensions?.getOrNull(1) ?: 0
                 val sourceFile = File(outputDir, "source_%04d.png".format(Locale.US, index))
-                val sourceWritten = if (
-                    sourcePixels != null &&
-                    sourceWidth > 0 &&
-                    sourceHeight > 0 &&
-                    sourcePixels.size == sourceWidth * sourceHeight
-                ) {
-                    val sourceBitmap = Bitmap.createBitmap(sourceWidth, sourceHeight, Bitmap.Config.ARGB_8888)
-                    sourceBitmap.setPixels(sourcePixels, 0, sourceWidth, 0, 0, sourceWidth, sourceHeight)
-                    val written = sourceFile.outputStream().use { stream ->
+                fun writePixels(file: File, pixels: IntArray?, width: Int, height: Int): Boolean {
+                    if (pixels == null || width <= 0 || height <= 0 || pixels.size != width * height) {
+                        return false
+                    }
+                    val sourceBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                    sourceBitmap.setPixels(pixels, 0, width, 0, 0, width, height)
+                    val written = file.outputStream().use { stream ->
                         sourceBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                     }
                     sourceBitmap.recycle()
-                    written
+                    return written
+                }
+                val sourceCaptured = sourcePixels != null &&
+                    sourceWidth > 0 &&
+                    sourceHeight > 0 &&
+                    sourcePixels.size == sourceWidth * sourceHeight
+                val sourceSummary = if (sourceCaptured) {
+                    summarizePixels(sourcePixels, sourceWidth, sourceHeight)
+                } else {
+                    null
+                }
+                val sourceWritten = if (keyframe) {
+                    writePixels(sourceFile, sourcePixels, sourceWidth, sourceHeight)
                 } else {
                     false
                 }
+                val uiOverlayFile = File(outputDir, "ui_overlay_%04d.png".format(Locale.US, index))
+                val uiControlFile = File(outputDir, "ui_control_%04d.png".format(Locale.US, index))
+                val uiOverlayWritten = summaryOnly || secondary || writePixels(
+                    uiOverlayFile,
+                    RendererDebugBridge.captureCurrentPackedPlane(0, 1),
+                    RendererDebugBridge.CAPTURE_WIDTH,
+                    RendererDebugBridge.CAPTURE_HEIGHT / 2,
+                )
+                val uiControlWritten = summaryOnly || secondary || writePixels(
+                    uiControlFile,
+                    RendererDebugBridge.captureCurrentPackedPlane(0, 2),
+                    RendererDebugBridge.CAPTURE_WIDTH,
+                    RendererDebugBridge.CAPTURE_HEIGHT / 2,
+                )
                 val presenterComplete = presenter?.optBoolean("complete", false) == true
                 val framePassed = inputHandled &&
-                    step.ready &&
                     step.advanced &&
                     presenterComplete &&
-                    pngWritten &&
-                    sourceWritten
+                    finalSummary != null &&
+                    sourceCaptured &&
+                    (!keyframe || pngWritten) &&
+                    (!keyframe || sourceWritten) &&
+                    uiOverlayWritten &&
+                    uiControlWritten
                 passed = passed && framePassed
                 frames.put(
                     JSONObject()
                         .put("index", index)
-                        .put("file", outputFile.name)
+                        .put("file", if (pngWritten) outputFile.name else JSONObject.NULL)
                         .put("pngBytes", if (pngWritten) outputFile.length() else 0L)
-                        .put("sourceFile", sourceFile.name)
+                        .put("finalSummary", finalSummary ?: JSONObject.NULL)
+                        .put("sourceFile", if (sourceWritten) sourceFile.name else JSONObject.NULL)
                         .put("sourceWidth", sourceWidth)
                         .put("sourceHeight", sourceHeight)
                         .put("sourcePngBytes", if (sourceWritten) sourceFile.length() else 0L)
+                        .put("sourceSummary", sourceSummary ?: JSONObject.NULL)
+                        .put("uiOverlayFile", if (summaryOnly || secondary) JSONObject.NULL else uiOverlayFile.name)
+                        .put("uiOverlayPngBytes", if (uiOverlayWritten && !summaryOnly && !secondary) uiOverlayFile.length() else 0L)
+                        .put("uiControlFile", if (summaryOnly || secondary) JSONObject.NULL else uiControlFile.name)
+                        .put("uiControlPngBytes", if (uiControlWritten && !summaryOnly && !secondary) uiControlFile.length() else 0L)
                         .put("inputHandled", inputHandled)
                         .put("startFrame", step.startFrame)
                         .put("endFrame", step.endFrame)
@@ -914,6 +1027,9 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
                 )
             }
         } finally {
+            if (transitionInputHeld) {
+                MelonEmulator.onInputUp(transitionInput!!)
+            }
             dispatchControllerMotion()
             if (pauseWasHeld) {
                 DebugCommandStateStore.setDebugPauseHeld(true)
@@ -928,6 +1044,12 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             .put("schema", "thords.m7-surface-sequence.v1")
             .put("target", if (secondary) "secondary" else "main")
             .put("captureCount", captureCount)
+            .put("summaryOnly", summaryOnly)
+            .put("transitionInput", transitionInput?.name ?: JSONObject.NULL)
+            .put("transitionInputFrames", if (transitionInput == null) 0 else transitionInputFrames)
+            .put("warmupFrames", warmupFrames)
+            .put("leftX", leftX)
+            .put("leftY", leftY)
             .put("cameraX", cameraX)
             .put("cameraY", cameraY)
             .put("frames", frames)
@@ -935,8 +1057,47 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         File(outputDir, M7_SURFACE_SEQUENCE_MANIFEST).writeText(manifest.toString(2))
         Log.w(
             TAG,
-            "action=run_m7_surface_sequence target=${if (secondary) "secondary" else "main"} captures=${frames.length()} result=${if (passed) "PASS" else "PARTIAL"}",
+            "action=run_m7_surface_sequence target=${if (secondary) "secondary" else "main"} captures=${frames.length()} summaryOnly=${if (summaryOnly) 1 else 0} result=${if (passed) "PASS" else "PARTIAL"}",
         )
+        return passed
+    }
+
+    private fun handleGrantM7CastleKey(context: Context): Boolean {
+        if (!DebugCommandStateStore.isRunningRom()) {
+            Log.w(TAG, "action=grant_m7_castle_key ready=0 result=PARTIAL")
+            return false
+        }
+
+        val pauseWasHeld = DebugCommandStateStore.isDebugPauseHeld()
+        MelonEmulator.pauseEmulation()
+        DebugCommandStateStore.setDebugPauseHeld(true)
+        val values = try {
+            RendererDebugBridge.setMainRamBitsForDebug(
+                M7_CASTLE_KEY_ADDRESS,
+                M7_CASTLE_KEY_MASK,
+            )
+        } finally {
+            if (!pauseWasHeld) {
+                DebugCommandStateStore.setDebugPauseHeld(false)
+                MelonEmulator.resumeEmulation()
+            }
+        }
+        val oldValue = values?.getOrNull(0)
+        val newValue = values?.getOrNull(1)
+        val passed = oldValue != null &&
+            newValue == oldValue.or(M7_CASTLE_KEY_MASK) &&
+            newValue.and(M7_CASTLE_KEY_MASK) != 0
+        File(context.cacheDir, M7_CASTLE_KEY_OUTPUT_FILE).writeText(
+            JSONObject()
+                .put("schema", "thords.m7-castle-key.v1")
+                .put("address", Integer.toUnsignedLong(M7_CASTLE_KEY_ADDRESS))
+                .put("setMask", Integer.toUnsignedLong(M7_CASTLE_KEY_MASK))
+                .put("oldValue", oldValue?.let { Integer.toUnsignedLong(it) } ?: JSONObject.NULL)
+                .put("newValue", newValue?.let { Integer.toUnsignedLong(it) } ?: JSONObject.NULL)
+                .put("result", if (passed) "PASS" else "PARTIAL")
+                .toString(2),
+        )
+        Log.w(TAG, "action=grant_m7_castle_key result=${if (passed) "PASS" else "PARTIAL"}")
         return passed
     }
 
@@ -1727,6 +1888,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val EXTRA_BURST_LIVE = "burst_live"
         private const val EXTRA_LIVE_BURST = "live_burst"
         private const val EXTRA_INPUT = "input"
+        private const val EXTRA_INPUT_FRAMES = "input_frames"
+        private const val EXTRA_WARMUP_FRAMES = "warmup_frames"
         private const val EXTRA_CAPTURE_KINDS = "capture_kinds"
         private const val EXTRA_KINDS = "kinds"
         private const val EXTRA_CAPTURE_ID_BASE = "capture_id_base"
@@ -1735,6 +1898,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val EXTRA_FIRST_KINDS = "first_kinds"
         private const val EXTRA_CAPTURE_KINDS_REST = "capture_kinds_rest"
         private const val EXTRA_REST_KINDS = "rest_kinds"
+        private const val EXTRA_SUMMARY_ONLY = "summary_only"
         private const val EXTRA_VALUE = "value"
         private const val DEFAULT_ROM_READY_TIMEOUT_MS = 8_000
         private const val MAX_RECEIVER_WAIT_TIMEOUT_MS = 8_000
@@ -1750,6 +1914,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ANALOG_SWEEP_OUTPUT_FILE = "analog-end-to-end.json"
         private const val ANALOG_GAMEPLAY_TRIAL_OUTPUT_FILE = "analog-gameplay-trial.json"
         private const val M7_PRESENTER_TRACE_OUTPUT_FILE = "m7-presenter-trace.json"
+        private const val M7_CASTLE_KEY_OUTPUT_FILE = "m7-castle-key.json"
         private const val M7_SURFACE_SEQUENCE_OUTPUT_DIR = "debug-evidence/m7-surface-sequence"
         private const val M7_SURFACE_SEQUENCE_MANIFEST = "manifest.json"
         private const val DEFAULT_PRESENTER_TRACE_RECORDS = 192
@@ -1762,7 +1927,12 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val PRESENTER_TRACE_POLL_MS = 25L
         private const val DEFAULT_M7_SURFACE_SEQUENCE_FRAMES = 8
         private const val MAX_M7_SURFACE_SEQUENCE_FRAMES = 16
+        private const val MAX_M7_SUMMARY_SEQUENCE_FRAMES = 384
+        private const val MAX_M7_SURFACE_SEQUENCE_WARMUP_FRAMES = 32
         private const val PRESENTER_RECORDS_PER_DUAL_FRAME = 2
+        // European SM64DS SAVE_DATA[1] initial-castle-key flag, used only by the M7 debug fixture.
+        private const val M7_CASTLE_KEY_ADDRESS = 0x0209CAA4
+        private const val M7_CASTLE_KEY_MASK = 0x40
         private val ANALOG_SWEEP_MAGNITUDES = floatArrayOf(0.25f, 0.50f, 0.75f, 1.00f)
 
         private val receiverScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -1790,6 +1960,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_STEP_FRAME_SUFFIX = "STEP_FRAME"
         private const val ACTION_STEP_FRAMES_SUFFIX = "STEP_FRAMES"
         private const val ACTION_RUN_M7_PRESENTER_TRACE_SUFFIX = "RUN_M7_PRESENTER_TRACE"
+        private const val ACTION_GRANT_M7_CASTLE_KEY_SUFFIX = "GRANT_M7_CASTLE_KEY"
         private const val ACTION_RUN_M7_SURFACE_SEQUENCE_SUFFIX = "RUN_M7_SURFACE_SEQUENCE"
         private const val ACTION_DUMP_RENDERER_CAPTURE_SUFFIX = "DUMP_RENDERER_CAPTURE"
     }

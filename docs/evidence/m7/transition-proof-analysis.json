@@ -1,0 +1,33 @@
+{
+  "schema": "thords.m7-transition-proof.v1",
+  "result": "PASS",
+  "gate": "W20",
+  "scenario": "Castle Garden castle-door transition",
+  "structuralPass": true,
+  "contentPass": true,
+  "frameCount": 384,
+  "frameRange": {
+    "start": 12,
+    "end": 396
+  },
+  "warmupFrames": 12,
+  "leftX": 0,
+  "leftY": -1,
+  "exactConsecutiveSteps": true,
+  "keyframeCount": 3,
+  "distinctFinalHashes": 192,
+  "distinctSourceHashes": 192,
+  "maximumFinalRepeatRun": 3,
+  "maximumSourceRepeatRun": 3,
+  "nonconsecutiveFinalHashReappearances": 0,
+  "alphaFailureFrames": [],
+  "blackFailureFrames": [],
+  "rectFailureFrames": [],
+  "notReadyFrames": [
+    7
+  ],
+  "endpointFinalChangedPixelRatio": 0.626346,
+  "endpointSourceChangedPixelRatio": 0.614807,
+  "endpointFinalColorDelta": 8.78,
+  "endpointSourceColorDelta": 8.7585
+}
