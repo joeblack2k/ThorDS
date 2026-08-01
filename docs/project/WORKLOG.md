@@ -1433,6 +1433,11 @@ Evidence:
   Enhanced toggle, relaunch toast and RA Off/Casual/Hardcore dialog were
   visibly usable on the 1920x1080 display. The pending edit was abandoned
   without pressing Play.
+- Confirmed the same flow end to end: Enhanced was selected, `Play` passed
+  ROM validation, `EmulatorActivity` started, and the launch log recorded
+  effective Enhanced/Casual/ARM9-100 state. After stopping and reopening
+  details, the persisted status still showed Thor Enhanced and
+  `MATCH_EXACT`.
 - No second settings store, ROM database field or new toggle was introduced.
 
 ### Validation

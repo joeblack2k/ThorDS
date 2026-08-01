@@ -45,6 +45,16 @@ Validation:
   dialog with Casual selected.
 - The pending change was abandoned without pressing Play; no preference was
   committed by this physical witness.
+- Confirmed relaunch witness: selecting Thor Enhanced and pressing `Play`
+  passed ROM validation and opened `EmulatorActivity`.
+- Launch log recorded:
+  `profile=sm64ds.eu.thor-enhanced integrity=ENHANCED requestedRa=CASUAL
+  effectiveRa=CASUAL requestedArm9=100 effectiveArm9=100
+  arm9Capability=PLUMBING_ONLY`.
+- After stopping and reopening the details screen, the persisted status
+  showed `Thor Enhanced`, `MATCH_EXACT`, `ENHANCED / ARM9 100% / RA CASUAL`.
+- Confirmed launch and relaunch logcat contained no `FATAL EXCEPTION` or
+  `ANR in`.
 
 This is a bounded status/control slice. Explicit relaunch staging,
 physical ROM-details navigation and the complete M11 acceptance remain open.
