@@ -53,6 +53,22 @@
   equivalence, drift, subsystem correctness and the formal >100% gates pass.
 - Evidence: `docs/evidence/m10/stability-100.txt`.
 
+## 2026-08-01 - M10 persisted ARM9 preference wiring
+
+### Result
+
+- ROM launch now reads the existing hash-bound `ProfilePreferences` record
+  before planning the session and passes `requestedArm9Percent` into the
+  profile engine.
+- Missing or invalid stored preferences continue to resolve safely to 100%;
+  the live capability remains `PLUMBING_ONLY`.
+- The profile engine tests and GitHub Prod Release compile/test gate passed.
+
+### Boundary
+
+- This adds deterministic configuration plumbing only. It does not expose a
+  user toggle or promote any ratio to `EXPERIMENTAL`/`VALIDATED`.
+
 ## 2026-08-01 - M9 RetroAchievements closeout
 
 ### Result

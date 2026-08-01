@@ -17,6 +17,9 @@ Policy:
   ARM9_OC_CORE_SUPPORT. The live planner uses PLUMBING_ONLY.
 - Profile plans retain requested/effective ARM9 percentages and capability in
   the deterministic hash and diagnostics.
+- ROM launch now reads the existing hash-bound `ProfilePreferences` record and
+  passes its requested ARM9 percentage into the planner; missing preferences
+  default to 100%.
 - RetroAchievements receives the resolved effective percentage from the
   profile launch planner. Current plumbing therefore supplies 100.
 
@@ -71,6 +74,6 @@ Publication safety:
 
 Boundaries:
 - No UI toggle or effective over-100 runtime behavior is exposed. The native
-  configuration and JNI telemetry plumbing are now present; the capability
-  remains PLUMBING_ONLY.
+  configuration, JNI telemetry and persisted preference plumbing are present;
+  the capability remains PLUMBING_ONLY.
 - No commit was created at evidence authoring time.
