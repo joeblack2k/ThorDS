@@ -1,0 +1,30 @@
+{
+  "milestone": "M13",
+  "gate": "display isolation",
+  "device": "AYN Thor",
+  "rom": "Super Mario 64 DS",
+  "commonSettings": {
+    "requestedArm9Percent": 125,
+    "retroAchievements": "CASUAL"
+  },
+  "runs": [
+    {
+      "profile": "sm64ds.eu.thor-enhanced",
+      "trueWidescreen": true,
+      "curatedCodes": 3,
+      "surface": "BLACK"
+    },
+    {
+      "profile": "original.sm64ds.eu",
+      "trueWidescreen": false,
+      "curatedCodes": 0,
+      "surface": "BLACK"
+    }
+  ],
+  "result": "BLACK_OUTPUT_NOT_M8_SPECIFIC",
+  "notes": [
+    "The profile preferences were restored to Enhanced after the comparison.",
+    "The comparison excludes true-widescreen as the sole cause of the black output.",
+    "No 60fps gameplay claim is made because neither run produced a visible gameplay surface."
+  ]
+}

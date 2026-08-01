@@ -1739,6 +1739,18 @@ Evidence:
   display was still black with `stageTimer=0`, so it is not gameplay evidence.
 - Evidence: `docs/evidence/m13/f1-current-state-roundtrip.json`.
 
+### 2026-08-01 - M13 Original versus Enhanced black-output isolation
+
+- Temporarily ran the same private ROM at ARM9=125 with
+  `original.sm64ds.eu` and no enhancements, then compared it with the
+  Enhanced profile and true-widescreen enabled.
+- Both runs produced black DS-primary output. Enhanced had three curated codes;
+  Original had zero. The original Enhanced preferences were restored after the
+  test.
+- This excludes M8 true-widescreen as the sole cause. F1 gameplay evidence and
+  60fps validation remain open.
+- Evidence: `docs/evidence/m13/f1-original-vs-enhanced-black-output.json`.
+
 ### 2026-08-01 - M13 F3 developer cadence probe definition
 
 - Added the hidden, default-off exact-profile `60fps-dev-cadence` definition for
