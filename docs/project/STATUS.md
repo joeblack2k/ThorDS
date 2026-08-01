@@ -87,6 +87,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   launch planning and adds the fourth curated runtime code; the probe was
   disabled again after the check. Evidence:
   `docs/evidence/m13/f3-cadence-probe-activation.json`.
+- The existing native one-second game-loop sampler is now exposed through the
+  debug-only `DUMP_SM64DS_GAME_LOOP` action. Title-screen validation returned
+  `valid=false`, correctly preventing a menu from becoming gameplay evidence.
 - M13 now also contains a timed, read-only sampler for the mapped EU main-loop
   counter. It reports one-second `uniqueUpdates` windows for runtime
   validation; this is not yet 60fps acceptance evidence.

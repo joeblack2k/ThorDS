@@ -1706,3 +1706,12 @@ Evidence:
 - Disabled the probe again after the wiring check; no product 60fps claim was
   made because the device was still at course selection, not gameplay.
 - Evidence: `docs/evidence/m13/f3-cadence-probe-activation.json`.
+
+### 2026-08-01 - M13 game-loop telemetry debug bridge
+
+- Exposed the existing native one-second sampler through the debug-only
+  `DUMP_SM64DS_GAME_LOOP` action.
+- The JSON schema reports validity, unique updates, emulator frames, cadence
+  value, stage timer and camera behavior calls.
+- A fresh title-screen launch correctly returned `valid=false`; no gameplay
+  baseline is claimed from title/menu state.

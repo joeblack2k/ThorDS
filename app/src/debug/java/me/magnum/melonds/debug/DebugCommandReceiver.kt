@@ -72,6 +72,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_SET_ARM9_PERCENT_SUFFIX) -> { handleSetArm9Percent(context, intent); true }
             context.debugCommandAction(ACTION_SET_SM64DS_CADENCE_PROBE_SUFFIX) -> { handleSetSm64dsCadenceProbe(context, intent); true }
             context.debugCommandAction(ACTION_DUMP_ARM9_TELEMETRY_SUFFIX) -> { handleDumpArm9Telemetry(); true }
+            context.debugCommandAction(ACTION_DUMP_SM64DS_GAME_LOOP_SUFFIX) -> { handleDumpSm64dsGameLoopTelemetry(); true }
             context.debugCommandAction(ACTION_SET_SM64DS_SEMANTIC_MONITOR_SUFFIX) -> { handleSetSm64dsSemanticMonitor(intent); true }
             context.debugCommandAction(ACTION_DUMP_SM64DS_SEMANTIC_TELEMETRY_SUFFIX) -> { handleDumpSm64dsSemanticTelemetry(); true }
             context.debugCommandAction(ACTION_SET_BGOBJ_LOG_SUFFIX) -> { handleSetBgObjLog(entryPoint, intent); true }
@@ -173,6 +174,10 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
 
     private fun handleDumpArm9Telemetry() {
         Log.w(TAG, "action=dump_arm9_telemetry value=${MelonEmulator.getArm9OverclockTelemetry()}")
+    }
+
+    private fun handleDumpSm64dsGameLoopTelemetry() {
+        Log.w(TAG, "action=dump_sm64ds_game_loop value=${MelonEmulator.getSm64dsGameLoopTelemetry()}")
     }
 
     private fun handleSetBgObjLog(entryPoint: DebugCommandEntryPoint, intent: Intent) {
@@ -2003,6 +2008,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_SET_ARM9_PERCENT_SUFFIX = "SET_ARM9_PERCENT"
         private const val ACTION_SET_SM64DS_CADENCE_PROBE_SUFFIX = "SET_SM64DS_CADENCE_PROBE"
         private const val ACTION_DUMP_ARM9_TELEMETRY_SUFFIX = "DUMP_ARM9_TELEMETRY"
+        private const val ACTION_DUMP_SM64DS_GAME_LOOP_SUFFIX = "DUMP_SM64DS_GAME_LOOP"
         private const val ACTION_SET_SM64DS_SEMANTIC_MONITOR_SUFFIX = "SET_SM64DS_SEMANTIC_MONITOR"
         private const val ACTION_DUMP_SM64DS_SEMANTIC_TELEMETRY_SUFFIX = "DUMP_SM64DS_SEMANTIC_TELEMETRY"
         private const val ACTION_SET_BGOBJ_LOG_SUFFIX = "SET_BGOBJ_LOG"
