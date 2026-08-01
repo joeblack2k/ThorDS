@@ -12,7 +12,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Summary
 
-- Current workstream: M10 ARM9 overclock foundation
+- Current workstream: SM64DS Smooth Orbit Camera v1
 - Current gate: measurement-only ARM9 runtime work; over-100% remains disabled
 - Overall status: PARTIAL
 - Latest verified result: M7 is `PASS`. W-01/W-03 use named Castle Garden
@@ -65,6 +65,10 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - RA Hardcore gate: PARTIAL
 - ARM9 OC: PARTIAL
 - 60fps: REQUIRED / IMPLEMENTATION AND VALIDATION OPEN
+- SM64DS Smooth Orbit Camera v1: PARTIAL / frontend mapping, R3 sequence,
+  JNI bridge and transient Slot-2 protocol are implemented and compiled;
+  exact EU runtime patch, HUD/tutorial-arrow suppression, sound-path proof and
+  physical Thor acceptance remain open.
 - M13 research now records the EU game-side VBlank cadence hook, the unresolved
   scene vtable dispatch and the timer/animation dependency boundary. No
   unverified 60fps code is shipped; implementation and full timing validation
@@ -81,9 +85,10 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Continue with the M11 profile-controls slice while M10 remains measurement-only,
-then implement and validate the required M13 60fps product mode. 60fps is not
-an optional feature and must not be recorded as explicitly disabled.
+Continue the Smooth Orbit Camera v1 pass with deterministic EU camera-hook
+liveness and the guarded exact-profile runtime patch. 60fps remains a
+separate required product mode and must not be recorded as explicitly
+disabled.
 M8 and M9 are complete for the current product gate; do not restart either
 validation workstream. Over-100% ARM9 behavior remains disabled until timing
 evidence proves it safe. Remaining independent gaps, including M6 physical

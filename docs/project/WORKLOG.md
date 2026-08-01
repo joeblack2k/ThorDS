@@ -1,5 +1,32 @@
 # Worklog
 
+## 2026-08-01 - Smooth Orbit Camera v1 frontend and Slot-2 bridge
+
+### Result
+
+- Imported and published the bounded camera dossier under `docs/camera/`.
+- Added and unit-tested the pure radial-deadzone/response mapper for
+  proportional horizontal right-stick yaw.
+- Enhanced input now reserves `AXIS_Z`/`AXIS_RZ` for smooth camera state
+  instead of synthesizing digital D-pad events.
+- R3 uses a one-shot edge sequence; physical D-pad input remains available as
+  the original digital fallback.
+- Added the transient Slot-2 camera register bank at `0x09000200` in the
+  public core fork, preserving mode 0/1 behavior and savestate format.
+- Added Kotlin -> JNI -> native transport with reset/teardown neutralization.
+- Exact EU identity was rechecked locally: `ASMP`, revision `0`, RA hash
+  `ba3c4052e00c5cc31df5d5534c39de1b`.
+
+### Boundary
+
+- This is not yet a working in-game orbit camera. The exact EU runtime patch,
+  camera-state gating, HUD/tutorial-arrow suppression, ordinary-yaw sound
+  proof and physical Thor matrix remain open.
+- The ROM remains ignored and was used only as local input. No ROM bytes,
+  screenshots or device identifiers were added to source or evidence.
+- Green checks: smooth mapper unit tests, GitHubProdDebug native build and
+  Android-test Kotlin compilation.
+
 ## 2026-08-01 - 60fps requirement wording corrected
 
 ### Result
