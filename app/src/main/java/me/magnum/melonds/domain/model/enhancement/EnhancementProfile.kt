@@ -110,6 +110,7 @@ data class ProfilePreferences(
     val selectedProfileId: String? = null,
     val enabledEnhancements: Map<String, Boolean> = emptyMap(),
     val requestedRaMode: ProfileRaMode = ProfileRaMode.CASUAL,
+    val requestedArm9Percent: Int = Arm9OverclockPolicy.DEFAULT_PERCENT,
 )
 
 enum class ProfileMatch {
@@ -132,6 +133,9 @@ data class ResolvedSessionPlan(
     val match: ProfileMatch,
     val profileIntegrity: ProfileIntegrity,
     val requestedRaMode: ProfileRaMode,
+    val requestedArm9Percent: Int,
+    val effectiveArm9Percent: Int,
+    val arm9OverclockCapability: Arm9OverclockCapability,
     val curatedRuntimeCodes: List<RuntimeActionReplayCode>,
     val userCheats: List<Cheat>,
     val enhancements: List<ResolvedEnhancement>,
@@ -150,6 +154,12 @@ data class ResolvedSessionPlan(
                 .append(requestedRaMode)
                 .append('|')
                 .append(effectiveRaMode)
+                .append('|')
+                .append(requestedArm9Percent)
+                .append('|')
+                .append(effectiveArm9Percent)
+                .append('|')
+                .append(arm9OverclockCapability)
             enhancements.sortedBy { it.id }.forEach {
                 append('|').append(it.id).append(':').append(it.enabled).append(':').append(it.reason.orEmpty())
             }
@@ -165,6 +175,9 @@ data class ResolvedSessionPlan(
         add("integrity=$profileIntegrity")
         add("requested_ra=$requestedRaMode")
         add("ra=$effectiveRaMode")
+        add("requested_arm9_percent=$requestedArm9Percent")
+        add("effective_arm9_percent=$effectiveArm9Percent")
+        add("arm9_capability=$arm9OverclockCapability")
         enhancements.forEach { add("enhancement=${it.id}:${if (it.enabled) "enabled" else "disabled:${it.reason}"}") }
         curatedRuntimeCodes.forEach { add("curated_code=${it.id}:${it.codeSha256}") }
         add("user_cheats=${userCheats.size}")

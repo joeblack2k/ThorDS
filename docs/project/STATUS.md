@@ -69,7 +69,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M7 | IN_PROGRESS | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, newline-safe parser, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and Castle Garden classifier matrices verified; save-state-assisted Castle Garden route, native-versus-probe world/FOV comparison, measured game projection response, Thor-default world plus packed-UI rotation, readable pause overlay, 10-second `FPS: 60` movement smoke and corrected 180-sample live bursts recorded; W-20 is PARTIAL with no observed pause transition and repeated adjacent frames; W-01 is BLOCKED by black renderer layers and unproven checkpoint restore; side-region culling and exact HUD/glyph/bottom geometry remain open |
 | M8 | NOT_STARTED | | | |
 | M9 | IN_PROGRESS | policy-foundation + M9.2 launch-policy wiring | docs/evidence/m9/ | Android-free policy foundation, unsupported-mode fail-closed handling and pre-bootstrap launch gate verified; native/network/offline validation and full M9 acceptance remain open; publication is PASS_WITH_KNOWN_LEGACY_HISTORY |
-| M10 | NOT_STARTED | | | |
+| M10 | IN_PROGRESS | | docs/evidence/m10/ | ARM9 overclock policy foundation only; current plumbing resolves effective 100; no native/JNI/UI/runtime over-100 behavior |
 | M11 | NOT_STARTED | | | |
 | M12 | NOT_STARTED | | | |
 | M13 | NOT_STARTED | | | |

@@ -1,0 +1,72 @@
+M10 ARM9 overclock policy foundation
+Date: 2026-08-01
+Base: 94e5cc19cddaad44f0f7843a79299d9255b72dd8
+Worktree: parent checkout
+Result: PASS_WITH_BOUNDS
+Scope note: the policy-foundation slice passes; the full M10 milestone remains
+IN_PROGRESS because native/JNI plumbing, telemetry, UI and effective over-100
+runtime behavior are intentionally not implemented yet.
+
+Policy:
+- Allowed requested ARM9 percentages are 100, 125, 150, 175 and 200.
+- Invalid requests, safe mode, UNSUPPORTED, PLUMBING_ONLY and requested
+  RetroAchievements Hardcore all resolve to effective 100.
+- EXPERIMENTAL and VALIDATED can resolve an allowed non-100 request only
+  outside safe mode and Hardcore.
+- The live enhancement capability set does not contain
+  ARM9_OC_CORE_SUPPORT. The live planner uses PLUMBING_ONLY.
+- Profile plans retain requested/effective ARM9 percentages and capability in
+  the deterministic hash and diagnostics.
+- RetroAchievements receives the resolved effective percentage from the
+  profile launch planner. Current plumbing therefore supplies 100.
+
+Focused validation:
+- Parent-checkout command:
+  `CARGO=/tmp/thords-cargo ./gradlew --no-daemon
+  -Pkotlin.incremental=false :app:testGitHubProdReleaseUnitTest --tests
+  me.magnum.melonds.domain.model.enhancement.Arm9OverclockPolicyTest
+  --tests me.magnum.melonds.domain.model.enhancement.ProfileEngineTest
+  --tests
+  me.magnum.melonds.domain.model.retroachievements.RetroAchievementsPolicyTest
+  --tests me.magnum.melonds.ui.emulator.EmulatorViewModelLaunchPolicyTest
+  -x :app:regenerateVulkanSpirv -x :app:buildLibrashaderAndroid`
+- Parent result: 32 tests, 0 failures and 0 errors:
+  `Arm9OverclockPolicyTest` 5/5,
+  `ProfileEngineTest` 16/16, `RetroAchievementsPolicyTest` 10/10 and
+  `EmulatorViewModelLaunchPolicyTest` 1/1.
+- Full parent build:
+  `CARGO=/tmp/thords-cargo ./gradlew --no-daemon
+  -Pkotlin.incremental=false :app:regenerateVulkanSpirv
+  :app:checkVulkanSpirv :app:testGitHubProdReleaseUnitTest
+  :app:assembleGitHubProdDebug`
+- Full parent result: `BUILD SUCCESSFUL`; SPIR-V headers were up to date,
+  release unit tests passed and the GitHubProdDebug APK assembled.
+- `git diff --check`: PASS before commit.
+
+Device/package smoke:
+- APK: `app/build/outputs/apk/gitHubProd/debug/app-gitHub-prod-debug.apk`.
+- `apkanalyzer` reported package `io.github.joeblack2k.thords.dev`, version
+  `0.1.0-dev` and the expected debug permissions. The archive contained no
+  ROM/save/private-evidence/credential path.
+- `adb install -r` on the connected AYN Thor succeeded. Launcher smoke
+  reached `RomListActivity`; the bounded filtered logcat contained no
+  `FATAL EXCEPTION`, `ANR in` or `am_anr`.
+
+Publication safety:
+- Tracked and reachable-history scans found no `.nds`, `.srl`, `.rom`, `.sav`
+  or `.dsv` path and no tracked private-evidence/credential/token path. The
+  local ROM and `docs/evidence/private/` remain ignored and unstaged.
+- Staged-diff Gitleaks: PASS, no findings.
+- Full-history Gitleaks scanned 996 commits and reported one pre-existing
+  `generic-api-key` match at the public NIST AES test vector in
+  `app/src/main/cpp/rcheevos/src/rhash/aes.c:23`,
+  commit `744d1b9230deb38e8a8f48239c01d77a314c1470`.
+- Current-tree Gitleaks reported four additional pre-existing public
+  third-party/template matches in the pinned `melonDS-android-lib` submodule:
+  `build-windows.yml`, `tiny-AES-c/aes.c` and two `xxhash.h` test constants.
+  These are not credentials and are outside the staged parent diff.
+
+Boundaries:
+- No melonDS-android-lib core submodule, JNI, native configuration, UI
+  toggle, telemetry or effective over-100 runtime behavior was changed.
+- No commit was created at evidence authoring time.

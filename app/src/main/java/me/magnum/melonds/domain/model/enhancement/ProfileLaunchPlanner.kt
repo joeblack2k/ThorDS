@@ -32,6 +32,7 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
         developerWidescreenProbe: Boolean = false,
         requestedRaMode: ProfileRaMode,
         saveStateResumeEnabled: Boolean = false,
+        requestedArm9Percent: Int = Arm9OverclockPolicy.DEFAULT_PERCENT,
     ): PlannedRomLaunch {
         val identity = romInfo?.let { RomIdentity(it.gameCode, it.revision, rom.retroAchievementsHash) }
         val resolution = resolve(
@@ -42,6 +43,7 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
             developerWidescreenProbe = developerWidescreenProbe,
             requestedRaMode = requestedRaMode,
             saveStateResumeEnabled = saveStateResumeEnabled,
+            requestedArm9Percent = requestedArm9Percent,
         )
         val gbaSlotConfig = when {
             resolution.useSlot2Analog -> RomGbaSlotConfig.AnalogInput
@@ -64,6 +66,7 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
         developerWidescreenProbe: Boolean = false,
         requestedRaMode: ProfileRaMode,
         saveStateResumeEnabled: Boolean = false,
+        requestedArm9Percent: Int = Arm9OverclockPolicy.DEFAULT_PERCENT,
     ): LaunchProfileResolution {
         val requestedProfile = if (enhancementsEnabled) {
             identity?.let { catalog.exactProfiles(it).firstOrNull { profile -> profile.id == "sm64ds.eu.thor-enhanced" } }?.id
@@ -86,8 +89,10 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
                 selectedProfileId = requestedProfile,
                 enabledEnhancements = if (developerWidescreenProbe) mapOf("true-widescreen" to true) else emptyMap(),
                 requestedRaMode = requestedRaMode,
+                requestedArm9Percent = requestedArm9Percent,
             ),
             userCheats = userCheats,
+            safeMode = !enhancementsEnabled,
         )
         val analogEnabled = resolved.enhancements.any { it.id == "analog" && it.enabled }
         return LaunchProfileResolution(
@@ -95,6 +100,7 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
             useSlot2Analog = analogEnabled,
             retroAchievementsPolicy = retroAchievementsPolicyResolver.resolve(
                 plan = resolved,
+                arm9Percent = resolved.effectiveArm9Percent,
                 saveStateResumeEnabled = saveStateResumeEnabled,
             ),
         )

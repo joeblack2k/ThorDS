@@ -4,6 +4,7 @@ import me.magnum.melonds.domain.model.Cheat
 
 data class DeviceProfileContext(
     val capabilities: Set<EnhancementCapability>,
+    val arm9OverclockCapability: Arm9OverclockCapability = Arm9OverclockCapability.PLUMBING_ONLY,
 )
 
 object CapabilityProbe {
@@ -15,14 +16,20 @@ object CapabilityProbe {
         hasArm9OverclockSupport: Boolean,
         hasRetroAchievements: Boolean,
     ): DeviceProfileContext {
-        return DeviceProfileContext(buildSet {
-            if (hasSlot2Analog) add(EnhancementCapability.SLOT2_ANALOG)
-            if (hasVulkan) add(EnhancementCapability.VULKAN)
-            if (hasStructuredVulkanCompositor) add(EnhancementCapability.VULKAN_STRUCTURED_COMPOSITOR)
-            if (isThorDualDisplay) add(EnhancementCapability.THOR_DUAL_INTERNAL_DISPLAY)
-            if (hasArm9OverclockSupport) add(EnhancementCapability.ARM9_OC_CORE_SUPPORT)
-            if (hasRetroAchievements) add(EnhancementCapability.RA_INTEGRATION)
-        })
+        return DeviceProfileContext(
+            capabilities = buildSet {
+                if (hasSlot2Analog) add(EnhancementCapability.SLOT2_ANALOG)
+                if (hasVulkan) add(EnhancementCapability.VULKAN)
+                if (hasStructuredVulkanCompositor) add(EnhancementCapability.VULKAN_STRUCTURED_COMPOSITOR)
+                if (isThorDualDisplay) add(EnhancementCapability.THOR_DUAL_INTERNAL_DISPLAY)
+                if (hasRetroAchievements) add(EnhancementCapability.RA_INTEGRATION)
+            },
+            arm9OverclockCapability = if (hasArm9OverclockSupport) {
+                Arm9OverclockCapability.PLUMBING_ONLY
+            } else {
+                Arm9OverclockCapability.UNSUPPORTED
+            },
+        )
     }
 }
 
@@ -32,7 +39,14 @@ class ProfileResolver(private val catalog: ProfileCatalog) {
         device: DeviceProfileContext,
         preferences: ProfilePreferences,
         userCheats: List<Cheat>,
+        safeMode: Boolean = false,
     ): ResolvedSessionPlan {
+        val arm9Overclock = Arm9OverclockPolicy.resolve(
+            requestedPercent = preferences.requestedArm9Percent,
+            capability = device.arm9OverclockCapability,
+            safeMode = safeMode,
+            requestedRaMode = preferences.requestedRaMode,
+        )
         val (matched, match) = identity?.let(catalog::match) ?: (null to ProfileMatch.NO_MATCH)
         val selected = preferences.selectedProfileId?.let(catalog::find)
         val profile = when {
@@ -61,6 +75,9 @@ class ProfileResolver(private val catalog: ProfileCatalog) {
             match = effectiveMatch,
             profileIntegrity = profile.integrity,
             requestedRaMode = preferences.requestedRaMode,
+            requestedArm9Percent = arm9Overclock.requestedPercent,
+            effectiveArm9Percent = arm9Overclock.effectivePercent,
+            arm9OverclockCapability = arm9Overclock.capability,
             curatedRuntimeCodes = enabled.mapNotNull { definitions.getValue(it.id).runtimeCode }.sortedBy { it.id },
             userCheats = userCheats.toList(),
             enhancements = resolved.values.sortedBy { it.id },
@@ -125,5 +142,6 @@ class SessionPlanBuilder(catalog: ProfileCatalog) {
         device: DeviceProfileContext,
         preferences: ProfilePreferences,
         userCheats: List<Cheat>,
-    ): ResolvedSessionPlan = resolver.resolve(identity, device, preferences, userCheats)
+        safeMode: Boolean = false,
+    ): ResolvedSessionPlan = resolver.resolve(identity, device, preferences, userCheats, safeMode)
 }

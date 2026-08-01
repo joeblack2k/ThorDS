@@ -110,9 +110,13 @@ class ProfileEngineTest {
             currentSlot = RomGbaSlotConfig.None,
             userCheats = listOf(userCheat),
             requestedRaMode = ProfileRaMode.CASUAL,
+            requestedArm9Percent = 125,
         )
         assertEquals(ProfileIntegrity.ENHANCED, casual.plan.profileIntegrity)
         assertEquals(ProfileRaMode.CASUAL, casual.plan.requestedRaMode)
+        assertEquals(125, casual.plan.requestedArm9Percent)
+        assertEquals(100, casual.plan.effectiveArm9Percent)
+        assertEquals(Arm9OverclockCapability.PLUMBING_ONLY, casual.plan.arm9OverclockCapability)
         assertEquals(RetroAchievementsEffectiveMode.CASUAL, casual.retroAchievementsPolicy.effectiveMode)
         assertTrue(casual.plan.enhancements.any { it.id == "analog" && it.enabled })
         assertTrue(casual.retroAchievementsPolicy.runtimeFeaturePermissions.allowEnhancements)
@@ -144,11 +148,16 @@ class ProfileEngineTest {
             userCheats = emptyList(),
             enhancementsEnabled = false,
             requestedRaMode = ProfileRaMode.HARDCORE,
+            requestedArm9Percent = 125,
         )
         assertEquals(ProfileIntegrity.ORIGINAL, cleanHardcore.plan.profileIntegrity)
         assertEquals(ProfileRaMode.HARDCORE, cleanHardcore.plan.requestedRaMode)
+        assertEquals(125, cleanHardcore.plan.requestedArm9Percent)
+        assertEquals(100, cleanHardcore.plan.effectiveArm9Percent)
+        assertEquals(Arm9OverclockCapability.PLUMBING_ONLY, cleanHardcore.plan.arm9OverclockCapability)
         assertEquals(RetroAchievementsEffectiveMode.HARDCORE, cleanHardcore.retroAchievementsPolicy.effectiveMode)
         assertFalse(cleanHardcore.retroAchievementsPolicy.runtimeFeaturePermissions.allowEnhancements)
+        assertTrue("arm9_percent_not_100" !in cleanHardcore.retroAchievementsPolicy.reasonCodeValues)
 
         val autoloadBlocked = planner.resolve(
             identity = identity,
@@ -186,11 +195,38 @@ class ProfileEngineTest {
             ProfilePreferences(selectedProfileId = "test.enhanced", requestedRaMode = ProfileRaMode.CASUAL),
             emptyList(),
         )
+        val originalRequested125 = resolver.resolve(
+            exactIdentity,
+            DeviceProfileContext(emptySet()),
+            ProfilePreferences(
+                selectedProfileId = "original.generic",
+                requestedArm9Percent = 125,
+            ),
+            emptyList(),
+        )
+        val originalValidated125 = resolver.resolve(
+            exactIdentity,
+            DeviceProfileContext(emptySet(), Arm9OverclockCapability.VALIDATED),
+            ProfilePreferences(
+                selectedProfileId = "original.generic",
+                requestedArm9Percent = 125,
+            ),
+            emptyList(),
+        )
 
         assertNotEquals(originalCasual.planHash, originalHardcore.planHash)
         assertNotEquals(originalCasual.planHash, enhancedCasual.planHash)
+        assertNotEquals(originalCasual.planHash, originalRequested125.planHash)
+        assertNotEquals(originalRequested125.planHash, originalValidated125.planHash)
+        assertEquals(125, originalRequested125.requestedArm9Percent)
+        assertEquals(100, originalRequested125.effectiveArm9Percent)
+        assertEquals(Arm9OverclockCapability.PLUMBING_ONLY, originalRequested125.arm9OverclockCapability)
+        assertEquals(125, originalValidated125.effectiveArm9Percent)
         assertTrue(originalHardcore.diagnostics().any { it == "requested_ra=HARDCORE" })
         assertTrue(enhancedCasual.diagnostics().any { it == "integrity=ENHANCED" })
+        assertTrue(originalValidated125.diagnostics().any { it == "requested_arm9_percent=125" })
+        assertTrue(originalValidated125.diagnostics().any { it == "effective_arm9_percent=125" })
+        assertTrue(originalValidated125.diagnostics().any { it == "arm9_capability=VALIDATED" })
     }
 
     @Test
@@ -331,6 +367,10 @@ class ProfileEngineTest {
     @Test
     fun corruptPreferenceRowsFallBackToDefaults() {
         assertEquals(ProfilePreferences(), ProfilePreferencesCodec.decode("{bad"))
+        assertEquals(
+            100,
+            ProfilePreferencesCodec.decode("""{"selectedProfileId":"original.generic","requestedRaMode":"CASUAL"}""").requestedArm9Percent,
+        )
         val preferences = ProfilePreferences("test.enhanced", mapOf("analog" to false), ProfileRaMode.OFF)
         assertEquals(preferences, ProfilePreferencesCodec.decode(ProfilePreferencesCodec.encode(preferences)))
     }

@@ -785,3 +785,27 @@ W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
   `docs/evidence/m7/castle-garden-w01-object-aspect.txt`.
 - The next M7 action is a valid Castle Garden renderer checkpoint, followed by
   a retry of W-01; no object-aspect claim is made.
+
+## M10 ARM9 overclock policy foundation - 2026-08-01
+
+- Added the Android-free ARM9 policy with explicit `UNSUPPORTED`,
+  `PLUMBING_ONLY`, `EXPERIMENTAL` and `VALIDATED` capabilities and the
+  allowed requests `100/125/150/175/200`.
+- Invalid requests, safe mode, unsupported/plumbing-only capability and
+  requested Hardcore resolve to effective 100. Current live planner plumbing
+  remains `PLUMBING_ONLY`; `ARM9_OC_CORE_SUPPORT` is not published in live
+  enhancement capabilities.
+- Added backward-compatible preference decoding/defaults, resolved requested
+  and effective values plus capability to session plans, deterministic hashes
+  and diagnostics. The planner passes the effective value to the existing
+  RetroAchievements policy resolver.
+- Focused validation passed: `Arm9OverclockPolicyTest` 5/5,
+  `ProfileEngineTest` 16/16, `RetroAchievementsPolicyTest` 10/10 and
+  `EmulatorViewModelLaunchPolicyTest` 1/1. `git diff --check` passed.
+- The unexcluded Gradle task remains blocked by the empty fresh-worktree
+  `melonDS-android-lib` checkout; the focused rerun excluded only the
+  unrelated Vulkan/librashader pre-build tasks. No submodule content was
+  changed.
+- Evidence: `docs/evidence/m10/policy-foundation.txt`. M10 remains
+  `IN_PROGRESS`; M7 remains `IN_PROGRESS`, M8 remains `NOT_STARTED`, and full
+  M9 acceptance remains open. No commit was created.
