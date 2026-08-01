@@ -673,6 +673,15 @@ class EmulatorViewModel @Inject constructor(
         }
     }
 
+    fun relaunchCurrentRomForDebug(): Boolean {
+        val args = LaunchArgs.fromSavedStateHandle(savedStateHandle) ?: return false
+        if (args !is LaunchArgs.RomObject && args !is LaunchArgs.RomUri && args !is LaunchArgs.RomPath) {
+            return false
+        }
+        relaunchWithNewArgs(args)
+        return true
+    }
+
     fun onRomLaunchValidated(rom: Rom) {
         sessionCoroutineScope.launch {
             launchRom(refreshRomForLaunch(rom))

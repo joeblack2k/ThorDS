@@ -144,7 +144,11 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         val repository = SharedPreferencesProfilePreferencesRepository(context)
         val current = repository.read(romKey)
         repository.write(romKey, current.copy(requestedArm9Percent = percent))
-        Log.w(TAG, "action=set_arm9_percent romKey=$romKey percent=$percent")
+        val relaunched = DebugCommandStateStore.requestCurrentRomRelaunch()
+        Log.w(
+            TAG,
+            "action=set_arm9_percent romKey=$romKey percent=$percent relaunched=${if (relaunched) 1 else 0}",
+        )
     }
 
     private fun handleDumpArm9Telemetry() {

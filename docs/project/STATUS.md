@@ -55,7 +55,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M10 | PARTIAL | ad3a5179 | docs/evidence/m10/ | guarded native/JNI config, scheduler snapshots, persisted preference fail-closed check, incompatible-ratio savestate guard, 100% telemetry and stability are green; 64-bit scaled-cycle truncation fixed; equivalence, drift and formal over-100 runtime gates remain open |
 | M11 | PARTIAL | 760f3c2b | docs/evidence/m11/ | ROM-details resolved ThorDS profile status, per-ROM Original/Enhanced and RA controls, physical Hardcore recovery branches and staged-edit process recreation pass; safe-mode and full physical details-flow acceptance remain open |
 | M12 | BLOCKED | docs: record M12 release preflight matrix | docs/evidence/m12/ | inventory only; release remains blocked by incomplete product and device gates |
-| M13 | NOT_STARTED | | | |
+| M13 | PARTIAL | arm9 profile/state-load gate | docs/evidence/m13/ | F1 monitor live; ARM9 125% relaunch and state 8 load pass; gameplay cadence and exact 60fps remain open |
 
 ## Feature status
 
@@ -63,7 +63,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - True Widescreen: PARTIAL
 - RA Casual: PASS
 - RA Hardcore gate: PARTIAL
-- ARM9 OC: PARTIAL
+- ARM9 OC: EXPERIMENTAL / 125% relaunch and compatible state load pass; timing validation remains open
 - 60fps: REQUIRED / IMPLEMENTATION AND VALIDATION OPEN
 - SM64DS Smooth Orbit Camera v1: PARTIAL / frontend mapping, R3 sequence,
   JNI bridge, transient Slot-2 protocol and exact-profile EU runtime patch are
@@ -85,9 +85,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Continue the Smooth Orbit Camera v1 pass with HUD/tutorial-arrow/audio proof
-and Enhanced-profile physical validation. 60fps remains a separate required
-product mode and must not be recorded as explicitly disabled.
+Continue F1/F2 with the loaded state: capture gameplay semantic counters and
+classify cadence consumers. 60fps remains required; this ARM9 gate is only an
+experimental timing prerequisite, not 60fps acceptance.
 M8 and M9 are complete for the current product gate; do not restart either
 validation workstream. Over-100% ARM9 behavior remains disabled until timing
 evidence proves it safe. Remaining independent gaps, including M6 physical

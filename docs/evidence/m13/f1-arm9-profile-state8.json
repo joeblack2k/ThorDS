@@ -1,0 +1,36 @@
+{
+  "milestone": "M13",
+  "step": "F1",
+  "identity": {
+    "gameCode": "ASMP",
+    "revision": 0,
+    "retroAchievementsHash": "ba3c4052e00c5cc31df5d5534c39de1b"
+  },
+  "device": "AYN Thor",
+  "build": "GitHubProdDebug",
+  "profile": {
+    "requestedArm9Percent": 125,
+    "effectiveArm9Percent": 125,
+    "capability": "EXPERIMENTAL"
+  },
+  "telemetry": {
+    "percent": 125,
+    "remainder": 25,
+    "frameCount": 1494
+  },
+  "savestate": {
+    "path": "app-private/thords-m7-test.ml8",
+    "loadSuccess": true
+  },
+  "semanticTelemetryAfterLoad": {
+    "enabled": true,
+    "generation": 0,
+    "lastPc": 33914436,
+    "counters": [0, 0, 0, 0, 0, 0, 0, 0, 1786]
+  },
+  "result": "PASS_FOR_ARM9_PROFILE_AND_STATE_LOAD",
+  "notes": [
+    "The state was accepted only after the active emulator was relaunched with effective ARM9 125%.",
+    "The semantic counters are not gameplay acceptance evidence."
+  ]
+}

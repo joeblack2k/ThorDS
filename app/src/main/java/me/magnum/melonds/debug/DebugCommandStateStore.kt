@@ -66,6 +66,15 @@ internal object DebugCommandStateStore {
         return true
     }
 
+    fun requestCurrentRomRelaunch(): Boolean {
+        val activity = currentEmulatorActivity.get() ?: return false
+        val viewModel = resolveEmulatorViewModel(activity) ?: return false
+        activity.runOnUiThread {
+            viewModel.relaunchCurrentRomForDebug()
+        }
+        return true
+    }
+
     fun isDebugPauseHeld(): Boolean = debugPauseHeld
 
     fun setDebugPauseHeld(held: Boolean) {

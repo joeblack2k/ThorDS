@@ -1656,3 +1656,18 @@ Evidence:
 - The slot-0 state path was unavailable after reinstall, so no gameplay claim
   was made.
 - Evidence: `docs/evidence/m13/f1-thor-semantic-run.json`.
+
+### 2026-08-01 - M13 ARM9 profile and compatible state load
+
+- Fixed the debug profile-change path so the current ROM is relaunched after
+  the hash-bound ARM9 preference changes; runtime settings refresh alone cannot
+  rebuild launch-time configuration.
+- Promoted the existing ARM9 scheduler plumbing to the explicit
+  `EXPERIMENTAL` capability used by the profile planner. `VALIDATED` remains
+  reserved for completed timing and hardware evidence.
+- Thor evidence: `requestedArm9=125 effectiveArm9=125`, native telemetry
+  `percent=125`, and compatible state `.ml8` loaded with `success=1`.
+- Semantic telemetry after the load remained monitor-live with VBlank count
+  `1786`; no gameplay cadence claim is made from this state-load gate.
+- Evidence: `docs/evidence/m13/f1-arm9-profile-state8.json`.
+- Next: F1 gameplay witness and F2 cadence-consumer classification.

@@ -117,7 +117,11 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
         }
         val resolved = sessionPlanBuilder.build(
             identity = identity,
-            device = DeviceProfileContext(capabilities),
+            // The ARM9 scheduler plumbing is present; hardware validation promotes this to VALIDATED.
+            device = DeviceProfileContext(
+                capabilities = capabilities,
+                arm9OverclockCapability = Arm9OverclockCapability.EXPERIMENTAL,
+            ),
             preferences = preferences.copy(
                 selectedProfileId = requestedProfile,
                 enabledEnhancements = mapOf(
