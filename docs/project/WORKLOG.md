@@ -751,3 +751,20 @@ W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
 - This is M9.2 pre-bootstrap wiring only. Native/runtime, network/offline,
   conflict UI, physical session and full M9 acceptance remain open. No commit
   was created.
+
+## M7 W-20 Castle Garden transition probe - 2026-08-01
+
+- Ran the bounded physical Castle Garden live transition probe after the
+  M9.2 push.
+- Capture cadence was stable: 180/180 complete samples, unique contiguous
+  frame ids `1077..1256`, complete metadata, and no filtered crash/ANR in the
+  successful capture window.
+- Two `KEYCODE_BUTTON_MODE` attempts produced no observable pause transition.
+  The inspected samples remained world frames; 90/179 adjacent PNG pairs were
+  byte-identical, so no-previous-frame transition proof is not available.
+- One earlier no-ready setup attempt produced an app ANR before the successful
+  capture. Temporary device and local artifacts were deleted.
+- Decision: W-20 remains `PARTIAL`, not a pass. Evidence:
+  `docs/evidence/m7/castle-garden-w20-transition.txt`.
+- Next runnable gate: W-01 object aspect using a paired native/probe
+  Castle Garden renderer frame and bounding-box ratio.

@@ -1,0 +1,38 @@
+M7 W-20 Castle Garden world-to-pause-to-world transition probe
+Date: 2026-08-01
+Scope: physical Castle Garden transition and live capture stability only
+
+Result: PARTIAL
+
+Capture:
+- 180/180 live captures completed.
+- Frame ids were unique and contiguous: 1077..1256.
+- 180/180 metadata records were complete.
+- 180 valid 256x384 RGBA screen PNGs and one manifest were produced.
+- The checked classifier fields each had one distinct value with zero changes.
+- screenSwapLatched was true for 180/180 samples.
+- frontBufferLatched was 1 for 90 samples and 0 for 90 samples.
+
+Transition attempt:
+- Two KEYCODE_BUTTON_MODE pause attempts were sent.
+- Observed pause transitions: 0.
+- The inspected checkpoint samples remained Castle Garden world frames;
+  no pause overlay was observed.
+- 90/179 adjacent PNG pairs were byte-identical. The repeated-frame count
+  prevents a clean no-previous-frame transition pass.
+- No visible flash was found in the four inspected samples, but that is not
+  sufficient to pass W-20 without an observed pause transition.
+
+Stability:
+- The successful capture window had 0 filtered FATAL EXCEPTION or ANR matches.
+- One earlier no-ready setup attempt produced an app ANR before the successful
+  capture. It is recorded as a failed setup attempt, not as a green W-20 run.
+- Device and local temporary capture artifacts were deleted after aggregation.
+- No ROM bytes, save files, private screenshots or device identifiers are
+  retained in this evidence.
+
+Decision:
+- W-20 remains OPEN/PARTIAL.
+- This result proves live capture cadence and classifier stability only.
+- Object aspect, side-region culling, HUD/glyph/bottom geometry and a real
+  world-to-pause-to-world transition remain open.
