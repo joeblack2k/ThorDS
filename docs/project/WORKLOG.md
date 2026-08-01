@@ -1425,6 +1425,9 @@ Evidence:
   normal launch path after relaunch.
 - Profile changes now show an explicit relaunch-required message in the ROM
   details screen.
+- Profile edits remain pending in the details ViewModel and are committed only
+  from `onRomValidated`, so leaving the screen or failing validation does not
+  change the persisted launch preference.
 - No second settings store, ROM database field or new toggle was introduced.
 
 ### Validation

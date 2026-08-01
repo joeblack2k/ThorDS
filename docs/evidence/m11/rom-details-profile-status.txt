@@ -23,6 +23,9 @@ The selections write the existing hash-bound preferences and are applied by
 the normal launch path after relaunch. The details screen shows an explicit
 relaunch-required message after either profile control changes. No second
 settings store or ROM database field was added.
+Pending edits are committed only after ROM validation succeeds; abandoning
+the details screen or aborting validation leaves the persisted preference
+unchanged.
 
 Validation:
 

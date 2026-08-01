@@ -64,6 +64,7 @@ class RomDetailsViewModel @Inject constructor(
     private val _romConfig = MutableStateFlow(_rom.value.config)
     private val _thorProfile = MutableStateFlow<ThorProfileUiModel?>(null)
     private var thorIdentity: RomIdentity? = null
+    private var pendingThorProfilePreferences: me.magnum.melonds.domain.model.enhancement.ProfilePreferences? = null
     private val profileLaunchPlanner by lazy { ProfileLaunchPlanner(EmbeddedProfileCatalog(context).catalog) }
     private val profilePreferencesRepository by lazy { SharedPreferencesProfilePreferencesRepository(context) }
 
@@ -224,6 +225,14 @@ class RomDetailsViewModel @Inject constructor(
         }
     }
 
+    fun commitPendingThorProfilePreferences() {
+        val identity = thorIdentity ?: return
+        pendingThorProfilePreferences?.let {
+            profilePreferencesRepository.write(identity.stableKey(), it)
+            pendingThorProfilePreferences = null
+        }
+    }
+
     private suspend fun resolveThorProfile() {
         val rom = _rom.value
         val info = romFileProcessorFactory.getFileRomProcessorForDocument(rom.uri)?.getRomInfo(rom)
@@ -233,7 +242,8 @@ class RomDetailsViewModel @Inject constructor(
             _thorProfile.value = null
             return
         }
-        val preferences = profilePreferencesRepository.read(identity.stableKey())
+        val preferences = pendingThorProfilePreferences
+            ?: profilePreferencesRepository.read(identity.stableKey())
         val resolved = profileLaunchPlanner.resolve(
             identity = identity,
             currentSlot = rom.config.gbaSlotConfig,
@@ -260,7 +270,9 @@ class RomDetailsViewModel @Inject constructor(
     ) {
         val identity = thorIdentity ?: return
         val key = identity.stableKey()
-        profilePreferencesRepository.write(key, update(profilePreferencesRepository.read(key)))
+        pendingThorProfilePreferences = update(
+            pendingThorProfilePreferences ?: profilePreferencesRepository.read(key),
+        )
         viewModelScope.launch { resolveThorProfile() }
     }
 

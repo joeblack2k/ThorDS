@@ -43,6 +43,7 @@ class RomDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val emulatorLauncherValidatorDelegate = EmulatorLaunchValidatorDelegate(this, object : EmulatorLaunchValidatorDelegate.Callback {
             override fun onRomValidated(rom: Rom) {
+                romDetailsViewModel.commitPendingThorProfilePreferences()
                 val intent = EmulatorActivity.getRomEmulatorActivityIntent(this@RomDetailsActivity, rom)
                 startActivity(intent)
             }
