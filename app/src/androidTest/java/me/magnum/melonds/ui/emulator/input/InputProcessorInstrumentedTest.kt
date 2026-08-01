@@ -82,6 +82,8 @@ class InputProcessorInstrumentedTest {
 
         controllerMotion(0f, 0f, cameraX = 0.8f).useEvent(processor::onMotionEvent)
         assertTrue(cameraStates.last()[0] > 0)
+        controllerMotion(0f, 0f, alternateCameraX = -0.8f).useEvent(processor::onMotionEvent)
+        assertTrue(cameraStates.last()[0] < 0)
         processor.releaseAllInputs()
         assertEquals(0f to 0f, outputs.last())
         assertEquals(0, cameraStates.last()[0])
@@ -142,6 +144,8 @@ class InputProcessorInstrumentedTest {
         leftY: Float,
         cameraX: Float = 0f,
         cameraY: Float = 0f,
+        alternateCameraX: Float = 0f,
+        alternateCameraY: Float = 0f,
         hatX: Float = 0f,
     ): MotionEvent {
         val now = SystemClock.uptimeMillis()
@@ -154,6 +158,8 @@ class InputProcessorInstrumentedTest {
             setAxisValue(MotionEvent.AXIS_Y, leftY)
             setAxisValue(MotionEvent.AXIS_Z, cameraX)
             setAxisValue(MotionEvent.AXIS_RZ, cameraY)
+            setAxisValue(MotionEvent.AXIS_RX, alternateCameraX)
+            setAxisValue(MotionEvent.AXIS_RY, alternateCameraY)
             setAxisValue(MotionEvent.AXIS_HAT_X, hatX)
         }
         return MotionEvent.obtain(
