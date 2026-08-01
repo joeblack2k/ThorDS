@@ -1,0 +1,19 @@
+{
+  "milestone": "M13",
+  "gate": "private gameplay savestate round trip",
+  "device": "AYN Thor",
+  "package": "io.github.joeblack2k.thords.dev",
+  "state": {
+    "privatePath": "/data/user/0/io.github.joeblack2k.thords.dev/cache/thords-m13-gameplay.ml0",
+    "save": "success",
+    "load": "success"
+  },
+  "result": "PRIVATE_GAMEPLAY_CHECKPOINT_REUSABLE",
+  "notes": [
+    "The checkpoint was created after advancing past the SM64DS intro by tapping the lower screen.",
+    "The checkpoint was loaded through the debug receiver without restarting the intro.",
+    "The state file and ROM remain private on the device and are not tracked or copied to the repository.",
+    "Loading the checkpoint restored the emulator, but the observed cadence remained the original approximately 30 unique updates per second.",
+    "No 60 FPS acceptance claim is made."
+  ]
+}

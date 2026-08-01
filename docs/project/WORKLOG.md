@@ -1804,3 +1804,25 @@ Evidence:
   value, stage timer and camera behavior calls.
 - A fresh title-screen launch correctly returned `valid=false`; no gameplay
   baseline is claimed from title/menu state.
+## 2026-08-01 - M13 gameplay cadence baseline after intro
+
+- Confirmed that the apparent white/black hang was the SM64DS intro waiting for
+  a tap on the lower screen. After the lower-screen tap, the AYN Thor reached
+  visible Castle Garden gameplay.
+- Captured native game-loop telemetry from that live gameplay state:
+  approximately 60 emulator frames per second but only 30 unique SM64DS
+  updates per second, with `cadence=2`.
+- The visible 60 FPS overlay is therefore presentation cadence, not proof of
+  60 FPS game logic. Evidence: `docs/evidence/m13/f2-gameplay-30fps-baseline.json`.
+- M13 60 FPS remains open. The next implementation target is the guarded
+  game-update cadence path, followed by movement/camera and stability
+  acceptance on the Thor.
+## 2026-08-01 - M13 reusable private gameplay checkpoint
+
+- Created a private savestate after advancing past the SM64DS intro:
+  `/data/user/0/io.github.joeblack2k.thords.dev/cache/thords-m13-gameplay.ml0`.
+- Loaded the same checkpoint through the debug receiver and received
+  `success=1`; the intro no longer needs to be replayed for each test.
+- The state remains device-private. No ROM, save-state bytes or private capture
+  were copied into the repository.
+- Evidence: `docs/evidence/m13/f1-gameplay-savestate-roundtrip.json`.
