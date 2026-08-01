@@ -1,0 +1,33 @@
+M13 timing hook audit
+Date: 2026-08-01
+Status: RESEARCH_COMPLETE_IMPLEMENTATION_OPEN
+
+Source lock:
+- superproject HEAD: 7b8476f1
+- core gitlink: 3c54a9c8b5e6b0a928487597ee33dcf110d01c4e
+- target identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
+
+Observed boundaries:
+- Android frontend entry: app/src/main/cpp/MelonDS.cpp, loop()
+- frontend emulation call: app/src/main/cpp/MelonInstance.cpp, runFrame()
+- emulated DS frame: melonDS-android-lib/src/NDS.cpp, NDS::RunFrame()
+- hardware VBlank: melonDS-android-lib/src/GPU.cpp,
+  GPU::StartScanline() at VCount == 192
+- ARM7 VBlank delivery and existing cheat hook:
+  melonDS-android-lib/src/ARM.cpp, ARM::TriggerIRQ()
+- existing runtime code engine:
+  melonDS-android-lib/src/AREngine.cpp, AREngine::RunCheats()
+
+Findings:
+- NDS::RunFrame() advances one complete DS display period.
+- Frontend target FPS and presenter counters cannot prove unique SM64DS
+  gameplay updates.
+- The repository has no proven European 60fps Action Replay code or patched
+  reference copy.
+- No 60fps runtime code was invented or added.
+
+Next evidence required:
+- legal local original/patched comparison or a source-level equivalent;
+- exact changed addresses/words and preconditions;
+- semantic game-update counter;
+- 60 unique updates/s, normal timing/audio/physics and stress evidence.

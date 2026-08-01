@@ -85,9 +85,10 @@ Gebruikers meldden:
 
 De post concludeert dat een accurate DS-emulator extra geëmuleerde CPU-capaciteit nodig heeft. Daarom:
 
-- analog + True Widescreen zijn v0.1-doelen;
+- analog + True Widescreen + 60fps zijn productdoelen;
 - ARM9-OC-fundering komt mee;
-- 60fps is pas groen na eigen patchanalyse en timingtests.
+- 60fps is pas groen na eigen patchanalyse en timingtests; zonder die groene
+  gate is de productrelease niet compleet.
 
 ## RA-les
 

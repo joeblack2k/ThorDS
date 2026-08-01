@@ -20,7 +20,7 @@ Voor v0.1:
 Analog Controls       releasefeature
 True Widescreen       releasefeature
 ARM9 OC foundation    experimentele fundering
-60fps                 volgende doelstelling
+60fps                 verplichte product- en releasefeature
 ```
 
 Geen onbegrepen binary, vooraf gepatchte ROM of YouTube-download wordt in de repository, APK of profielcatalogus opgenomen.
@@ -67,7 +67,8 @@ Een zichtbare 60fps-counter bewijst geen correcte 60fps.
 
 ## Acceptatie
 
-Een toekomstige 60fps-toggle wordt pas `VALIDATED` wanneer:
+De verplichte 60fps-toggle blijft verborgen of experimenteel totdat hij
+`VALIDATED` is. `VALIDATED` vereist:
 
 - 60 unieke gameplayupdates per seconde zijn gemeten;
 - tien minuten wandklok exact overeenkomt met gametijd binnen de testtolerantie;

@@ -65,6 +65,10 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - RA Hardcore gate: PARTIAL
 - ARM9 OC: PARTIAL
 - 60fps: REQUIRED / NOT_STARTED
+- M13 research now records the real emulation/VBlank/Action Replay hook
+  boundaries. No unverified 60fps code is shipped; implementation and full
+  timing validation remain open. Evidence:
+  `docs/evidence/m13/timing/core-hook-audit.txt`.
 - Thor GUI: PARTIAL
 - Stability: NOT_STARTED
 

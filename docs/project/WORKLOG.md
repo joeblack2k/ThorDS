@@ -1,5 +1,23 @@
 # Worklog
 
+## 2026-08-01 - M13 60fps timing-hook audit
+
+### Result
+
+- M13 is confirmed as a required product and release gate.
+- The real boundaries were mapped: Android `runFrame`, emulated
+  `NDS::RunFrame`, DS VBlank at `VCount == 192`, ARM7 VBlank delivery and
+  the existing Action Replay hook.
+- The current repository contains no proven European `ASMP` 60fps code or
+  legal patched reference copy, so no unverified code words were added.
+
+### Boundary
+
+- This is research evidence, not a 60fps implementation or validation pass.
+- A legal original/patched comparison or source-equivalent mapping and a
+  semantic game-update counter are still required.
+- Evidence: `docs/evidence/m13/timing/core-hook-audit.txt`.
+
 ## 2026-08-01 - M10 native launch telemetry baseline
 
 ### Result
