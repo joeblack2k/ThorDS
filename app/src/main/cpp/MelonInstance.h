@@ -70,6 +70,9 @@ public:
         std::optional<std::chrono::time_point<std::chrono::steady_clock>> budgetDeadline);
     void requestVulkanPresentationResync();
     void requestVulkanFastForwardPresentationTransition();
+    void startVulkanPresenterDebugMetadataCapture(int recordCount);
+    bool isVulkanPresenterDebugMetadataCaptureComplete() const;
+    std::string getVulkanPresenterDebugMetadataCaptureJson() const;
     std::vector<u32> captureCurrentFrameForDebug();
     std::vector<u32> captureCurrentPackedTopPrimaryForDebug();
     std::vector<u32> captureCurrentPackedBottomPrimaryForDebug();

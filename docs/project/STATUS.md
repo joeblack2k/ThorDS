@@ -15,14 +15,14 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - Current workstream: G2 / M7 deterministic Castle Garden proof closeout
 - Current gate: renderer-internal geometry and physical display-role proof
 - Overall status: PARTIAL
-- Latest verified result: the G1 code/harness slice passed on the exact
-  GitHubProdDebug APK. The production Android route handled 64/64 samples
-  across 16 directions and four magnitudes, the radial deadzone boundary,
-  D-pad-plus-camera ownership, neutral return and a live input-pipeline
-  recreation. Same-checkpoint Castle Garden trials measured game response for
-  low, mid and full movement plus the right-stick camera. Original relaunched
-  with zero curated codes/addon/camera; Enhanced relaunched with exactly one
-  curated analog code plus addon and camera.
+- Latest verified result: G2 now has a bounded presenter metadata trace and
+  exact-step in-app PixelCopy for both physical surfaces. The corrected native
+  single-frame primitive produced contiguous frame ids; the 192-record
+  world-pause-world trace had no sequence gaps or frame regressions. W-06 is
+  PASS with exact `256x192` to `1240x930` lower scaling, `0.0%` aspect error,
+  rotation disabled and a green 3x3 touch grid. The current exact APK also
+  produced an upright `1920x1080` top capture, but no owner-witnessed physical
+  closure or stable 60fps claim is made.
 - Active blocker: M6 still lacks witnessed swim/fly/slide and usable physical
   gameplay. The owner-observed 180-degree top-screen output and approximately
   20fps gameplay make that physical closeout impractical. G2 is independent
@@ -46,7 +46,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M4 | PASS | 04ed45bd | docs/evidence/m4/ | catalog v1, exact resolver, safe Original fallback, curated/user separation and synthetic delta patches |
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
 | M6 | PARTIAL | input: harden and trace Slot-2 analog lifecycle | docs/evidence/m6/ | deterministic post-Android sweep, gameplay response, ownership, lifecycle neutralization, pipeline recreation and Original/Enhanced relaunch pass; swim/fly/slide and usable physical play remain |
-| M7 | PARTIAL | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, newline-safe parser, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and Castle Garden classifier matrices verified; save-state-assisted Castle Garden route, direct-path checkpoint restore, native-versus-probe world/FOV comparison, measured game projection response, Thor-default world plus packed-UI rotation, readable pause overlay, 10-second `FPS: 60` movement smoke, corrected 180-sample live bursts, a 120-frame fixed Castle Garden movement burst, a clean 30-frame exact-step final-primary side sequence, a measured native `packedBottomPrimary` raster, a direct final-primary world-pause-world transition and a short opaque/non-black transition soak recorded; W-20 is PARTIAL with longer no-flash/soak coverage open; W-01 is PARTIAL after paired non-black final-primary captures and a 0.39% diagnostic object-mask ratio delta, while formal round/square and controlled-camera evidence remain open; W-03 is PARTIAL because side geometry moves coherently in the exact primary sequence but no single identifiable side landmark is tracked wholly within one side ROI; W-06 is PARTIAL because native bottom geometry is measured but final secondary-display placement remains open; exact HUD/glyph geometry remains open |
+| M7 | PARTIAL | 54410dc0 + current G2 slice | docs/evidence/m7/ | W-02 and W-06 pass. Bounded presenter and paired source/final PixelCopy instrumentation are green on Thor; world-pause-world internal trace passes. W-01 known controlled reference, W-03 named side landmark, top UI-safe W-04/W-05 and W-20 painting/star plus pixel black/stale classification remain open |
 | M8 | NOT_STARTED | | | |
 | M9 | PARTIAL | policy-foundation + M9.2 launch-policy wiring | docs/evidence/m9/ | Android-free policy foundation, unsupported-mode fail-closed handling and pre-bootstrap launch gate verified; native/network/offline validation and full M9 acceptance remain open; publication history has documented legacy bounds |
 | M10 | PARTIAL | | docs/evidence/m10/ | ARM9 overclock policy foundation only; current plumbing resolves effective 100; no native/JNI/UI/runtime over-100 behavior |
@@ -67,8 +67,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Continue with G2's renderer-internal Castle Garden measurement layer while G1's
-physical swim/fly/slide witness is blocked. Add bounded presenter metadata and
-an offline analyzer for W-01/W-03/W-04/W-05/W-06/W-20, then use the result to
-repair the reported top-screen 180-degree defect and distinguish game cadence
-from presenter cadence. Do not collect another host-polled screenshot burst.
+Use the exact-step paired top-Surface sequence to close W-01 with a stable
+reference and W-03 with one named Castle Garden side landmark. Capture the top
+UI-safe plane for W-04/W-05, then run the same bounded surface path through one
+painting/star transition for W-20. Keep the owner's physical top-orientation
+and playable-framerate witness separate from captured compositor output.

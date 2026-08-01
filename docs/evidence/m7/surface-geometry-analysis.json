@@ -1,0 +1,93 @@
+{
+  "schema": "thords.m7-surface-geometry-analysis.v1",
+  "structuralPass": true,
+  "target": "secondary",
+  "frameIndex": 0,
+  "emulatorFrame": 272,
+  "source": {
+    "width": 256,
+    "height": 192
+  },
+  "finalSurface": {
+    "width": 1240,
+    "height": 1080,
+    "rect": {
+      "enabled": true,
+      "x": 0,
+      "y": 75,
+      "width": 1240,
+      "height": 930
+    },
+    "rotatePrimaryVulkan180": false,
+    "rectAspectErrorPercent": 0.0
+  },
+  "sourceToFinal": {
+    "channelMapping": "SOURCE_RED_BLUE_SWAPPED",
+    "exactPixelRatio": 1.0,
+    "meanChannelDelta": 0.0
+  },
+  "knownCircle": {
+    "name": "bottom-hud-bomb-body",
+    "reference": {
+      "valid": true,
+      "pixelCount": 119,
+      "x": 2,
+      "y": 2,
+      "width": 17,
+      "height": 16,
+      "aspect": 1.0625
+    },
+    "final": {
+      "valid": true,
+      "pixelCount": 119,
+      "x": 2,
+      "y": 2,
+      "width": 17,
+      "height": 16,
+      "aspect": 1.0625
+    },
+    "aspectDeltaPercent": 0.0,
+    "measurementPass": true
+  },
+  "knownGlyph": {
+    "name": "bottom-hud-digit-4",
+    "reference": {
+      "valid": true,
+      "pixelCount": 48,
+      "x": 40,
+      "y": 3,
+      "width": 8,
+      "height": 15,
+      "aspect": 0.533333
+    },
+    "final": {
+      "valid": true,
+      "pixelCount": 48,
+      "x": 40,
+      "y": 3,
+      "width": 8,
+      "height": 15,
+      "aspect": 0.533333
+    },
+    "aspectDeltaPercent": 0.0,
+    "measurementPass": true
+  },
+  "gates": {
+    "W04": {
+      "status": "PARTIAL",
+      "lowerReferenceMeasurement": "PASS",
+      "topUiSafePlane": "NOT_MEASURED"
+    },
+    "W05": {
+      "status": "PARTIAL",
+      "lowerReferenceMeasurement": "PASS",
+      "topUiSafePlane": "NOT_MEASURED"
+    },
+    "W06": {
+      "status": "PASS",
+      "physicalRectAspect": "PASS",
+      "orientation": "PASS",
+      "touchGrid": "PASS"
+    }
+  }
+}

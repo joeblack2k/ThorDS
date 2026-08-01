@@ -2307,6 +2307,30 @@ void MelonInstance::requestVulkanFastForwardPresentationTransition()
     renderer3D.InvalidatePresentationState(false);
 }
 
+void MelonInstance::startVulkanPresenterDebugMetadataCapture(int recordCount)
+{
+    if (!areRendererDebugToolsEnabled() || !vulkanSurfacePresenter)
+        return;
+
+    vulkanSurfacePresenter->startDebugMetadataCapture(
+        static_cast<u32>(std::max(recordCount, 1)));
+}
+
+bool MelonInstance::isVulkanPresenterDebugMetadataCaptureComplete() const
+{
+    return areRendererDebugToolsEnabled()
+        && vulkanSurfacePresenter
+        && vulkanSurfacePresenter->isDebugMetadataCaptureComplete();
+}
+
+std::string MelonInstance::getVulkanPresenterDebugMetadataCaptureJson() const
+{
+    if (!areRendererDebugToolsEnabled() || !vulkanSurfacePresenter)
+        return {};
+
+    return vulkanSurfacePresenter->getDebugMetadataCaptureJson();
+}
+
 std::vector<u32> MelonInstance::captureCurrentFrameForDebug()
 {
     if (!areRendererDebugToolsEnabled())

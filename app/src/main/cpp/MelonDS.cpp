@@ -766,6 +766,26 @@ namespace MelonDSAndroid
             instance->requestVulkanFastForwardPresentationTransition();
     }
 
+    void startVulkanPresenterDebugMetadataCaptureForDebug(int recordCount)
+    {
+        if (instance)
+            instance->startVulkanPresenterDebugMetadataCapture(recordCount);
+    }
+
+    bool isVulkanPresenterDebugMetadataCaptureCompleteForDebug()
+    {
+        return instance
+            && instance->isVulkanPresenterDebugMetadataCaptureComplete();
+    }
+
+    std::string getVulkanPresenterDebugMetadataCaptureJsonForDebug()
+    {
+        if (!instance)
+            return {};
+
+        return instance->getVulkanPresenterDebugMetadataCaptureJson();
+    }
+
     bool areRendererDebugToolsEnabled()
     {
         return rendererDebugToolsEnabled.load(std::memory_order_relaxed);

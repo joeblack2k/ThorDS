@@ -2,7 +2,7 @@ M7 W-06 Castle Garden bottom-primary raster probe
 Date: 2026-08-01
 Scope: developer Vulkan capture, Castle Garden checkpoint
 
-Result: PARTIAL
+Result: PASS
 
 Probe:
 - The existing app-private Castle Garden checkpoint was already restored
@@ -19,25 +19,42 @@ Probe:
 - The filtered device log contained no `FATAL EXCEPTION`, `ANR in` or
   `am_anr` entry during the probe.
 
-Measurement boundary:
-- This proves that the bottom source raster is captured at native DS geometry
-  and is populated for the Castle Garden checkpoint.
-- It does not prove the physical Thor secondary panel's placement, scaling,
-  orientation or final-display aspect. A final bottom-panel measurement still
-  requires a documented physical display capture or an equivalent final
-  surface readback.
+Final physical-surface measurement:
+- A debug-only in-app PixelCopy captured the lower Presentation only after an
+  exact native frame step and two successful presenter records.
+- The paired source and final capture were tied to emulator frame 272.
+- Source geometry was `256x192`; final physical geometry was `1240x1080`.
+- Presenter metadata placed the lower raster at `x=0,y=75,width=1240,height=930`
+  with primary rotation disabled. The destination and source are both exactly
+  4:3, for `0.0%` aspect error.
+- After explicitly accounting for the debug source's red/blue byte order, the
+  normalized physical rect matched the source pixel-for-pixel.
+- The known lower-HUD bomb-body and digit-4 masks each measured `0.0%` aspect
+  delta from source to physical output.
+
+Touch-grid rerun:
+- The full 3x3 physical grid mapped to DS
+  `0/128/255 x 0/96/191`.
+- The upper and lower black-bar probes emitted no mapped DS touch.
+- Android intermittently dropped the absolute injected display point `(0,75)`;
+  `(1,75)` and `(0,76)` both mapped to DS `(0,0)`. This is an input-injection
+  edge, not a layout-mapping discrepancy.
 
 Decision:
-- W-06 advances from unmeasured to `PARTIAL`: native bottom-raster geometry is
-  now directly measured and reproducible.
-- W-06 remains open for final secondary-display geometry and the complete M7
-  bottom-screen acceptance gate.
-- W-01 formal round/square repeat, W-03 semantic side-landmark tracking,
-  W-04 HUD, W-05 glyph and W-20 world-to-pause-to-world transition proof
-  remain open.
+- W-06 is `PASS`: final lower rect, orientation, aspect and exact touch mapping
+  are measured on the current Thor APK.
+- The lower-HUD circle/glyph reference measurements pass, but W-04 and W-05
+  remain `PARTIAL` until the top UI-safe plane is measured through its distinct
+  widescreen draw path.
+- W-01 formal reference geometry, W-03 semantic side-landmark tracking and the
+  remaining W-20 painting/star transition proof remain open.
 
 Safety:
 - No ROM bytes, save-state bytes, private screenshots, device identifiers or
   credentials are retained in this evidence file.
 - Bob-omb Battlefield is not part of this gate; Castle Garden is the sole M7
   representative scene.
+
+Machine-readable evidence:
+- `docs/evidence/m7/surface-geometry-analysis.json`
+- `docs/evidence/m7/w06-touch-grid.json`

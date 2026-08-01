@@ -132,6 +132,9 @@ internal object RendererDebugBridge {
     external fun getCurrentFrameIndexForDebug(): Int
     external fun requestPreparedRendererSnapshot()
     external fun clearPreparedRendererSnapshot()
+    external fun startVulkanPresenterMetadataCapture(recordCount: Int)
+    external fun isVulkanPresenterMetadataCaptureComplete(): Boolean
+    external fun getVulkanPresenterMetadataCaptureJson(): String?
     external fun startDenseScreenBurstCapture(frameCount: Int, stepFrames: Int, captureKindsMask: Int)
     external fun isDenseScreenBurstCaptureComplete(): Boolean
     external fun getDenseScreenBurstCaptureFrameCount(): Int

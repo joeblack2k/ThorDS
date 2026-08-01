@@ -1,0 +1,70 @@
+{
+  "schema": "thords.presenter-trace-analysis.v1",
+  "sourceSchema": "thords.presenter-trace.v1",
+  "structuralPass": true,
+  "recordCount": 192,
+  "targetRecords": 192,
+  "durationMs": 1968.591,
+  "sequenceGaps": 0,
+  "frameRegressions": 0,
+  "consecutiveDuplicateFrameIds": 0,
+  "scenario": {
+    "present": true,
+    "name": "world-pause-world",
+    "pauseDurationMs": 401.307,
+    "recordsBeforePause": 120,
+    "recordsDuringPause": 2,
+    "recordsAfterPause": 70,
+    "worldPauseWorldBracketed": true
+  },
+  "surfaces": {
+    "bottom": {
+      "recordCount": 96,
+      "firstFrameId": 350,
+      "lastFrameId": 445,
+      "frameRegressions": 0,
+      "consecutiveDuplicateFrameIds": 0,
+      "outputSizes": ["1240x1080"],
+      "rotatePrimaryVulkan180Values": [false],
+      "developerWidescreenProbeValues": [false],
+      "drawModeRecordCounts": {"1": 96},
+      "finalRectAspects": {
+        "bottomRect": {
+          "valid": true,
+          "aspect": 1.333333,
+          "nativeAspectErrorPercent": 0.0,
+          "withinTwoPercent": true
+        }
+      }
+    },
+    "top": {
+      "recordCount": 96,
+      "firstFrameId": 350,
+      "lastFrameId": 445,
+      "frameRegressions": 0,
+      "consecutiveDuplicateFrameIds": 0,
+      "outputSizes": ["1920x1080"],
+      "rotatePrimaryVulkan180Values": [true],
+      "developerWidescreenProbeValues": [true],
+      "drawModeRecordCounts": {"7": 96, "8": 96},
+      "finalRectAspects": {
+        "topRect": {
+          "valid": true,
+          "aspect": 1.777778,
+          "nativeAspectErrorPercent": 33.3333,
+          "withinTwoPercent": false
+        }
+      }
+    }
+  },
+  "m7": {
+    "W20": {
+      "status": "PARTIAL",
+      "worldPauseWorldTrace": "PASS",
+      "paintingOrStarTransitionTrace": "NOT_MEASURED",
+      "contentBlackOrStaleCheck": "NOT_MEASURED"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

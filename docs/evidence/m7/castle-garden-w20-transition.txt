@@ -2,7 +2,7 @@ M7 W-20 Castle Garden world-to-pause-to-world transition probe
 Date: 2026-08-01
 Scope: physical Castle Garden transition and live capture stability only
 
-Result: PARTIAL_WITH_OBSERVED_TRANSITION
+Result: PARTIAL
 
 Capture:
 - 180/180 live captures completed.
@@ -61,8 +61,25 @@ Short transition soak:
   so it strengthens but does not replace longer no-flash cadence evidence.
 
 Decision:
-- W-20 advances to `PARTIAL_WITH_OBSERVED_TRANSITION`: the direct final-primary
+- W-20 remains `PARTIAL`: the direct final-primary
   sequence now proves a real Castle Garden world-to-pause-to-world transition.
 - W-20 remains open for longer no-flash/soak coverage and exact cadence
   evidence between the world, pause and restored-world states.
 - Object aspect, side-region culling and HUD/glyph geometry remain open.
+
+Renderer-internal presenter trace:
+- A bounded 192-record capture ran wholly inside the debug APK around a
+  world-pause-world sequence. No host screenshot polling was used.
+- The trace completed with 192/192 records, no sequence gaps, no per-surface
+  frame-id regressions and no consecutive duplicate frame ids.
+- The sequence contained 120 records before the pause markers, 2 while the
+  pause was taking effect and 70 after resume.
+- The top role produced 96 `1920x1080` records with draw modes 7 and 8 and the
+  top-only 180-degree transform enabled. The bottom role produced 96
+  `1240x1080` records with rotation disabled.
+- The world-pause-world trace is `PASS`; W-20 remains `PARTIAL` because a
+  painting/star transition and pixel-level black/stale classification are not
+  yet captured through the same internal path.
+
+Machine-readable evidence:
+- `docs/evidence/m7/presenter-trace-analysis.json`

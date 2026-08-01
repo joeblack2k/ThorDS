@@ -189,6 +189,8 @@ class ExternalPresentation(
         pauseOverlay.isVisible = visible
     }
 
+    internal fun getEmulatorSurfaceForDebug(): EmulatorSurfaceView = surfaceView
+
     private fun createSurfaceView(renderer: EmulatorRenderer): EmulatorSurfaceView {
         return EmulatorSurfaceView(context).apply {
             setRenderer(renderer)

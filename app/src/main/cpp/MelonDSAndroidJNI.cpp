@@ -1748,6 +1748,43 @@ Java_me_magnum_melonds_impl_emulator_debug_RendererDebugBridge_clearPreparedRend
 }
 
 JNIEXPORT void JNICALL
+Java_me_magnum_melonds_impl_emulator_debug_RendererDebugBridge_startVulkanPresenterMetadataCapture(
+    JNIEnv* env,
+    jobject thiz,
+    jint recordCount)
+{
+    (void)env;
+    (void)thiz;
+    MelonDSAndroid::startVulkanPresenterDebugMetadataCaptureForDebug(
+        static_cast<int>(recordCount));
+}
+
+JNIEXPORT jboolean JNICALL
+Java_me_magnum_melonds_impl_emulator_debug_RendererDebugBridge_isVulkanPresenterMetadataCaptureComplete(
+    JNIEnv* env,
+    jobject thiz)
+{
+    (void)env;
+    (void)thiz;
+    return MelonDSAndroid::isVulkanPresenterDebugMetadataCaptureCompleteForDebug()
+        ? JNI_TRUE
+        : JNI_FALSE;
+}
+
+JNIEXPORT jstring JNICALL
+Java_me_magnum_melonds_impl_emulator_debug_RendererDebugBridge_getVulkanPresenterMetadataCaptureJson(
+    JNIEnv* env,
+    jobject thiz)
+{
+    (void)thiz;
+    const std::string json = MelonDSAndroid::getVulkanPresenterDebugMetadataCaptureJsonForDebug();
+    if (json.empty())
+        return nullptr;
+
+    return env->NewStringUTF(json.c_str());
+}
+
+JNIEXPORT void JNICALL
 Java_me_magnum_melonds_impl_emulator_debug_RendererDebugBridge_startDenseScreenBurstCapture(
     JNIEnv* env,
     jobject thiz,

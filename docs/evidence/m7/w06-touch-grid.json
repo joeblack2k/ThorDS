@@ -1,0 +1,27 @@
+{
+  "schema": "thords.touch-grid.v1",
+  "date": "2026-08-01",
+  "physicalRect": {
+    "x": 0,
+    "y": 75,
+    "width": 1240,
+    "height": 930
+  },
+  "points": [
+    {"display": [1, 75], "ds": [0, 0]},
+    {"display": [620, 75], "ds": [128, 0]},
+    {"display": [1239, 75], "ds": [255, 0]},
+    {"display": [0, 540], "ds": [0, 96]},
+    {"display": [620, 540], "ds": [128, 96]},
+    {"display": [1239, 540], "ds": [255, 96]},
+    {"display": [0, 1004], "ds": [0, 191]},
+    {"display": [620, 1004], "ds": [128, 191]},
+    {"display": [1239, 1004], "ds": [255, 191]}
+  ],
+  "negativePoints": [
+    {"display": [10, 20], "mapped": false},
+    {"display": [10, 1030], "mapped": false}
+  ],
+  "edgeInjectionNote": "Android intermittently dropped the absolute injected point [0,75]; [1,75] and [0,76] both mapped to DS [0,0].",
+  "result": "PASS"
+}

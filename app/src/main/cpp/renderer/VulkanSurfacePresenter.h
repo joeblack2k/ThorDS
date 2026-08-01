@@ -2,7 +2,9 @@
 #define VULKANSURFACEPRESENTER_H
 
 #include <android/native_window.h>
+#include <atomic>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <utility>
 #include <unordered_map>
@@ -124,6 +126,9 @@ public:
     bool waitForFrameConsumption(Frame* frame, u64 timeoutNs = UINT64_MAX);
     void invalidateDescriptorCaches();
     VulkanPresenterPacingStats takePacingStatsSnapshotAndReset();
+    void startDebugMetadataCapture(u32 recordCount);
+    bool isDebugMetadataCaptureComplete() const;
+    std::string getDebugMetadataCaptureJson() const;
     static bool prewarmRetroArchFilter(
         const VulkanSurfaceConfig& config,
         u32 outputScreenWidth,
@@ -148,6 +153,41 @@ private:
         u32 drawMode = 0;
         float viewportWidth = 0.0f;
         float viewportHeight = 0.0f;
+    };
+
+    struct DebugMetadataRecord
+    {
+        u32 sequence = 0;
+        u64 frameId = 0;
+        u64 timestampNs = 0;
+        u32 outputWidth = 0;
+        u32 outputHeight = 0;
+        VulkanPresenterRect topScreen{};
+        VulkanPresenterRect bottomScreen{};
+        VulkanPresenterRect hybridTopScreen{};
+        VulkanPresenterRect hybridBottomScreen{};
+        u32 drawCallCount = 0;
+        u32 drawModeMask = 0;
+        u32 sourceWidth = 0;
+        u32 sourceHeight = 0;
+        u32 rendererWidth = 0;
+        u32 rendererHeight = 0;
+        u32 scale = 0;
+        u32 screenSwap = 0;
+        bool directPresent = false;
+        bool retroArchApplied = false;
+        bool developerWidescreenProbe = false;
+        bool rotatePrimaryVulkan180 = false;
+        bool widescreenWorldSafe = false;
+        bool widescreenCapture3d = false;
+        bool previousTopSourceValid = false;
+        bool previousBottomSourceValid = false;
+        bool currentSourceHasHighres3d = false;
+        bool topSourceHasStructured3d = false;
+        bool capture3dSourceValid = false;
+        bool liveSourceScreenSwap = false;
+        bool needsReadback = false;
+        bool validationMode = false;
     };
 
     struct BackgroundResource
@@ -332,6 +372,15 @@ private:
         const std::vector<DrawCall>& drawCalls
     );
     bool submitSurfaceCommands(SurfaceState& surfaceState, u32 imageIndex, u64& presentCpuNs, u64& presentTimelineValueOut);
+    void recordDebugMetadata(
+        const SurfaceState& surfaceState,
+        const Frame& frame,
+        const VulkanCompositionInputs& inputs,
+        bool directPresent,
+        bool retroArchApplied,
+        bool widescreenWorldSafe,
+        bool widescreenCapture3d,
+        const std::vector<DrawCall>& drawCalls);
     bool ensureRetroArchResources(
         SurfaceState& surfaceState,
         u32 sourceScreenWidth,
@@ -420,6 +469,12 @@ private:
     bool lastPresentedDirect = true;
     u32 lastSwapchainImageCount = 0;
     VkPresentModeKHR lastPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+    std::atomic_bool debugMetadataCaptureActive{false};
+    mutable std::mutex debugMetadataCaptureMutex;
+    std::vector<DebugMetadataRecord> debugMetadataRecords;
+    u32 debugMetadataTargetRecordCount = 0;
+    u64 debugMetadataStartedTimestampNs = 0;
+    u64 debugMetadataCompletedTimestampNs = 0;
 };
 
 }

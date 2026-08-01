@@ -4,6 +4,7 @@
 #include <array>
 #include <cstring>
 #include <mutex>
+#include <sstream>
 #include <vector>
 
 #include "Platform.h"
@@ -1237,6 +1238,15 @@ bool VulkanSurfacePresenter::presentFrame(Frame* frame, VulkanOutput& output, co
             directPresentedFrames++;
         else
             fallbackPresentedFrames++;
+        recordDebugMetadata(
+            surfaceState,
+            *frame,
+            inputs,
+            directPresent,
+            retroArchApplied,
+            inputs.topSourceHasStructured3d && !inputs.capture3dSourceValid,
+            inputs.capture3dSourceValid,
+            drawCalls);
     }
 
     if (presentedAnySurface)
@@ -1258,6 +1268,183 @@ bool VulkanSurfacePresenter::presentFrame(Frame* frame, VulkanOutput& output, co
     }
 
     return presentedAnySurface;
+}
+
+void VulkanSurfacePresenter::startDebugMetadataCapture(u32 recordCount)
+{
+    const u32 boundedRecordCount = std::clamp(recordCount, 1u, 512u);
+    std::lock_guard<std::mutex> lock(debugMetadataCaptureMutex);
+    debugMetadataRecords.clear();
+    debugMetadataRecords.reserve(boundedRecordCount);
+    debugMetadataTargetRecordCount = boundedRecordCount;
+    debugMetadataStartedTimestampNs = PerfNowNs();
+    debugMetadataCompletedTimestampNs = 0;
+    debugMetadataCaptureActive.store(true, std::memory_order_release);
+}
+
+bool VulkanSurfacePresenter::isDebugMetadataCaptureComplete() const
+{
+    std::lock_guard<std::mutex> lock(debugMetadataCaptureMutex);
+    return debugMetadataTargetRecordCount > 0
+        && debugMetadataRecords.size() >= debugMetadataTargetRecordCount
+        && !debugMetadataCaptureActive.load(std::memory_order_acquire);
+}
+
+std::string VulkanSurfacePresenter::getDebugMetadataCaptureJson() const
+{
+    std::lock_guard<std::mutex> lock(debugMetadataCaptureMutex);
+    if (debugMetadataTargetRecordCount == 0)
+        return {};
+
+    const auto boolJson = [](bool value) {
+        return value ? "true" : "false";
+    };
+    const auto rectRole = [](const DebugMetadataRecord& record) {
+        const auto enabled = [](const VulkanPresenterRect& rect) {
+            return rect.enabled && rect.width > 0 && rect.height > 0;
+        };
+        const bool hasTop = enabled(record.topScreen) || enabled(record.hybridTopScreen);
+        const bool hasBottom = enabled(record.bottomScreen) || enabled(record.hybridBottomScreen);
+        if (hasTop && hasBottom)
+            return "mixed";
+        if (hasTop)
+            return "top";
+        if (hasBottom)
+            return "bottom";
+        return "none";
+    };
+
+    std::ostringstream json;
+    json << "{\"schema\":\"thords.presenter-trace.v1\""
+         << ",\"targetRecords\":" << debugMetadataTargetRecordCount
+         << ",\"recordCount\":" << debugMetadataRecords.size()
+         << ",\"complete\":" << boolJson(
+                debugMetadataRecords.size() >= debugMetadataTargetRecordCount
+                && !debugMetadataCaptureActive.load(std::memory_order_acquire))
+         << ",\"overflow\":false"
+         << ",\"startedTimestampNs\":" << debugMetadataStartedTimestampNs
+         << ",\"completedTimestampNs\":" << debugMetadataCompletedTimestampNs
+         << ",\"records\":[";
+
+    const auto appendRect = [&](const char* name, const VulkanPresenterRect& rect) {
+        json << "\"" << name << "\":{"
+             << "\"enabled\":" << boolJson(rect.enabled)
+             << ",\"x\":" << rect.x
+             << ",\"y\":" << rect.y
+             << ",\"width\":" << rect.width
+             << ",\"height\":" << rect.height
+             << "}";
+    };
+
+    for (size_t index = 0; index < debugMetadataRecords.size(); index++)
+    {
+        if (index > 0)
+            json << ",";
+
+        const DebugMetadataRecord& record = debugMetadataRecords[index];
+        json << "{\"sequence\":" << record.sequence
+             << ",\"frameId\":" << record.frameId
+             << ",\"timestampNs\":" << record.timestampNs
+             << ",\"surfaceRole\":\"" << rectRole(record) << "\""
+             << ",\"outputWidth\":" << record.outputWidth
+             << ",\"outputHeight\":" << record.outputHeight
+             << ",";
+        appendRect("topRect", record.topScreen);
+        json << ",";
+        appendRect("bottomRect", record.bottomScreen);
+        json << ",";
+        appendRect("hybridTopRect", record.hybridTopScreen);
+        json << ",";
+        appendRect("hybridBottomRect", record.hybridBottomScreen);
+        json << ",\"drawCallCount\":" << record.drawCallCount
+             << ",\"drawModeMask\":" << record.drawModeMask
+             << ",\"sourceWidth\":" << record.sourceWidth
+             << ",\"sourceHeight\":" << record.sourceHeight
+             << ",\"rendererWidth\":" << record.rendererWidth
+             << ",\"rendererHeight\":" << record.rendererHeight
+             << ",\"scale\":" << record.scale
+             << ",\"screenSwap\":" << record.screenSwap
+             << ",\"directPresent\":" << boolJson(record.directPresent)
+             << ",\"retroArchApplied\":" << boolJson(record.retroArchApplied)
+             << ",\"developerWidescreenProbe\":" << boolJson(record.developerWidescreenProbe)
+             << ",\"rotatePrimaryVulkan180\":" << boolJson(record.rotatePrimaryVulkan180)
+             << ",\"widescreenWorldSafe\":" << boolJson(record.widescreenWorldSafe)
+             << ",\"widescreenCapture3d\":" << boolJson(record.widescreenCapture3d)
+             << ",\"previousTopSourceValid\":" << boolJson(record.previousTopSourceValid)
+             << ",\"previousBottomSourceValid\":" << boolJson(record.previousBottomSourceValid)
+             << ",\"currentSourceHasHighres3d\":" << boolJson(record.currentSourceHasHighres3d)
+             << ",\"topSourceHasStructured3d\":" << boolJson(record.topSourceHasStructured3d)
+             << ",\"capture3dSourceValid\":" << boolJson(record.capture3dSourceValid)
+             << ",\"liveSourceScreenSwap\":" << boolJson(record.liveSourceScreenSwap)
+             << ",\"needsReadback\":" << boolJson(record.needsReadback)
+             << ",\"validationMode\":" << boolJson(record.validationMode)
+             << "}";
+    }
+    json << "]}";
+    return json.str();
+}
+
+void VulkanSurfacePresenter::recordDebugMetadata(
+    const SurfaceState& surfaceState,
+    const Frame& frame,
+    const VulkanCompositionInputs& inputs,
+    bool directPresent,
+    bool retroArchApplied,
+    bool widescreenWorldSafe,
+    bool widescreenCapture3d,
+    const std::vector<DrawCall>& drawCalls)
+{
+    if (!debugMetadataCaptureActive.load(std::memory_order_acquire))
+        return;
+
+    std::lock_guard<std::mutex> lock(debugMetadataCaptureMutex);
+    if (!debugMetadataCaptureActive.load(std::memory_order_relaxed)
+        || debugMetadataRecords.size() >= debugMetadataTargetRecordCount)
+        return;
+
+    DebugMetadataRecord record{};
+    record.sequence = static_cast<u32>(debugMetadataRecords.size());
+    record.frameId = frame.frameId;
+    record.timestampNs = PerfNowNs();
+    record.outputWidth = surfaceState.extent.width;
+    record.outputHeight = surfaceState.extent.height;
+    record.topScreen = surfaceState.config.topScreen;
+    record.bottomScreen = surfaceState.config.bottomScreen;
+    record.hybridTopScreen = surfaceState.config.hybridTopScreen;
+    record.hybridBottomScreen = surfaceState.config.hybridBottomScreen;
+    record.drawCallCount = static_cast<u32>(drawCalls.size());
+    for (const DrawCall& drawCall : drawCalls)
+    {
+        if (drawCall.drawMode < 32u)
+            record.drawModeMask |= (1u << drawCall.drawMode);
+    }
+    record.sourceWidth = frame.width;
+    record.sourceHeight = frame.height;
+    record.rendererWidth = inputs.rendererWidth;
+    record.rendererHeight = inputs.rendererHeight;
+    record.scale = inputs.scale;
+    record.screenSwap = inputs.screenSwap;
+    record.directPresent = directPresent;
+    record.retroArchApplied = retroArchApplied;
+    record.developerWidescreenProbe = surfaceState.config.developerWidescreenProbe;
+    record.rotatePrimaryVulkan180 = surfaceState.config.rotatePrimaryVulkan180;
+    record.widescreenWorldSafe = widescreenWorldSafe;
+    record.widescreenCapture3d = widescreenCapture3d;
+    record.previousTopSourceValid = inputs.previousTopSourceValid;
+    record.previousBottomSourceValid = inputs.previousBottomSourceValid;
+    record.currentSourceHasHighres3d = inputs.currentSourceHasHighres3d;
+    record.topSourceHasStructured3d = inputs.topSourceHasStructured3d;
+    record.capture3dSourceValid = inputs.capture3dSourceValid;
+    record.liveSourceScreenSwap = inputs.liveSourceScreenSwap;
+    record.needsReadback = inputs.needsReadback;
+    record.validationMode = inputs.validationMode;
+    debugMetadataRecords.push_back(record);
+
+    if (debugMetadataRecords.size() >= debugMetadataTargetRecordCount)
+    {
+        debugMetadataCompletedTimestampNs = record.timestampNs;
+        debugMetadataCaptureActive.store(false, std::memory_order_release);
+    }
 }
 
 bool VulkanSurfacePresenter::waitForFrameConsumption(Frame* frame, u64 timeoutNs)

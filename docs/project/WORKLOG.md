@@ -1057,3 +1057,50 @@ while the owner-observed top screen remains 180 degrees inverted and gameplay
 is approximately 20fps. G2 deterministic renderer instrumentation is the next
 independent workstream. Evidence:
 `docs/evidence/m6/analog-end-to-end.json`.
+
+## G2 deterministic presenter and physical-surface instrumentation - 2026-08-01
+
+### Implementation
+
+- Added an opt-in presenter metadata buffer capped at 512 successful presents.
+  It records only frame/timestamp, role, rect, draw mode and source-state
+  metadata; no pixels or physical display identifiers enter the trace.
+- Added a debug-only world-pause-world command that writes the bounded trace to
+  app-private storage.
+- Added exact-step in-app PixelCopy sequences for the main and secondary
+  emulator surfaces, paired with the internal 3D or bottom source raster.
+- Replaced the old resume-and-poll debug stepping with the existing native
+  `debugStepFrame()` primitive. Four requested frames then advanced exactly
+  `317 -> 318 -> 319 -> 320 -> 321`.
+- Added dependency-free presenter and PNG geometry analyzers with synthetic
+  self-tests.
+
+### Validation
+
+- Both analyzer self-tests: PASS.
+- GitHubProdDebug APK build: PASS.
+- APK SHA-256:
+  `5a7be439d4be0ea91ae768297981e4085ab02229c222be3837ec9ef732d86542`.
+- Exact APK install on the connected Thor: PASS.
+- Internal world-pause-world trace: 192/192 records, 0 sequence gaps,
+  0 frame regressions and 0 consecutive duplicate frame ids.
+- Main PixelCopy: exact native frame steps with two successful presenter
+  records per capture.
+- Secondary PixelCopy: paired `256x192` source and `1240x1080` final output;
+  active rect `x=0,y=75,width=1240,height=930`, rotation off and exact 4:3.
+- Source-to-final lower output was pixel-identical after explicitly accounting
+  for the native debug source's red/blue byte order.
+- Lower bomb-body and digit-4 aspect deltas were both `0.0%`.
+- Current 3x3 lower touch grid and both black-bar exclusions: PASS.
+
+### Decision
+
+W-06 is `PASS`. W-04/W-05 lower reference measurements pass but their top
+UI-safe-plane gates remain `PARTIAL`. W-20 world-pause-world passes, while the
+painting/star and pixel black/stale portions remain `PARTIAL`. W-01 and W-03
+remain `PARTIAL`; no M7 or M8 completion claim is made.
+
+Evidence:
+`docs/evidence/m7/presenter-trace-analysis.json`,
+`docs/evidence/m7/surface-geometry-analysis.json` and
+`docs/evidence/m7/w06-touch-grid.json`.

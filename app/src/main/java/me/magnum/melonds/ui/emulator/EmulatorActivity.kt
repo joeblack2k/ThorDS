@@ -1762,6 +1762,14 @@ class EmulatorActivity : AppCompatActivity() {
         finish()
     }
 
+    internal fun getEmulatorSurfaceForDebug(secondary: Boolean): EmulatorSurfaceView? {
+        return if (secondary) {
+            presentation?.getEmulatorSurfaceForDebug()
+        } else {
+            binding.surfaceMain
+        }
+    }
+
     private fun releaseEmulatorUiResources() {
         cancelStartupPresentationRefreshes()
         offlineSyncChoiceDialog?.dismiss()

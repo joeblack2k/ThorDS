@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
@@ -84,6 +85,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_LOAD_STATE_SUFFIX) -> handleLoadState(context, entryPoint, intent)
             context.debugCommandAction(ACTION_STEP_FRAME_SUFFIX) -> handleStepFrame(entryPoint, intent)
             context.debugCommandAction(ACTION_STEP_FRAMES_SUFFIX) -> handleStepFrame(entryPoint, intent)
+            context.debugCommandAction(ACTION_RUN_M7_PRESENTER_TRACE_SUFFIX) -> handleRunM7PresenterTrace(context, entryPoint, intent)
+            context.debugCommandAction(ACTION_RUN_M7_SURFACE_SEQUENCE_SUFFIX) -> handleRunM7SurfaceSequence(context, entryPoint, intent)
             context.debugCommandAction(ACTION_DUMP_RENDERER_CAPTURE_SUFFIX) -> handleDumpRendererCapture(context, entryPoint, intent)
             else -> {
                 Log.w(TAG, "Ignored unknown action=${intent.action}")
@@ -706,6 +709,237 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         return step.ready && step.advanced
     }
 
+    private suspend fun handleRunM7PresenterTrace(
+        context: Context,
+        entryPoint: DebugCommandEntryPoint,
+        intent: Intent,
+    ): Boolean {
+        if (!DebugCommandStateStore.isRunningRom()) {
+            Log.w(TAG, "action=run_m7_presenter_trace ready=0")
+            return false
+        }
+
+        entryPoint.sharedPreferences().edit(commit = true) {
+            putBoolean(KEY_RENDERER_DEBUG_TOOLS_ENABLED, true)
+        }
+        if (DebugCommandStateStore.requestSettingsRefresh()) {
+            delay(350L)
+        }
+        if (entryPoint.settingsRepository().getCurrentVideoRenderer() != VideoRenderer.VULKAN) {
+            Log.w(TAG, "action=run_m7_presenter_trace renderer=vulkan required=1")
+            return false
+        }
+
+        val recordCount = intent.firstNullableIntExtra(EXTRA_CAPTURE_COUNT, EXTRA_VALUE)
+            ?.coerceIn(1, MAX_PRESENTER_TRACE_RECORDS)
+            ?: DEFAULT_PRESENTER_TRACE_RECORDS
+        val pauseMs = intent.firstNullableIntExtra(EXTRA_DURATION_MS, EXTRA_RESUME_MS)
+            ?.coerceIn(1, MAX_PRESENTER_TRACE_PAUSE_MS)
+            ?: DEFAULT_PRESENTER_TRACE_PAUSE_MS
+        val timeoutMs = intent.firstNullableIntExtra(EXTRA_TIMEOUT_MS)
+            ?.coerceIn(1, MAX_PRESENTER_TRACE_TIMEOUT_MS)
+            ?: DEFAULT_PRESENTER_TRACE_TIMEOUT_MS
+        val pauseWasHeld = DebugCommandStateStore.isDebugPauseHeld()
+        val startedTimestampNs = SystemClock.elapsedRealtimeNanos()
+        var pauseStartedTimestampNs = 0L
+        var pauseEndedTimestampNs = 0L
+
+        RendererDebugBridge.startVulkanPresenterMetadataCapture(recordCount)
+        try {
+            DebugCommandStateStore.setDebugPauseHeld(false)
+            MelonEmulator.resumeEmulation()
+            delay(PRESENTER_TRACE_PRE_PAUSE_MS)
+
+            pauseStartedTimestampNs = SystemClock.elapsedRealtimeNanos()
+            MelonEmulator.pauseEmulation()
+            delay(pauseMs.toLong())
+            pauseEndedTimestampNs = SystemClock.elapsedRealtimeNanos()
+            MelonEmulator.resumeEmulation()
+
+            val deadlineMs = SystemClock.elapsedRealtime() + timeoutMs
+            while (!RendererDebugBridge.isVulkanPresenterMetadataCaptureComplete() &&
+                SystemClock.elapsedRealtime() < deadlineMs
+            ) {
+                delay(PRESENTER_TRACE_POLL_MS)
+            }
+        } finally {
+            if (pauseWasHeld) {
+                DebugCommandStateStore.setDebugPauseHeld(true)
+                MelonEmulator.pauseEmulation()
+            } else {
+                DebugCommandStateStore.setDebugPauseHeld(false)
+                MelonEmulator.resumeEmulation()
+            }
+        }
+
+        val nativeJson = RendererDebugBridge.getVulkanPresenterMetadataCaptureJson()
+            ?: return false
+        val trace = JSONObject(nativeJson)
+        val completed = trace.optBoolean("complete", false)
+        trace.put(
+            "scenario",
+            JSONObject()
+                .put("name", "world-pause-world")
+                .put("startedTimestampNs", startedTimestampNs)
+                .put("pauseStartedTimestampNs", pauseStartedTimestampNs)
+                .put("pauseEndedTimestampNs", pauseEndedTimestampNs),
+        )
+        val outputDir = File(context.filesDir, "debug-evidence").apply { mkdirs() }
+        val outputFile = File(outputDir, M7_PRESENTER_TRACE_OUTPUT_FILE)
+        outputFile.writeText(trace.toString(2))
+        Log.w(
+            TAG,
+            "action=run_m7_presenter_trace complete=${if (completed) 1 else 0} records=${trace.optInt("recordCount", 0)} file=${outputFile.name}",
+        )
+        return completed
+    }
+
+    private suspend fun handleRunM7SurfaceSequence(
+        context: Context,
+        entryPoint: DebugCommandEntryPoint,
+        intent: Intent,
+    ): Boolean {
+        if (!DebugCommandStateStore.isRunningRom()) {
+            Log.w(TAG, "action=run_m7_surface_sequence ready=0")
+            return false
+        }
+
+        entryPoint.sharedPreferences().edit(commit = true) {
+            putBoolean(KEY_RENDERER_DEBUG_TOOLS_ENABLED, true)
+        }
+        if (DebugCommandStateStore.requestSettingsRefresh()) {
+            delay(350L)
+        }
+        if (entryPoint.settingsRepository().getCurrentVideoRenderer() != VideoRenderer.VULKAN) {
+            return false
+        }
+
+        val captureCount = intent.firstNullableIntExtra(EXTRA_CAPTURE_COUNT, EXTRA_FRAMES, EXTRA_VALUE)
+            ?.coerceIn(1, MAX_M7_SURFACE_SEQUENCE_FRAMES)
+            ?: DEFAULT_M7_SURFACE_SEQUENCE_FRAMES
+        val secondary = intent.firstBooleanExtra(EXTRA_SECONDARY) ?: false
+        val cameraX = (intent.firstFloatExtra(EXTRA_CAMERA_X) ?: 0f).coerceIn(-1f, 1f)
+        val cameraY = (intent.firstFloatExtra(EXTRA_CAMERA_Y) ?: 0f).coerceIn(-1f, 1f)
+        val timeoutMs = (intent.firstNullableIntExtra(EXTRA_TIMEOUT_MS) ?: DEFAULT_ANALOG_STEP_TIMEOUT_MS)
+            .coerceIn(250, MAX_RECEIVER_WAIT_TIMEOUT_MS)
+        val outputDir = File(context.filesDir, M7_SURFACE_SEQUENCE_OUTPUT_DIR).apply {
+            deleteRecursively()
+            mkdirs()
+        }
+        val frames = JSONArray()
+        val pauseWasHeld = DebugCommandStateStore.isDebugPauseHeld()
+        var passed = true
+
+        MelonEmulator.pauseEmulation()
+        DebugCommandStateStore.setDebugPauseHeld(true)
+        try {
+            dispatchControllerMotion()
+            for (index in 0 until captureCount) {
+                RendererDebugBridge.startVulkanPresenterMetadataCapture(PRESENTER_RECORDS_PER_DUAL_FRAME)
+                val inputHandled = dispatchControllerMotion(cameraX = cameraX, cameraY = cameraY)
+                val step = stepRendererFrames(entryPoint, 1, timeoutMs)
+                val presenterDeadlineMs = SystemClock.elapsedRealtime() + timeoutMs
+                while (!RendererDebugBridge.isVulkanPresenterMetadataCaptureComplete() &&
+                    SystemClock.elapsedRealtime() < presenterDeadlineMs
+                ) {
+                    delay(PRESENTER_TRACE_POLL_MS)
+                }
+                val presenter = RendererDebugBridge.getVulkanPresenterMetadataCaptureJson()
+                    ?.let(::JSONObject)
+                val bitmap = DebugCommandStateStore.captureSurfaceBitmap(secondary)
+                val outputFile = File(outputDir, "frame_%04d.png".format(Locale.US, index))
+                val pngWritten = if (bitmap != null) {
+                    val written = outputFile.outputStream().use { stream ->
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                    }
+                    bitmap.recycle()
+                    written
+                } else {
+                    false
+                }
+                val sourceDimensions = if (secondary) {
+                    intArrayOf(RendererDebugBridge.CAPTURE_WIDTH, RendererDebugBridge.CAPTURE_HEIGHT / 2)
+                } else {
+                    RendererDebugBridge.captureCurrent3dDimensions()
+                }
+                val sourcePixels = if (secondary) {
+                    RendererDebugBridge.captureCurrentPackedBottomPrimary()
+                } else {
+                    RendererDebugBridge.captureCurrent3dFrame()
+                }
+                val sourceWidth = sourceDimensions?.getOrNull(0) ?: 0
+                val sourceHeight = sourceDimensions?.getOrNull(1) ?: 0
+                val sourceFile = File(outputDir, "source_%04d.png".format(Locale.US, index))
+                val sourceWritten = if (
+                    sourcePixels != null &&
+                    sourceWidth > 0 &&
+                    sourceHeight > 0 &&
+                    sourcePixels.size == sourceWidth * sourceHeight
+                ) {
+                    val sourceBitmap = Bitmap.createBitmap(sourceWidth, sourceHeight, Bitmap.Config.ARGB_8888)
+                    sourceBitmap.setPixels(sourcePixels, 0, sourceWidth, 0, 0, sourceWidth, sourceHeight)
+                    val written = sourceFile.outputStream().use { stream ->
+                        sourceBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                    }
+                    sourceBitmap.recycle()
+                    written
+                } else {
+                    false
+                }
+                val presenterComplete = presenter?.optBoolean("complete", false) == true
+                val framePassed = inputHandled &&
+                    step.ready &&
+                    step.advanced &&
+                    presenterComplete &&
+                    pngWritten &&
+                    sourceWritten
+                passed = passed && framePassed
+                frames.put(
+                    JSONObject()
+                        .put("index", index)
+                        .put("file", outputFile.name)
+                        .put("pngBytes", if (pngWritten) outputFile.length() else 0L)
+                        .put("sourceFile", sourceFile.name)
+                        .put("sourceWidth", sourceWidth)
+                        .put("sourceHeight", sourceHeight)
+                        .put("sourcePngBytes", if (sourceWritten) sourceFile.length() else 0L)
+                        .put("inputHandled", inputHandled)
+                        .put("startFrame", step.startFrame)
+                        .put("endFrame", step.endFrame)
+                        .put("frameReady", step.ready)
+                        .put("frameAdvanced", step.advanced)
+                        .put("presenterComplete", presenterComplete)
+                        .put("presenterRecordCount", presenter?.optInt("recordCount", 0) ?: 0)
+                        .put("presenter", presenter ?: JSONObject.NULL),
+                )
+            }
+        } finally {
+            dispatchControllerMotion()
+            if (pauseWasHeld) {
+                DebugCommandStateStore.setDebugPauseHeld(true)
+                MelonEmulator.pauseEmulation()
+            } else {
+                DebugCommandStateStore.setDebugPauseHeld(false)
+                MelonEmulator.resumeEmulation()
+            }
+        }
+
+        val manifest = JSONObject()
+            .put("schema", "thords.m7-surface-sequence.v1")
+            .put("target", if (secondary) "secondary" else "main")
+            .put("captureCount", captureCount)
+            .put("cameraX", cameraX)
+            .put("cameraY", cameraY)
+            .put("frames", frames)
+            .put("result", if (passed) "PASS" else "PARTIAL")
+        File(outputDir, M7_SURFACE_SEQUENCE_MANIFEST).writeText(manifest.toString(2))
+        Log.w(
+            TAG,
+            "action=run_m7_surface_sequence target=${if (secondary) "secondary" else "main"} captures=${frames.length()} result=${if (passed) "PASS" else "PARTIAL"}",
+        )
+        return passed
+    }
+
     private suspend fun stepRendererFrames(
         entryPoint: DebugCommandEntryPoint,
         frames: Int,
@@ -714,14 +948,22 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         val renderer = entryPoint.settingsRepository().getCurrentVideoRenderer()
         val startFrame = RendererDebugBridge.getCurrentFrameIndexForDebug()
 
-        DebugCommandStateStore.setDebugPauseHeld(false)
-        MelonEmulator.resumeEmulation()
-        waitForRendererFrameOrTimeout(
-            renderer = renderer,
-            startFrame = startFrame,
-            resumeFrames = frames,
-            timeoutMs = timeoutMs.toLong(),
-        )
+        DebugCommandStateStore.setDebugPauseHeld(true)
+        MelonEmulator.pauseEmulation()
+        var allStepsRequested = true
+        for (index in 0 until frames) {
+            val frameBeforeStep = RendererDebugBridge.getCurrentFrameIndexForDebug()
+            if (!MelonEmulator.debugStepFrame()) {
+                allStepsRequested = false
+                break
+            }
+            waitForRendererFrameOrTimeout(
+                renderer = renderer,
+                startFrame = frameBeforeStep,
+                resumeFrames = 1,
+                timeoutMs = timeoutMs.toLong(),
+            )
+        }
         MelonEmulator.pauseEmulation()
         waitForRendererReadyOrTimeout(
             renderer = renderer,
@@ -737,7 +979,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             startFrame = startFrame,
             endFrame = endFrame,
             ready = ready,
-            advanced = startFrame < 0 || endFrame >= startFrame + frames,
+            advanced = allStepsRequested && (startFrame < 0 || endFrame == startFrame + frames),
         )
     }
 
@@ -1458,6 +1700,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val EXTRA_INVERT_Y = "invert_y"
         private const val EXTRA_DEADZONE = "deadzone"
         private const val EXTRA_DEVICE_ID = "device_id"
+        private const val EXTRA_SECONDARY = "secondary"
         private const val EXTRA_TIMELINE = "timeline"
         private const val EXTRA_TIMELINE_OFF = "timeline_off"
         private const val EXTRA_DYNAMIC_INDEXING = "dynamic_indexing"
@@ -1506,6 +1749,20 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ANALOG_SWEEP_DIRECTIONS = 16
         private const val ANALOG_SWEEP_OUTPUT_FILE = "analog-end-to-end.json"
         private const val ANALOG_GAMEPLAY_TRIAL_OUTPUT_FILE = "analog-gameplay-trial.json"
+        private const val M7_PRESENTER_TRACE_OUTPUT_FILE = "m7-presenter-trace.json"
+        private const val M7_SURFACE_SEQUENCE_OUTPUT_DIR = "debug-evidence/m7-surface-sequence"
+        private const val M7_SURFACE_SEQUENCE_MANIFEST = "manifest.json"
+        private const val DEFAULT_PRESENTER_TRACE_RECORDS = 192
+        private const val MAX_PRESENTER_TRACE_RECORDS = 512
+        private const val DEFAULT_PRESENTER_TRACE_PAUSE_MS = 400
+        private const val MAX_PRESENTER_TRACE_PAUSE_MS = 2_000
+        private const val DEFAULT_PRESENTER_TRACE_TIMEOUT_MS = 7_000
+        private const val MAX_PRESENTER_TRACE_TIMEOUT_MS = 8_000
+        private const val PRESENTER_TRACE_PRE_PAUSE_MS = 1_000L
+        private const val PRESENTER_TRACE_POLL_MS = 25L
+        private const val DEFAULT_M7_SURFACE_SEQUENCE_FRAMES = 8
+        private const val MAX_M7_SURFACE_SEQUENCE_FRAMES = 16
+        private const val PRESENTER_RECORDS_PER_DUAL_FRAME = 2
         private val ANALOG_SWEEP_MAGNITUDES = floatArrayOf(0.25f, 0.50f, 0.75f, 1.00f)
 
         private val receiverScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -1532,6 +1789,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_LOAD_STATE_SUFFIX = "LOAD_STATE"
         private const val ACTION_STEP_FRAME_SUFFIX = "STEP_FRAME"
         private const val ACTION_STEP_FRAMES_SUFFIX = "STEP_FRAMES"
+        private const val ACTION_RUN_M7_PRESENTER_TRACE_SUFFIX = "RUN_M7_PRESENTER_TRACE"
+        private const val ACTION_RUN_M7_SURFACE_SEQUENCE_SUFFIX = "RUN_M7_SURFACE_SEQUENCE"
         private const val ACTION_DUMP_RENDERER_CAPTURE_SUFFIX = "DUMP_RENDERER_CAPTURE"
     }
 

@@ -1,9 +1,14 @@
 package me.magnum.melonds.debug
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
+import android.view.PixelCopy
 import androidx.core.content.edit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -14,6 +19,8 @@ import me.magnum.melonds.ui.emulator.EmulatorViewModel
 import me.magnum.melonds.ui.emulator.model.EmulatorState
 import java.lang.ref.WeakReference
 import kotlin.Lazy
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 internal object DebugCommandStateStore {
     private const val TAG = "DebugCommand"
@@ -81,6 +88,43 @@ internal object DebugCommandStateStore {
     suspend fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
         return withContext(Dispatchers.Main.immediate) {
             currentEmulatorActivity.get()?.dispatchGenericMotionEvent(event) ?: false
+        }
+    }
+
+    suspend fun captureSurfaceBitmap(secondary: Boolean): Bitmap? {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return null
+        }
+        return withContext(Dispatchers.Main.immediate) {
+            val surfaceView = currentEmulatorActivity.get()
+                ?.getEmulatorSurfaceForDebug(secondary)
+                ?: return@withContext null
+            val (surfaceWidth, surfaceHeight) = surfaceView.getCurrentSurfaceSize()
+            if (surfaceWidth <= 0 || surfaceHeight <= 0) {
+                return@withContext null
+            }
+            val bitmap = Bitmap.createBitmap(surfaceWidth, surfaceHeight, Bitmap.Config.ARGB_8888)
+            suspendCoroutine { continuation ->
+                try {
+                    PixelCopy.request(
+                        surfaceView,
+                        bitmap,
+                        { result ->
+                            if (result == PixelCopy.SUCCESS) {
+                                continuation.resume(bitmap)
+                            } else {
+                                bitmap.recycle()
+                                continuation.resume(null)
+                            }
+                        },
+                        Handler(Looper.getMainLooper()),
+                    )
+                } catch (error: IllegalArgumentException) {
+                    bitmap.recycle()
+                    Log.w(TAG, "PixelCopy surface capture failed", error)
+                    continuation.resume(null)
+                }
+            }
         }
     }
 
