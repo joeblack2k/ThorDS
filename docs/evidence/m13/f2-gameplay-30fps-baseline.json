@@ -1,0 +1,23 @@
+{
+  "milestone": "M13",
+  "gate": "SM64DS gameplay cadence baseline",
+  "device": "AYN Thor",
+  "package": "io.github.joeblack2k.thords.dev",
+  "profile": "sm64ds.eu.thor-enhanced",
+  "renderer": "vulkan",
+  "requestedArm9Percent": 125,
+  "observation": {
+    "presentationOverlayFps": 60,
+    "uniqueUpdatesPerSecond": 30,
+    "emulatorFramesPerSecond": 60,
+    "cadence": 2,
+    "stageTimer": 0
+  },
+  "result": "GAMEPLAY_VISIBLE_ORIGINAL_30_UPDATE_CADENCE",
+  "notes": [
+    "The device was beyond the intro and visibly rendering SM64DS gameplay.",
+    "The 60 FPS overlay is presentation cadence only and is not a 60 FPS gameplay proof.",
+    "The native game-loop telemetry still reports approximately 30 unique updates per real second.",
+    "No 60 FPS acceptance claim is made."
+  ]
+}
