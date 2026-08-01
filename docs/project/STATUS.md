@@ -66,9 +66,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - ARM9 OC: PARTIAL
 - 60fps: REQUIRED / IMPLEMENTATION AND VALIDATION OPEN
 - SM64DS Smooth Orbit Camera v1: PARTIAL / frontend mapping, R3 sequence,
-  JNI bridge and transient Slot-2 protocol are implemented and compiled;
-  exact EU runtime patch, HUD/tutorial-arrow suppression, sound-path proof and
-  physical Thor acceptance remain open.
+  JNI bridge, transient Slot-2 protocol and exact-profile EU runtime patch are
+  implemented and compiled; HUD/tutorial-arrow suppression, sound-path proof
+  and physical Thor acceptance remain open.
 - M13 research now records the EU game-side VBlank cadence hook, the unresolved
   scene vtable dispatch and the timer/animation dependency boundary. No
   unverified 60fps code is shipped; implementation and full timing validation
@@ -85,10 +85,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Continue the Smooth Orbit Camera v1 pass with deterministic EU camera-hook
-liveness and the guarded exact-profile runtime patch. 60fps remains a
-separate required product mode and must not be recorded as explicitly
-disabled.
+Continue the Smooth Orbit Camera v1 pass with HUD/tutorial-arrow/audio proof
+and Enhanced-profile physical validation. 60fps remains a separate required
+product mode and must not be recorded as explicitly disabled.
 M8 and M9 are complete for the current product gate; do not restart either
 validation workstream. Over-100% ARM9 behavior remains disabled until timing
 evidence proves it safe. Remaining independent gaps, including M6 physical

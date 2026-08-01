@@ -1,5 +1,31 @@
 # Worklog
 
+## 2026-08-01 - Smooth Orbit Camera v1 exact EU patch slice
+
+### Result
+
+- Disassembled the exact locally owned EU ARM9 image with its real load base
+  `0x02004000`; the normal orbit routine is `0x0200BB28`.
+- Identified the legacy digital-yaw block at runtime
+  `0x0200BCF0`-`0x0200BD4C`.
+- Added an ARMv5TE guarded trampoline source and a deterministic Action Replay
+  generator under `tools/thords/camera/`.
+- The generator rejects a mismatched original hook word, a non-zero payload
+  region, an oversized payload or an out-of-range branch. An independent
+  verifier reconstructs the hook branch and payload alignment.
+- Integrated the generated code only into the exact
+  `sm64ds.eu.thor-enhanced` profile. Original remains without the patch.
+- Profile tests, ARM assembly, patch generation, patch verification, debug APK
+  build and Thor install completed successfully.
+
+### Boundary
+
+- The exact patch has not yet passed physical Enhanced gameplay validation.
+- HUD/tutorial-arrow suppression, ordinary-yaw sound proof and the full camera
+  trace remain open.
+- The ROM and decompressed ARM9 image remain local-only inputs; generated public
+  output contains code words and hashes, not ROM bytes.
+
 ## 2026-08-01 - Smooth Orbit Camera v1 frontend and Slot-2 bridge
 
 ### Result

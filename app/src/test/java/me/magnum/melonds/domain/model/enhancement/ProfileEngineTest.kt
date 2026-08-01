@@ -36,7 +36,7 @@ class ProfileEngineTest {
     }
 
     @Test
-    fun sm64dsProfilesRequireTheExactEuropeIdentityAndContainNoM6Code() {
+    fun sm64dsProfilesRequireTheExactEuropeIdentityAndContainTheExactCameraCode() {
         val catalog = ProfileCatalog.parse(File("src/main/assets/enhancement-profiles.json").readText())
         val sm64ds = RomIdentity("ASMP", 0, "ba3c4052e00c5cc31df5d5534c39de1b")
         assertEquals(ProfileMatch.MATCH_EXACT, catalog.match(sm64ds).second)
@@ -58,9 +58,13 @@ class ProfileEngineTest {
         assertEquals("original.sm64ds.eu", original.profileId)
         assertEquals(ProfileIntegrity.ENHANCED, enhanced.profileIntegrity)
         assertEquals(ProfileIntegrity.ORIGINAL, original.profileIntegrity)
-        val analog = enhanced.curatedRuntimeCodes.single()
-        assertEquals("sm64ds.eu.am64ds-analog.v1", analog.id)
-        assertEquals(analog.codeSha256, sha256(analog.codeWords.joinToString("\n") + "\n"))
+        assertEquals(
+            listOf("sm64ds.eu.am64ds-analog.v1", "sm64ds.eu.thor-smooth-camera.v1"),
+            enhanced.curatedRuntimeCodes.map { it.id },
+        )
+        enhanced.curatedRuntimeCodes.forEach {
+            assertEquals(it.codeSha256, sha256(it.codeWords.joinToString("\n") + "\n"))
+        }
         assertTrue(original.curatedRuntimeCodes.isEmpty())
     }
 
@@ -72,7 +76,14 @@ class ProfileEngineTest {
         val identity = RomIdentity(exactInfo.gameCode, exactInfo.revision, "ba3c4052e00c5cc31df5d5534c39de1b")
         val exact = planner.resolve(identity, RomGbaSlotConfig.None, listOf(userCheat), requestedRaMode = ProfileRaMode.CASUAL)
         assertTrue(exact.useSlot2Analog)
-        assertEquals(listOf("ThorDS: sm64ds.eu.am64ds-analog.v1", "User"), RuntimeActionReplayComposer.compose(exact.plan).map { it.name })
+        assertEquals(
+            listOf(
+                "ThorDS: sm64ds.eu.am64ds-analog.v1",
+                "ThorDS: sm64ds.eu.thor-smooth-camera.v1",
+                "User",
+            ),
+            RuntimeActionReplayComposer.compose(exact.plan).map { it.name },
+        )
 
         val mismatch = planner.resolve(identity.copy(revision = 1), RomGbaSlotConfig.None, listOf(userCheat), requestedRaMode = ProfileRaMode.CASUAL)
         assertFalse(mismatch.useSlot2Analog)

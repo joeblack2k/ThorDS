@@ -4,7 +4,7 @@
 	/*
 	 * ThorDS Smooth Orbit Camera v1 trampoline.
 	 *
-	 * The hook is installed at 0x02007CF0, immediately before the original
+	 * The hook is installed at 0x0200BCF0, immediately before the original
 	 * 0x2000/0x0100 digital-yaw branches.  Invalid protocol state restores
 	 * the original register set and returns to that instruction unchanged.
 	 */
@@ -71,11 +71,11 @@ thords_smooth_camera_hook:
 .L_magic:
 	.word	0x00005343
 .L_sound:
-	.word	0x0200e790
+	.word	0x02012790
 .L_original_recenter:
-	.word	0x02007b74
+	.word	0x0200bb74
 .L_original_approach:
-	.word	0x02007d50
+	.word	0x0200bd50
 .L_original_digital:
-	.word	0x02007cf0
+	.word	0x0200bcf0
 	.size	thords_smooth_camera_hook, .-thords_smooth_camera_hook
