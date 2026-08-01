@@ -809,3 +809,43 @@ W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
 - Evidence: `docs/evidence/m10/policy-foundation.txt`. M10 remains
   `IN_PROGRESS`; M7 remains `IN_PROGRESS`, M8 remains `NOT_STARTED`, and full
   M9 acceptance remains open. No commit was created.
+
+## M11 session status snapshot - 2026-08-01
+
+### Changes
+
+- Added a `SessionStatusSnapshot` to `EmulatorSession` and latched it once
+  from the resolved ROM launch plan.
+- Added the snapshot to the ROM pause menu and rendered profile integrity,
+  effective ARM9 percentage and effective RetroAchievements mode above the
+  existing pause actions.
+- Kept firmware and default pause menus on the existing item-list path; no
+  policy recomputation was added to pause handling.
+- Session reset clears the snapshot and a subsequent ROM launch creates a
+  fresh one; a runtime Reset within the same ROM session keeps the latched
+  values.
+
+### Validation
+
+- Focused M11/M10 JVM validation: 34 tests, 0 failures and 0 errors.
+- Full SPIR-V check, GitHubProdRelease unit tests and GitHubProdDebug APK
+  build: `BUILD SUCCESSFUL`, 145 actionable tasks.
+- The debug APK installed on the connected Thor.
+- A fresh ROM launch and a second launch after process restart showed the
+  physical pause status `Profile: Enhanced`, `ARM9: 100%` and
+  `RetroAchievements: Off`, with existing menu actions still present.
+- The Thor pause list scrolled to the existing Reset and Exit actions; a
+  runtime Reset kept the same status because the ROM session remained active.
+- Filtered logcat after the clean physical ROM run had no FATAL EXCEPTION,
+  ANR in or am_anr.
+- The direct firmware launch did not yield a usable firmware session, so the
+  physical firmware pause branch remains open and is recorded as a bound.
+
+### Decision
+
+`PASS_WITH_BOUNDS` for the bounded M11 session-status UI contract. Full M11
+remains `IN_PROGRESS`; native ARM9 execution, broader UI/telemetry work and
+the firmware physical branch are not claimed. M7 Castle Garden remains the
+active release blocker, and Bob-omb Battlefield is out of scope.
+
+Evidence: `docs/evidence/m11/session-status-pause.txt`.

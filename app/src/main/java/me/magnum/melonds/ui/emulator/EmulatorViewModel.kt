@@ -131,6 +131,7 @@ import me.magnum.melonds.impl.enhancement.EmbeddedProfileCatalog
 import me.magnum.melonds.impl.emulator.EmulatorSession
 import me.magnum.melonds.impl.emulator.LeaderboardTrackerUpdateLogLimiter
 import me.magnum.melonds.impl.emulator.debug.RendererDebugCaptureLogger
+import me.magnum.melonds.impl.emulator.SessionStatusSnapshot
 import me.magnum.melonds.impl.network.NetworkConnectivityObserver
 import me.magnum.melonds.impl.retroachievements.offline.OfflineLedgerIntegrity
 import me.magnum.melonds.impl.retroachievements.offline.OfflineLedgerExpiredException
@@ -806,6 +807,11 @@ class EmulatorViewModel @Inject constructor(
                 sessionType = EmulatorSession.SessionType.RomSession(plannedLaunch.rom),
                 areRetroAchievementsEnabled = areRetroAchievementsEnabledForLaunch,
                 isRetroAchievementsHardcoreModeEnabled = launchDecision.sessionMode == RetroAchievementsSessionMode.HARDCORE,
+                sessionStatusSnapshot = SessionStatusSnapshot(
+                    profileIntegrity = plannedLaunch.plan.profileIntegrity,
+                    effectiveArm9Percent = plannedLaunch.plan.effectiveArm9Percent,
+                    retroAchievementsMode = policy.effectiveMode,
+                ),
             )
             startObservingMainScreenBackground()
             startObservingSecondaryScreenBackground()
@@ -1696,6 +1702,11 @@ class EmulatorViewModel @Inject constructor(
                             PauseMenu(
                                 options = pauseOptions,
                                 labelOverrides = labelOverrides,
+                                sessionStatus = if (_emulatorState.value is EmulatorState.RunningRom) {
+                                    emulatorSession.sessionStatusSnapshot()
+                                } else {
+                                    null
+                                },
                             ),
                         ),
                     )
@@ -6329,11 +6340,13 @@ class EmulatorViewModel @Inject constructor(
         sessionType: EmulatorSession.SessionType,
         areRetroAchievementsEnabled: Boolean,
         isRetroAchievementsHardcoreModeEnabled: Boolean = settingsRepository.isRetroAchievementsHardcoreEnabled(),
+        sessionStatusSnapshot: SessionStatusSnapshot? = null,
     ) {
         emulatorSession.startSession(
             areRetroAchievementsEnabled = areRetroAchievementsEnabled,
             isRetroAchievementsHardcoreModeEnabled = isRetroAchievementsHardcoreModeEnabled,
             sessionType = sessionType,
+            sessionStatusSnapshot = sessionStatusSnapshot,
         )
     }
 

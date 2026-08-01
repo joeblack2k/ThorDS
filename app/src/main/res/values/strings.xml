@@ -191,6 +191,13 @@
     <string name="choose_component">Choose component</string>
 
     <string name="pause">Pause</string>
+    <string name="pause_session_status">Profile: %1$s\nARM9: %2$d%%\nRetroAchievements: %3$s</string>
+    <string name="pause_session_profile_original">Original</string>
+    <string name="pause_session_profile_enhanced">Enhanced</string>
+    <string name="pause_session_ra_off">Off</string>
+    <string name="pause_session_ra_casual">Casual</string>
+    <string name="pause_session_ra_hardcore">Hardcore</string>
+    <string name="pause_session_ra_blocked">Blocked</string>
     <string name="achievements">Achievements</string>
     <string name="reset">Reset</string>
     <string name="exit">Exit</string>

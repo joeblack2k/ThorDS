@@ -20,8 +20,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.ScrollView
@@ -77,7 +79,9 @@ import me.magnum.melonds.domain.model.Rect
 import me.magnum.melonds.domain.model.SaveStateSlot
 import me.magnum.melonds.domain.model.VideoFiltering
 import me.magnum.melonds.domain.model.VideoRenderer
+import me.magnum.melonds.domain.model.enhancement.ProfileIntegrity
 import me.magnum.melonds.domain.model.retroachievements.RaPendingCounts
+import me.magnum.melonds.domain.model.retroachievements.RetroAchievementsEffectiveMode
 import me.magnum.melonds.domain.model.layout.Insets
 import me.magnum.melonds.domain.model.layout.LayoutComponent
 import me.magnum.melonds.domain.model.layout.ScreenFold
@@ -88,6 +92,7 @@ import me.magnum.melonds.domain.repositories.SettingsRepository
 import me.magnum.melonds.extensions.insetsControllerCompat
 import me.magnum.melonds.extensions.setLayoutOrientation
 import me.magnum.melonds.impl.emulator.LifecycleOwnerProvider
+import me.magnum.melonds.impl.emulator.SessionStatusSnapshot
 import me.magnum.melonds.impl.emulator.debug.RendererDebugBridge
 import me.magnum.melonds.impl.layout.DeviceLayoutDisplayMapper
 import me.magnum.melonds.impl.layout.SecondaryDisplaySelector
@@ -1825,21 +1830,78 @@ class EmulatorActivity : AppCompatActivity() {
             pauseMenu.labelOverride(pauseMenu.options[it])
                 ?: getString(pauseMenu.options[it].textResource)
         }
-
         activeOverlays.addActiveOverlay(EmulatorOverlay.PAUSE_MENU)
-        AlertDialog.Builder(this)
+        val dialogBuilder = AlertDialog.Builder(this)
                 .setTitle(R.string.pause)
-                .setItems(options) { _, which ->
-                    val selectedOption = pauseMenu.options[which]
-                    viewModel.onPauseMenuOptionSelected(selectedOption)
-                }
                 .setOnDismissListener {
                     activeOverlays.removeActiveOverlay(EmulatorOverlay.PAUSE_MENU)
                 }
                 .setOnCancelListener {
                     viewModel.resumeEmulator()
                 }
-                .show()
+        if (pauseMenu.sessionStatus == null) {
+            dialogBuilder
+                    .setItems(options) { _, which ->
+                        viewModel.onPauseMenuOptionSelected(pauseMenu.options[which])
+                    }
+                    .show()
+            return
+        }
+        val sessionStatus = pauseMenu.sessionStatus
+
+        val statusPadding = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            20f,
+            resources.displayMetrics,
+        ).toInt()
+        val optionList = ListView(this).apply {
+            addHeaderView(
+                TextView(this@EmulatorActivity).apply {
+                    text = formatSessionStatus(sessionStatus)
+                    setPadding(statusPadding, statusPadding, statusPadding, statusPadding)
+                },
+                null,
+                false,
+            )
+            adapter = ArrayAdapter(
+                this@EmulatorActivity,
+                android.R.layout.simple_list_item_1,
+                options,
+            )
+        }
+
+        lateinit var dialog: AlertDialog
+        dialog = dialogBuilder
+                .setView(optionList)
+                .create()
+        optionList.setOnItemClickListener { _, _, which, _ ->
+            val optionIndex = which - 1
+            if (optionIndex < 0) {
+                return@setOnItemClickListener
+            }
+            viewModel.onPauseMenuOptionSelected(pauseMenu.options[optionIndex])
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    private fun formatSessionStatus(status: SessionStatusSnapshot): String {
+        val profile = when (status.profileIntegrity) {
+            ProfileIntegrity.ORIGINAL -> getString(R.string.pause_session_profile_original)
+            ProfileIntegrity.ENHANCED -> getString(R.string.pause_session_profile_enhanced)
+        }
+        val retroAchievements = when (status.retroAchievementsMode) {
+            RetroAchievementsEffectiveMode.OFF -> getString(R.string.pause_session_ra_off)
+            RetroAchievementsEffectiveMode.CASUAL -> getString(R.string.pause_session_ra_casual)
+            RetroAchievementsEffectiveMode.HARDCORE -> getString(R.string.pause_session_ra_hardcore)
+            RetroAchievementsEffectiveMode.BLOCKED -> getString(R.string.pause_session_ra_blocked)
+        }
+        return getString(
+            R.string.pause_session_status,
+            profile,
+            status.effectiveArm9Percent,
+            retroAchievements,
+        )
     }
 
     private fun showRomSettingsMenu(

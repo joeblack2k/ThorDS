@@ -1,0 +1,79 @@
+M11 ThorDS session status snapshot
+Date: 2026-08-01
+Branch: thords/enhancement-platform-v1
+Publication branch: main
+Commit subject: feat: expose latched session status in pause menu
+Result: PASS_WITH_BOUNDS
+
+Scope:
+- A ROM launch latches profile integrity, effective ARM9 percentage and the
+  effective RetroAchievements mode once in EmulatorSession.
+- The pause menu reads that immutable session snapshot instead of resolving
+  launch policy again.
+- Firmware and non-ROM pause menus retain the existing setItems path and do
+  not receive a stale ROM snapshot.
+- Session reset clears the snapshot; a later ROM launch creates a new
+  snapshot. A runtime Reset inside the same ROM session intentionally keeps
+  the latched status.
+
+Source and unit validation:
+- EmulatorSessionTest: PASS, 1 test.
+- EmulatorViewModelSessionStatusTest: PASS, 1 test.
+- Arm9OverclockPolicyTest: PASS, 5 tests.
+- ProfileEngineTest: PASS, 16 tests.
+- RetroAchievementsPolicyTest: PASS, 10 tests.
+- EmulatorViewModelLaunchPolicyTest: PASS, 1 test.
+- Focused total: PASS, 34 tests, 0 failures, 0 errors.
+- Full build command:
+  CARGO=/tmp/thords-cargo ./gradlew --no-daemon
+  -Pkotlin.incremental=false
+  :app:regenerateVulkanSpirv :app:checkVulkanSpirv
+  :app:testGitHubProdReleaseUnitTest :app:assembleGitHubProdDebug
+- Full build result: PASS, BUILD SUCCESSFUL, 145 actionable tasks.
+- APK package check: PASS, `io.github.joeblack2k.thords.dev`, version
+  `0.1.0-dev`, expected debug permissions and no ROM/save/credential/private
+  paths in the APK archive.
+
+Physical Thor validation:
+- GitHubProdDebug APK install: PASS.
+- A fresh ThorDS ROM launch from the configured ROM directory reached the
+  emulator surface and opened the Android pause menu with the device Back
+  action.
+- The visible pause status was exactly:
+  Profile: Enhanced
+  ARM9: 100%
+  RetroAchievements: Off
+- Existing pause actions remained visible below the status block, including
+  Settings, ROM settings, Save state, Load state and Cheats.
+- The pause list scrolled on the Thor to expose the existing Reset and Exit
+  actions; the status header remained attached to the same scrollable menu.
+- Selecting the existing runtime Reset kept the same status values, as
+  expected for one still-running ROM session.
+- The process was restarted and the ROM was launched again; the status block
+  was recreated with the same values rather than read from a previous
+  activity instance.
+- A direct firmware launch did not produce a usable firmware session on this
+  device, so the physical firmware pause-menu branch remains unproven.
+  The source branch and session reset tests cover the fail-closed/default
+  behavior; this is not claimed as a physical firmware pass.
+- Filtered logcat after the clean ROM run: no FATAL EXCEPTION, ANR in or
+  am_anr.
+
+Publication safety:
+- Tracked-file and reachable-history scans found no ROM/save extension path
+  and no tracked private-evidence, credential, token or keystore path.
+- Staged Gitleaks scan: PASS, 0 findings.
+- Reachable-history Gitleaks scan: 997 commits scanned, with one unchanged
+  pre-existing `generic-api-key` false positive in the public NIST AES test
+  vector at `app/src/main/cpp/rcheevos/src/rhash/aes.c:23`, commit
+  `744d1b9230deb38e8a8f48239c01d77a314c1470`. M11 adds no secret material.
+- The local ignored ROM and private evidence directory remain unstaged and
+  outside the publication set.
+
+Boundaries:
+- This is the read-only M11 UI/session contract only. It does not implement
+  native ARM9 over-100 execution, JNI plumbing, telemetry or a new launcher.
+- M7 Castle Garden geometry, culling, HUD/bottom metrics and transition proof
+  remain open. Bob-omb Battlefield is not part of the M7 scope.
+- No ROM, save state, device identifier, private capture, credential or
+  authentication material is included in this evidence.

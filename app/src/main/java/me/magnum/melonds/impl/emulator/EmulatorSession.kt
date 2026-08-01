@@ -1,9 +1,17 @@
 package me.magnum.melonds.impl.emulator
 
 import me.magnum.melonds.domain.model.ConsoleType
+import me.magnum.melonds.domain.model.enhancement.ProfileIntegrity
 import me.magnum.melonds.domain.model.rom.Rom
 import me.magnum.melonds.domain.model.emulator.EmulatorSessionUpdateAction
 import me.magnum.melonds.domain.model.retroachievements.GameAchievementData
+import me.magnum.melonds.domain.model.retroachievements.RetroAchievementsEffectiveMode
+
+data class SessionStatusSnapshot(
+    val profileIntegrity: ProfileIntegrity,
+    val effectiveArm9Percent: Int,
+    val retroAchievementsMode: RetroAchievementsEffectiveMode,
+)
 
 class EmulatorSession {
 
@@ -14,13 +22,24 @@ class EmulatorSession {
     private var sessionHasAchievements = false
     private var retroAchievementsOfflineModeEnabled = false
     private var sessionType: SessionType? = null
+    private var sessionStatusSnapshot: SessionStatusSnapshot? = null
 
-    fun startSession(areRetroAchievementsEnabled: Boolean, isRetroAchievementsHardcoreModeEnabled: Boolean, sessionType: SessionType) {
+    fun startSession(
+        areRetroAchievementsEnabled: Boolean,
+        isRetroAchievementsHardcoreModeEnabled: Boolean,
+        sessionType: SessionType,
+        sessionStatusSnapshot: SessionStatusSnapshot? = null,
+    ) {
         this.areRetroAchievementsEnabled = areRetroAchievementsEnabled
         // Hardcore mode can only be enabled if RetroAchievements are available when the session starts
         this.isRetroAchievementsHardcoreModeEnabled = areRetroAchievementsEnabled && isRetroAchievementsHardcoreModeEnabled
         this.retroAchievementsOfflineModeEnabled = false
         this.sessionType = sessionType
+        sessionStatusSnapshot?.let {
+            if (this.sessionStatusSnapshot == null) {
+                this.sessionStatusSnapshot = it
+            }
+        }
     }
 
     fun reset() {
@@ -29,6 +48,7 @@ class EmulatorSession {
         sessionHasAchievements = false
         retroAchievementsOfflineModeEnabled = false
         sessionType = null
+        sessionStatusSnapshot = null
     }
 
     fun updateRetroAchievementsSettings(areRetroAchievementsEnabled: Boolean, isHardcoreModeEnabled: Boolean): List<EmulatorSessionUpdateAction> {
@@ -95,6 +115,10 @@ class EmulatorSession {
 
     fun currentSessionType(): SessionType? {
         return sessionType
+    }
+
+    fun sessionStatusSnapshot(): SessionStatusSnapshot? {
+        return sessionStatusSnapshot
     }
 
     sealed class SessionType {

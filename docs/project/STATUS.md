@@ -54,6 +54,13 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   HUD/glyph/bottom geometry and transition measurements. The owner explicitly
   selected controllable castle grounds as the M7 representative scene;
   Bob-omb Battlefield is no longer an M7 exit gate.
+- M11 now has a bounded read-only session-status slice: a ROM launch latches
+  profile integrity, effective ARM9 percentage and effective
+  RetroAchievements mode, and the pause menu displays that snapshot without
+  recomputing policy. The real Thor pause menu showed `Enhanced`, `100%` and
+  `Off` after a fresh ROM launch and process restart. Full M11 remains open
+  because the firmware physical branch and broader release gates are not
+  complete. Evidence: `docs/evidence/m11/session-status-pause.txt`.
 
 ## Milestone status
 
@@ -70,7 +77,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M8 | NOT_STARTED | | | |
 | M9 | IN_PROGRESS | policy-foundation + M9.2 launch-policy wiring | docs/evidence/m9/ | Android-free policy foundation, unsupported-mode fail-closed handling and pre-bootstrap launch gate verified; native/network/offline validation and full M9 acceptance remain open; publication is PASS_WITH_KNOWN_LEGACY_HISTORY |
 | M10 | IN_PROGRESS | | docs/evidence/m10/ | ARM9 overclock policy foundation only; current plumbing resolves effective 100; no native/JNI/UI/runtime over-100 behavior |
-| M11 | NOT_STARTED | | | |
+| M11 | IN_PROGRESS | feat: expose latched session status in pause menu | docs/evidence/m11/ | bounded read-only pause/session snapshot is tested and visible on Thor; firmware physical branch and full M11 acceptance remain open |
 | M12 | NOT_STARTED | | | |
 | M13 | NOT_STARTED | | | |
 
