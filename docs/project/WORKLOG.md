@@ -63,6 +63,11 @@
 - The render/lag split is visible through `func_02019144` and
   `func_02019100`, with the active scene object dispatched through
   `data_0209d4a8`.
+- The normal scene object resolves to `_ZTV5Stage`, with
+  `Stage::Behavior` at `0x0202bbbc`.
+- The follow-up dispatch audit separates IRQ graph slots 2/3 from semantic
+  lifecycle slots 6/9; `dScEntry_c::Behavior` is `0x0211a2b8` and
+  `dScEntry_c::Render` is `0x0211a26c`.
 - Independent review confirms that animation, stage, actor-timer, message and
   HUD code consume the same cadence value.
 

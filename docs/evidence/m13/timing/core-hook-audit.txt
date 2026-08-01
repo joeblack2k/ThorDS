@@ -38,6 +38,14 @@ Findings:
   the VBlank threshold alone is therefore not yet a safe product patch.
 - No reliable EU ASMP ROM offsets, original instruction words or conditional
   Action Replay preconditions have been established.
+- The normal scene object is identified as `_ZTV5Stage`, with
+  `Stage::Behavior` at `0x0202bbbc`; this narrows the semantic update
+  dispatch, but does not by itself identify a safe patch word.
+- Independent dispatch review distinguishes the IRQ graph callbacks from the
+  semantic lifecycle: `func_02019144` uses active-object vtable slot 2 and
+  `func_02019100` uses slot 3, while `Stage::Behavior` is slot 6 and
+  `Stage::Render` is slot 9. `dScEntry_c::Behavior` is `0x0211a2b8` and
+  `dScEntry_c::Render` is `0x0211a26c`.
 - Detailed mapping is recorded in
   `docs/research/sm64ds-60fps-decomp-map.md`.
 - The pinned European decomp now provides a concrete game-side scheduling map
