@@ -1,0 +1,26 @@
+{
+  "milestone": "M13",
+  "gate": "camera stress and presentation recovery",
+  "device": "AYN Thor",
+  "test": {
+    "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+    "cameraX": 1.0,
+    "forcedFrames": 60,
+    "outputBefore": "normal_gameplay",
+    "outputAfter": "black_with_horizontal_noise_band"
+  },
+  "observed": {
+    "androidAnr": true,
+    "vulkanPresentDropped": 120,
+    "gameLoopCadenceBeforeRecovery": 1,
+    "recovery": "force-stop, relaunch ROM, reload private checkpoint",
+    "recoveryOutput": "normal_gameplay"
+  },
+  "result": "FAIL_STRESS_HARNESS_OVERLOAD_RECOVERED",
+  "notes": [
+    "This run does not prove a camera rendering defect because the debug harness held the emulator in a forced frame/capture sequence.",
+    "The run exposed a real robustness gap: the harness can starve or overload presentation and trigger an ANR.",
+    "The normal 60 FPS stability window remains valid; this camera stress result is a separate failure.",
+    "No public release or acceptance claim is made from this failed stress run."
+  ]
+}

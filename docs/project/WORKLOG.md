@@ -1874,3 +1874,14 @@ Evidence:
 - Emulator-frame counts matched the unique-update counts and no crash or ANR
   was found.
 - Evidence: `docs/evidence/m13/f4-60fps-stability-window.json`.
+## 2026-08-01 - M13 camera stress harness failure and recovery
+
+- A 60-frame forced camera-input surface sequence produced a black output with
+  a horizontal noise band and an Android ANR.
+- Logcat showed 120 dropped Vulkan presents during the overloaded harness run.
+- Force-stopped and relaunched ThorDS, then reloaded the private 60-FPS
+  checkpoint; normal gameplay output returned.
+- This is a failed debug-stress run, not a release result. It exposes a
+  harness/presentation robustness gap that must be isolated before using long
+  forced camera sequences as acceptance evidence.
+- Evidence: `docs/evidence/m13/f4-camera-stress-anr.json`.
