@@ -1,0 +1,22 @@
+{
+  "milestone": "M13",
+  "gate": "display isolation",
+  "device": "AYN Thor",
+  "rom": "Super Mario 64 DS",
+  "settings": {
+    "profile": "sm64ds.eu.thor-enhanced",
+    "requestedArm9Percent": 125,
+    "renderer": "vulkan",
+    "trueWidescreen": true
+  },
+  "comparison": {
+    "rendererDebugToolsEnabled": false,
+    "surface": "BLACK"
+  },
+  "result": "BLACK_OUTPUT_NOT_DEBUG_LATCH_ONLY",
+  "notes": [
+    "The original preference file, including rendererDebugToolsEnabled=true, was restored after the test.",
+    "No product preference or source file was changed by this runtime comparison.",
+    "No 60fps gameplay claim is made."
+  ]
+}

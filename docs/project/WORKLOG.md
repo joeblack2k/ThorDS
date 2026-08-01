@@ -1761,6 +1761,16 @@ Evidence:
   validation remain open.
 - Evidence: `docs/evidence/m13/f1-renderer-ab-black-output.json`.
 
+### 2026-08-01 - M13 debug-latch black-output isolation
+
+- Disabled the runtime `video_renderer_debug_tools_enabled` preference for one
+  clean launch with Enhanced, Vulkan, true-widescreen and ARM9=125.
+- The DS surface remained black. The original preference file was restored
+  afterward, including the prior debug-tools value.
+- This excludes the renderer debug latch as the sole cause. F1 gameplay
+  evidence and 60fps validation remain open.
+- Evidence: `docs/evidence/m13/f1-debug-tools-black-output.json`.
+
 ### 2026-08-01 - M13 F3 developer cadence probe definition
 
 - Added the hidden, default-off exact-profile `60fps-dev-cadence` definition for
