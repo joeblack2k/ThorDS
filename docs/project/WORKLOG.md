@@ -37,6 +37,22 @@
   not committed. Product code remains `PLUMBING_ONLY` with effective 100%.
 - Evidence: `docs/evidence/m10/telemetry-ratios.csv`.
 
+## 2026-08-01 - M10 100% Thor stability slice
+
+### Result
+
+- Reinstalled the restored safe product build on the connected Thor.
+- Ran the enhanced SM64DS profile for 10 minutes with 20 process checks.
+- The process stayed alive throughout; final PID was `32257`.
+- Filtered final logcat contained zero `FATAL EXCEPTION`, `SIGSEGV` and
+  `ANR in` matches.
+
+### Boundary
+
+- This closes the 100% stability slice only. M10 remains partial until
+  equivalence, drift, subsystem correctness and the formal >100% gates pass.
+- Evidence: `docs/evidence/m10/stability-100.txt`.
+
 ## 2026-08-01 - M9 RetroAchievements closeout
 
 ### Result

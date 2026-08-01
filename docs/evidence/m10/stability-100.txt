@@ -1,0 +1,19 @@
+M10 100% Thor stability slice
+Date: 2026-08-01
+Device: AYN Thor
+Package: io.github.joeblack2k.thords.dev
+Profile: sm64ds.eu.thor-enhanced
+Mode: safe product baseline, effective ARM9 100%
+Duration: 10 minutes, 20 x 30-second process checks
+
+Results:
+- process remained alive at every interval: PID 32257
+- FATAL EXCEPTION: 0
+- SIGSEGV: 0
+- ANR in: 0
+- final process check: PASS
+
+Boundary:
+- This closes only the 100% stability slice.
+- It does not prove 100% equivalence, timing drift, audio/RTC/ARM7/IPC/GPU
+  correctness or a green effective 125% runtime.
