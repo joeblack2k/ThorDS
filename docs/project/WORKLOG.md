@@ -82,8 +82,8 @@
   input at `0.75` for `2500 ms`.
 - Runtime result: `PASS`; 61 unique updates, 9,907 protocol reads and a
   non-zero game-side `cameraYawOffset` of `25970`.
-- No crash or ANR was observed. The green private follow-up checkpoint is
-  `thords-camera-generic-hook-green.ml5`.
+- No crash or ANR was observed. The green follow-up checkpoint remains private;
+  its local filename is not published.
 - Commit: `01cf152f fix: hook generic SM64DS camera update`.
 
 ### Boundary
@@ -1761,7 +1761,7 @@ Evidence:
   `EXPERIMENTAL` capability used by the profile planner. `VALIDATED` remains
   reserved for completed timing and hardware evidence.
 - Thor evidence: `requestedArm9=125 effectiveArm9=125`, native telemetry
-  `percent=125`, and compatible state `.ml8` loaded with `success=1`.
+  `percent=125`, and a compatible private state loaded with `success=1`.
 - Semantic telemetry after the load remained monitor-live with VBlank count
   `1786`; no gameplay cadence claim is made from this state-load gate.
 - Evidence: `docs/evidence/m13/f1-arm9-profile-state8.json`.
@@ -1801,10 +1801,9 @@ Evidence:
 
 ### 2026-08-01 - M13 private checkpoint retry
 
-- Reached the connected Thor with the existing private cache checkpoints and
-  retried `thords-m7-castle-ground.ml0`, `thords-m7-checkpoint.ml0`,
-  `thords-m7-castle-interior.ml0` and `thords-m7-rabbit-search.ml0` through the
-  debug `LOAD_STATE` API.
+- Reached the connected Thor with four existing private M7 cache checkpoints
+  and retried them through the debug `LOAD_STATE` API. Their local filenames
+  are not published.
 - All four loads returned `success=0`. The running display was black afterward.
 - The game-loop sampler remained valid at 60 updates/s with `cadence=1`, but
   `stageTimer=0` and the non-gameplay surface mean this is not F1 gameplay
@@ -1813,7 +1812,7 @@ Evidence:
 
 ### 2026-08-01 - M13 legacy savestate format root cause
 
-- The rejected `.ml0` checkpoint was inspected through the current runtime
+- The rejected legacy checkpoint was inspected through the current runtime
   error path. The file has valid `MELN` and `NDSG` sections, but its config word
   is `0x00000000`.
 - The current ThorDS runtime requires `0x00020000`, which records the ARM9
@@ -1914,8 +1913,8 @@ Evidence:
   acceptance on the Thor.
 ## 2026-08-01 - M13 reusable private gameplay checkpoint
 
-- Created a private savestate after advancing past the SM64DS intro:
-  `/data/user/0/io.github.joeblack2k.thords.dev/cache/thords-m13-gameplay.ml0`.
+- Created a private save state after advancing past the SM64DS intro; its local
+  app-private path is not published.
 - Loaded the same checkpoint through the debug receiver and received
   `success=1`; the intro no longer needs to be replayed for each test.
 - The state remains device-private. No ROM, save-state bytes or private capture
@@ -1925,8 +1924,8 @@ Evidence:
 
 - Enabled the exact EU SM64DS guarded cadence probe and loaded the reusable
   gameplay checkpoint.
-- Created and round-tripped a second private checkpoint:
-  `/data/user/0/io.github.joeblack2k.thords.dev/cache/thords-m13-60fps-gameplay.ml0`.
+- Created and round-tripped a second private cadence checkpoint; its local
+  app-private path is not published.
 - A 15-second native telemetry window reported 60 or 61 unique game updates
   per second in all steady-state windows, with one 51-update load/warm-up
   window. No crash or ANR was observed.
@@ -2029,3 +2028,31 @@ Evidence:
 - A local research ARM9 binary was rejected as a patch source because its bytes
   do not match the exact loaded EU runtime layout.
 - Evidence: `docs/evidence/m13/f4-camera-protocol-read-boundary.json`.
+
+## 2026-08-01 - M13 paired semantic cadence and 2x-speed failure
+
+- Removed the misleading `0x020199A4` scheduler marker after static review
+  showed it is a conditional special-state loop, not the ordinary gameplay
+  scheduler.
+- Added exact-PC counters for `Scene::BeforeBehavior` at `0x0202E3D4` and
+  `Scene::BeforeRender` at `0x0202E3A4`; existing counter indices remain
+  stable.
+- Verified both addresses at the product decomp pin and audit commit
+  `755f0be5b9658e5f75871c4138ddc0133a2c07c4`; the audit changes only shared
+  type declarations/readability in these functions.
+- On the same private Castle Garden checkpoint, cadence 2 produced one Stage
+  and Scene behavior/render pass per two VBlanks (`306/612`), while the guarded
+  cadence 1 probe produced one pass per VBlank (`615/615`). The independent
+  sampler showed `31/61` updates/frames versus `60/60`. ARM9 at effective 125%
+  had no target debt.
+- The owner physically observed approximately 2x gameplay speed with the probe
+  enabled. This proves real semantic doubling but fails correct-speed product
+  timing; F4 fixed-step movement, physics, animation, particles, timers and
+  audio remain red.
+- Disabled the probe, relaunched, restored the private normal-speed checkpoint
+  and confirmed cadence 2 with 30 unique updates across 61 emulator frames.
+  No crash or ANR was found.
+- GitHubProdRelease unit tests and the GitHubProdDebug APK build passed. The
+  installed APK SHA-256 is
+  `ba9bcfebffedc93d82cbbfbbfa3b8b5cf3bce86e9bfda75199d64137c1a328ea`.
+- Evidence: `docs/evidence/m13/f3-stage-dispatch-paired.json`.

@@ -2,7 +2,7 @@
   "milestone": "M13",
   "gate": "native camera-state observability",
   "device": "AYN Thor",
-  "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+  "checkpoint": "private gameplay state; local filename not published",
   "cameraHold": {
     "cameraX": 1.0,
     "cameraY": 0.0,

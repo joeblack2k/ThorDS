@@ -10,7 +10,7 @@
     "payload": "0x02075BB4",
     "patchSha256": "b8eff2139fb12fc0b0f0fac9d2e7f3e5a494fa9c21815882df1ebd92ed61eb95"
   },
-  "checkpoint": "thords-camera-generic-mode.ml4",
+  "checkpoint": "private generic camera checkpoint; local filename not published",
   "input": {
     "cameraX": 0.75,
     "holdMs": 2500,

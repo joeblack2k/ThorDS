@@ -25,6 +25,12 @@ The European decomp identifies the following game-side path:
 8. The `dScEntry_c` overlay supplies `Behavior` at `0x0211a2b8` and `Render`
    at `0x0211a26c`; these are the strongest entry-scene candidates for
    semantic update and render work.
+9. `Scene::BeforeBehavior` at `0x0202e3d4` and `Scene::BeforeRender` at
+   `0x0202e3a4` retain the same addresses and semantics at both the product pin
+   and audit commit `755f0be5b9658e5f75871c4138ddc0133a2c07c4`.
+10. A paired Castle Garden run measured Stage and Scene behavior/render at
+    approximately 30/s with cadence 2 and approximately 60/s with cadence 1.
+    The cadence probe therefore reaches the semantic scene path.
 
 Source references:
 
@@ -60,13 +66,15 @@ Relevant references:
 ## What this proves
 
 This is a concrete EU game-side timing hook and a viable target for the M13
-runtime-patch investigation. It is stronger than presenter FPS or
-`NDS::RunFrame()` counts.
+runtime-patch investigation. The paired Stage/Scene counters prove that the
+developer cadence probe creates real semantic updates rather than duplicated
+presentation frames.
 
 ## What this does not prove
 
-It does not yet prove that changing the value produces correct 60fps
-gameplay. The remaining work must establish:
+It does not prove correct-speed 60fps gameplay. The owner observed
+approximately 2x gameplay speed while the cadence probe was active. The
+remaining work must establish:
 
 - every initialization/scene path that can overwrite the tick;
 - the exact mapping between the IRQ scene-graph slots and the active
@@ -76,6 +84,11 @@ gameplay. The remaining work must establish:
 - semantic unique-update accounting;
 - normal wall-clock, timers, physics, animation and audio;
 - stress-scene and combined-feature behavior.
+
+`func_020199a4` at `0x020199a4` is not the ordinary gameplay scheduler. It is
+a special-state infinite loop reached conditionally from Stage/transition
+paths. Its zero count in Castle Garden is expected and it is not retained as a
+semantic marker.
 
 No ROM bytes, patched ROM, save, save state or guessed Action Replay payload
 is included in this repository.
@@ -100,7 +113,7 @@ semantic render:
   dScEntry_c::Render      -> 0x0211a26c
 ```
 
-The active-object connection between the IRQ graph callbacks and these
-behavior/render entries is not fully proven by the public decomp. Therefore
-the callback slots are valid instrumentation targets, but not yet valid
-replacement targets for a product runtime patch.
+The paired runtime counters now prove the active Castle Garden scene reaches
+the Stage and Scene behavior/render entries at the expected cadence. This does
+not make any callback slot a valid replacement target for a product runtime
+patch; fixed-step consumers and exact original-word guards remain unresolved.

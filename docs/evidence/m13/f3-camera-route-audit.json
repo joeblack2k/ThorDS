@@ -11,7 +11,7 @@
     "slot2Isolation": "profile camera axes are excluded from Slot-2 analog movement mapping"
   },
   "thorRuntime": {
-    "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+    "checkpoint": "private gameplay state; local filename not published",
     "cameraX": 0.65,
     "cameraY": 0.0,
     "inputHandled": true,

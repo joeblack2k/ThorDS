@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "milestone": "M13",
+  "gate": "F3 paired semantic cadence",
+  "profileIdentity": {
+    "gameCode": "ASMP",
+    "revision": 0,
+    "raHash": "ba3c4052e00c5cc31df5d5534c39de1b"
+  },
+  "renderer": "Vulkan",
+  "checkpoint": "private Castle Garden state; not published",
+  "effectiveArm9Percent": 125,
+  "counterOrder": [
+    "mainLoopSlot1",
+    "cadenceRender",
+    "lagCallback",
+    "stageBehavior",
+    "stageRender",
+    "entryBehavior",
+    "entryRender",
+    "entryInit",
+    "vblankHandler",
+    "sceneBeforeBehavior",
+    "sceneBeforeRender"
+  ],
+  "probeOff": {
+    "monitorSeconds": 10.08,
+    "counters": [
+      0,
+      0,
+      0,
+      306,
+      306,
+      0,
+      0,
+      0,
+      612,
+      306,
+      306
+    ],
+    "approximateRatesPerSecond": {
+      "stageBehavior": 30.36,
+      "stageRender": 30.36,
+      "sceneBeforeBehavior": 30.36,
+      "sceneBeforeRender": 30.36,
+      "vblankHandler": 60.71
+    },
+    "semanticPassesPerVblank": {
+      "stageBehavior": 0.5,
+      "stageRender": 0.5,
+      "sceneBeforeBehavior": 0.5,
+      "sceneBeforeRender": 0.5
+    },
+    "gameLoopWindow": {
+      "wallNs": 1013020520,
+      "uniqueUpdates": 31,
+      "emulatorFrames": 61,
+      "cadenceValue": 2
+    },
+    "arm9TargetDebtCycles": 0
+  },
+  "probeOn": {
+    "monitorSeconds": 10.08,
+    "counters": [
+      0,
+      0,
+      0,
+      615,
+      615,
+      0,
+      0,
+      0,
+      615,
+      615,
+      615
+    ],
+    "approximateRatesPerSecond": {
+      "stageBehavior": 61.01,
+      "stageRender": 61.01,
+      "sceneBeforeBehavior": 61.01,
+      "sceneBeforeRender": 61.01,
+      "vblankHandler": 61.01
+    },
+    "semanticPassesPerVblank": {
+      "stageBehavior": 1.0,
+      "stageRender": 1.0,
+      "sceneBeforeBehavior": 1.0,
+      "sceneBeforeRender": 1.0
+    },
+    "gameLoopWindow": {
+      "wallNs": 1000211198,
+      "uniqueUpdates": 60,
+      "emulatorFrames": 60,
+      "cadenceValue": 1
+    },
+    "arm9TargetDebtCycles": 0
+  },
+  "physicalOwnerWitness": {
+    "result": "FAIL",
+    "observation": "Gameplay ran at approximately twice normal speed while the probe was enabled."
+  },
+  "postcondition": {
+    "probeEnabled": false,
+    "cadenceValue": 2,
+    "gameLoopWindow": {
+      "wallNs": 1013780625,
+      "uniqueUpdates": 30,
+      "emulatorFrames": 61
+    },
+    "crashOrAnr": false
+  },
+  "result": "F3_SEMANTIC_TRANSITION_PASS_F4_TIMING_PARITY_FAIL",
+  "notes": [
+    "The robust paired result is one Stage/Scene behavior-render pass per two VBlanks with cadence 2 and one pass per VBlank with cadence 1.",
+    "The approximate wall-time rates are boundary-sensitive and are not the sole gate.",
+    "Zero counters mean only that an exact PC was not observed at the JIT dispatch boundary; they do not prove the function never executed.",
+    "The cadence probe doubles real Stage and Scene behavior/render execution; it is not duplicated-frame or presenter-only evidence.",
+    "The physical 2x-speed witness proves the cadence-only probe is not a product patch.",
+    "The next gate is source-derived fixed-step correction with deterministic wall-time and movement parity.",
+    "No ROM, save state, screenshot, device serial or private path is included."
+  ]
+}

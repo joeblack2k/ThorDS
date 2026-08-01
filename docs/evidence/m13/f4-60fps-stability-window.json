@@ -2,7 +2,7 @@
   "milestone": "M13",
   "gate": "60 FPS stability window",
   "device": "AYN Thor",
-  "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+  "checkpoint": "private gameplay state; not published",
   "durationSeconds": 60,
   "telemetryWindows": 59,
   "uniqueUpdatesPerSecond": {
@@ -19,10 +19,11 @@
   ],
   "emulatorFramesMatchedUniqueUpdates": true,
   "crashOrAnr": false,
-  "result": "PASS_NATIVE_60FPS_STABILITY_WINDOW",
+  "result": "PASS_CADENCE_STABILITY_ONLY_FAIL_GAMEPLAY_SPEED",
   "notes": [
     "The cadence probe remained enabled for the entire run.",
     "No 30-update window or cadence fallback was observed.",
-    "This is a native telemetry stability result; physical long-play, audio, camera direction and cutscene/ratio behavior remain separate acceptance gates."
+    "A later paired semantic run confirmed real Stage and Scene updates at about 60/s, while the owner observed approximately 2x gameplay speed.",
+    "This window proves cadence stability only; it fails correct-speed product timing and is not validated 60 FPS."
   ]
 }

@@ -1,7 +1,7 @@
 {
   "milestone": "M13",
   "gate": "F1 gameplay baseline",
-  "checkpoint": "thords-m7-castle-ground.ml0",
+  "checkpoint": "private legacy M7 checkpoint; local filename not published",
   "loadResult": "REJECTED",
   "runtimeEvidence": {
     "expectedSavestateConfigWord": "0x00020000",

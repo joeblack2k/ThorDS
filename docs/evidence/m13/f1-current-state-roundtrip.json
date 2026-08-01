@@ -2,7 +2,7 @@
   "milestone": "M13",
   "gate": "current savestate format",
   "device": "AYN Thor",
-  "state": "app-private m13-current.ml0",
+  "state": "app-private current state; local filename not published",
   "profile": {
     "requestedArm9Percent": 125,
     "effectiveArm9Percent": 125

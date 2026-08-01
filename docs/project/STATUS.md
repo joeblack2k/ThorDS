@@ -13,8 +13,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 ## Summary
 
 - Current workstream: M13 timing validation and SM64DS Smooth Orbit Camera v1
-- Current gate: semantic 60fps/product validation remains open; the generic
-  camera runtime hook is now hardware-validated
+- Current gate: F3 semantic 30-to-60 transition is proven; F4 correct-speed
+  timing remains red because the cadence-only probe produces 2x gameplay
 - ~~Original/safe-mode software rendering as a play path~~ — explicitly out
   of scope for ThorDS Enhanced product validation. The product path is Vulkan.
 - Overall status: PARTIAL
@@ -58,7 +58,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M10 | PARTIAL | ad3a5179 | docs/evidence/m10/ | guarded native/JNI config, scheduler snapshots, persisted preference fail-closed check, incompatible-ratio savestate guard, 100% telemetry and stability are green; 64-bit scaled-cycle truncation fixed; equivalence, drift and formal over-100 runtime gates remain open |
 | M11 | PARTIAL | 760f3c2b | docs/evidence/m11/ | ROM-details resolved ThorDS profile status, per-ROM Original/Enhanced and RA controls, physical Hardcore recovery branches and staged-edit process recreation pass; ~~safe-mode acceptance~~ is out of scope; full physical details-flow acceptance remains open |
 | M12 | BLOCKED | docs: record M12 release preflight matrix | docs/evidence/m12/ | inventory only; release remains blocked by incomplete product and device gates |
-| M13 | PARTIAL | arm9 profile/state-load gate | docs/evidence/m13/ | F1 monitor live; ARM9 125% relaunch and state 8 load pass; gameplay cadence and exact 60fps remain open |
+| M13 | PARTIAL | arm9 profile/state-load gate | docs/evidence/m13/ | F3 changes Stage/Scene behavior and render from about 30/s to 60/s; cadence-only gameplay is 2x speed, so F4 timing correction remains open |
 
 ## Feature status
 
@@ -67,7 +67,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - RA Casual: PASS
 - RA Hardcore gate: PARTIAL
 - ARM9 OC: EXPERIMENTAL / 125% relaunch and compatible state load pass; timing validation remains open
-- 60fps: REQUIRED / IMPLEMENTATION AND VALIDATION OPEN
+- 60fps: REQUIRED / F3 SEMANTIC CADENCE PASS / F4 CORRECT-SPEED TIMING FAIL
 - ~~Safe mode / software renderer gameplay~~: OUT OF SCOPE / Vulkan is the
   supported ThorDS Enhanced product renderer
 - SM64DS Smooth Orbit Camera v1: PARTIAL / frontend mapping, R3 sequence,
@@ -78,10 +78,10 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   61 unique updates, 9,907 protocol reads and a non-zero game-side yaw offset,
   with no crash or ANR. Evidence:
   `docs/evidence/m13/f4-generic-camera-hook.json`.
-- M13 research now records the EU game-side VBlank cadence hook, the unresolved
-  scene vtable dispatch and the timer/animation dependency boundary. No
-  unverified 60fps code is shipped; implementation and full timing validation
-  remain open. Evidence:
+- M13 research now records the EU game-side VBlank cadence hook, the proven
+  Stage/Scene behavior-render transition and the timer/animation dependency
+  boundary. No unverified 60fps product code is shipped; implementation and
+  full timing validation remain open. Evidence:
   `docs/evidence/m13/timing/core-hook-audit.txt`,
   `docs/research/sm64ds-60fps-decomp-map.md`,
   `docs/evidence/m13/timing/eu-overlay-original-hashes.txt`,
@@ -93,10 +93,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - The 18 source-level cadence writes were reviewed as initialization or
   scene/overlay-transition assignments and none was promoted to an F4 patch
   manifest. Binary/runtime consumer matching remains required.
-- F2 source review now maps `func_020199A4` at `0x020199A4` as the primary
-  cadence scheduler boundary, with timer, Stage behavior, HUD and OAM
-  consumers downstream. Runtime entry-count correlation against a 30 FPS
-  baseline is the next F2 experiment.
+- F2 source review rejects `func_020199A4` as the ordinary gameplay scheduler:
+  it is a conditional special-state loop and its zero Castle Garden count is
+  expected. Scene BeforeBehavior/BeforeRender are the replacement markers.
 - Route-A runtime telemetry now confirms the active scene path through equal
   Stage Behavior, Stage Render and VBlank counts (`376/376/376`) on the green
   checkpoint. `MainLoopSlot1` was zero in this state and is not used as sole
@@ -105,6 +104,13 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - F3 now has a hidden exact-profile `60fps-dev-cadence` Action Replay definition
   with default-off and relaunch-required semantics. It is experimental only;
   no product or 60fps validation claim is made.
+- The paired F3 Castle Garden run measured Stage/Scene behavior and render at
+  one pass per two VBlanks with cadence 2 and one pass per VBlank with cadence
+  1 (`306/612` versus `615/615`). The owner simultaneously observed
+  approximately 2x gameplay speed. This passes the semantic transition
+  experiment but fails F4 product timing. The probe was disabled and normal
+  cadence 2 restored. Evidence:
+  `docs/evidence/m13/f3-stage-dispatch-paired.json`.
 - F3 wiring is now Thor-verified: the debug-only preference action survives
   launch planning and adds the fourth curated runtime code; the probe was
   disabled again after the check. Evidence:
@@ -126,10 +132,11 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Continue F1/F2 with the loaded Vulkan state: capture gameplay semantic counters
-and classify cadence consumers. 60fps remains required; this ARM9 gate is only
-an experimental timing prerequisite, not 60fps acceptance. ~~Do not spend
-product-gate time on Original/safe-mode software rendering.~~
+Continue F4 on Vulkan by isolating and correcting the first ordinary-gameplay
+fixed-step movement/timing consumer, then compare the same private checkpoint
+at equal wall time. Keep the cadence-only probe default-off outside bounded
+measurements. ~~Do not spend product-gate time on Original/safe-mode software
+rendering.~~
 M8 and M9 are complete for the current product gate; do not restart either
 validation workstream. Over-100% ARM9 behavior remains disabled until timing
 evidence proves it safe. Remaining independent gaps, including M6 physical
@@ -144,4 +151,6 @@ tracked above.
   semantic gameplay targets remained zero.
 - This is valid monitor-liveness evidence, not 60 FPS gameplay evidence.
 - Evidence: `docs/evidence/m13/f1-thor-semantic-run.json`.
-- F1 gameplay validation and F2 cadence-consumer classification remain open.
+- F1 gameplay Route-A validation is green for the active Castle Garden
+  Stage/Scene path. F2 manual fixed-step classification and F4 timing
+  correction remain open.

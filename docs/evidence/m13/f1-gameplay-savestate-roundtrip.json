@@ -4,7 +4,7 @@
   "device": "AYN Thor",
   "package": "io.github.joeblack2k.thords.dev",
   "state": {
-    "privatePath": "/data/user/0/io.github.joeblack2k.thords.dev/cache/thords-m13-gameplay.ml0",
+    "checkpoint": "private Castle Garden state; local path not published",
     "save": "success",
     "load": "success"
   },

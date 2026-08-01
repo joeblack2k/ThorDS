@@ -2,7 +2,7 @@
   "milestone": "M13",
   "gate": "camera protocol consumption boundary",
   "device": "AYN Thor",
-  "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+  "checkpoint": "private gameplay state; local filename not published",
   "runtime": {
     "cameraHookWord": "0xEA01A7AF",
     "cameraPointer": "0x0217E080",

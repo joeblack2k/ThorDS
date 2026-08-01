@@ -3,7 +3,7 @@
   "gate": "M13 60fps stability window with green camera hook",
   "date": "2026-08-01",
   "profile": "sm64ds.eu.thor-enhanced",
-  "checkpoint": "thords-camera-generic-hook-green.ml5",
+  "checkpoint": "private green camera checkpoint; local filename not published",
   "probe": {
     "id": "60fps-dev-cadence",
     "enabledForMeasurementOnly": true,

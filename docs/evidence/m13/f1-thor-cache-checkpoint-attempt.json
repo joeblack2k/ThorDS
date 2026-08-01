@@ -9,19 +9,19 @@
   },
   "attempts": [
     {
-      "checkpoint": "thords-m7-castle-ground.ml0",
+      "checkpoint": "private M7 checkpoint 1",
       "loadSuccess": false
     },
     {
-      "checkpoint": "thords-m7-checkpoint.ml0",
+      "checkpoint": "private M7 checkpoint 2",
       "loadSuccess": false
     },
     {
-      "checkpoint": "thords-m7-castle-interior.ml0",
+      "checkpoint": "private M7 checkpoint 3",
       "loadSuccess": false
     },
     {
-      "checkpoint": "thords-m7-rabbit-search.ml0",
+      "checkpoint": "private M7 checkpoint 4",
       "loadSuccess": false
     }
   ],

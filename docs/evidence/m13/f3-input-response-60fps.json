@@ -2,7 +2,7 @@
   "milestone": "M13",
   "gate": "60 FPS input response smoke test",
   "device": "AYN Thor",
-  "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+  "checkpoint": "private gameplay state; local filename not published",
   "cases": {
     "leftStick": {
       "input": {

@@ -2,7 +2,7 @@
   "milestone": "M13",
   "gate": "game-side camera hook application",
   "device": "AYN Thor",
-  "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+  "checkpoint": "private gameplay state; local filename not published",
   "hook": {
     "address": "0x0200BCF0",
     "runtimeWord": "0xEA01A7AF",

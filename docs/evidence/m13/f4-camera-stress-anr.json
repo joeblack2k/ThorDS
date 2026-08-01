@@ -3,7 +3,7 @@
   "gate": "camera stress and presentation recovery",
   "device": "AYN Thor",
   "test": {
-    "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+    "checkpoint": "private gameplay state; local filename not published",
     "cameraX": 1.0,
     "forcedFrames": 60,
     "outputBefore": "normal_gameplay",

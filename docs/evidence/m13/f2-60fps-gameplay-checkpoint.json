@@ -10,7 +10,7 @@
     "value": 1
   },
   "state": {
-    "privatePath": "/data/user/0/io.github.joeblack2k.thords.dev/cache/thords-m13-60fps-gameplay.ml0",
+    "checkpoint": "private gameplay state; not published",
     "save": "success",
     "load": "success"
   },
@@ -36,11 +36,12 @@
     "emulatorFramesPerSecond": "matched unique update rate",
     "crashOrAnr": false
   },
-  "result": "60FPS_GAMEPLAY_CADENCE_REPRODUCED_WITH_PRIVATE_CHECKPOINT",
+  "result": "PASS_CADENCE_ONLY_FAIL_GAMEPLAY_SPEED",
   "notes": [
     "The 60 FPS mode is currently enabled through the exact EU SM64DS guarded developer cadence probe.",
     "The single 51-update window occurred during state-load/warm-up transition; surrounding windows were 60 or 61.",
-    "This is strong runtime evidence, but broader product acceptance still requires movement, camera, audio, long-run and release-gate validation.",
+    "A later paired semantic run confirmed real Stage and Scene updates at about 60/s, while the owner observed approximately 2x gameplay speed.",
+    "This cadence-only result fails product timing and must not be presented as validated 60 FPS.",
     "The ROM and savestate remain private on the device and are not tracked or copied to the repository."
   ]
 }
