@@ -1671,3 +1671,13 @@ Evidence:
   `1786`; no gameplay cadence claim is made from this state-load gate.
 - Evidence: `docs/evidence/m13/f1-arm9-profile-state8.json`.
 - Next: F1 gameplay witness and F2 cadence-consumer classification.
+
+### 2026-08-01 - M13 F2 cadence classifier refinement
+
+- Refined `tools/thords/60fps/scan_cadence_consumers.py` to classify the
+  inventory into scheduler, message/HUD, render/OAM, scene-update, boot/init,
+  animation, physics, timer and scene-specific groups.
+- Re-ran the EU inventory: 192 findings; 16 low-level `func_...` entries remain
+  explicitly `unresolved-function` for manual decomp review.
+- This reduces false `unknown` grouping but does not close F2 or authorize a
+  cadence patch.

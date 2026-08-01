@@ -14,19 +14,27 @@ FUNCTION = re.compile(r"^\s*(?:[\w:<>,~*&]+\s+)+([\w:~]+)\s*\([^;]*\)")
 
 def category(path: Path, line: str, function: str | None) -> str:
     text = f"{path} {line} {function or ''}".lower()
+    if any(x in text for x in ("vblank", "irq", "mainloop", "main_loop", "slot1")):
+        return "scheduler"
     if any(x in text for x in ("message", "hud", "menu", "pause")):
         return "message/HUD"
     if any(x in text for x in ("particle", "effect", "weather")):
         return "particle/effect"
+    if any(x in text for x in ("oam", "render", "minimap")):
+        return "render/OAM"
     if "anim" in text:
         return "animation"
     if any(x in text for x in ("physics", "velocity", "gravity", "player", "actor")):
         return "physics"
     if any(x in text for x in ("timer", "countdown", "delay")):
         return "timer"
+    if any(x in text for x in ("behavior", "update", "lc_", "ps_", "ve_", "stage")):
+        return "scene-update"
+    if any(x in text for x in ("boot", "initresource", "dscboot", "dscmb")):
+        return "boot/init"
     if "ov" in str(path).lower() or "overlay" in str(path).lower():
         return "scene-specific"
-    return "unknown"
+    return "unresolved-function"
 
 
 def main() -> int:
