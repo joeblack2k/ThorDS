@@ -73,6 +73,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   `docs/research/sm64ds-60fps-decomp-map.md`,
   `docs/evidence/m13/timing/eu-overlay-original-hashes.txt`,
   `docs/evidence/m13/timing/game-loop-counter-instrumentation.txt`.
+- M13 now also contains a timed, read-only sampler for the mapped EU main-loop
+  counter. It reports one-second `uniqueUpdates` windows for runtime
+  validation; this is not yet 60fps acceptance evidence.
 - Thor GUI: PARTIAL
 - Stability: NOT_STARTED
 

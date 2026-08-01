@@ -13,17 +13,22 @@ Implementation:
 - `MelonDSAndroid::getSm64dsGameLoopTelemetryJson()`
 - JNI `MelonEmulator.getSm64dsGameLoopTelemetry()`
 - reads the existing `NDS::MainRAM` buffer without modifying emulation state;
-- returns validity, source, mapped address and the current counter value.
+- samples the counter after each `MelonInstance::runFrame()` call;
+- reports one-second windows containing `windowWallNs`, `uniqueUpdates` and
+  `emulatorFrames`.
 
 Build evidence:
 - `:app:compileGitHubProdDebugKotlin`
 - `:app:assembleGitHubProdDebug`
 - GitHub Prod Debug CMake/native compilation
-- result: `BUILD SUCCESSFUL`
+- result: `BUILD SUCCESSFUL` (`76 actionable tasks: 9 executed, 67 up-to-date`)
 
 Boundary:
-- This is an internal read-only measurement path, not a 60fps toggle.
-- It is not yet wired to a timed sampler or unique-update report.
+- This is an internal read-only measurement path, not a 60fps toggle or patch.
+- `uniqueUpdates` is the delta of the mapped decomp counter and is not yet
+  validated against a live EU ASMP session on the Thor.
+- `emulatorFrames` counts completed `NDS::RunFrame()` calls in the sampled
+  window; it is diagnostic context, not presenter FPS.
 - It does not prove that the counter remains semantic through all scene,
   overlay, pause, transition and save/relaunch paths.
 - The 60fps mode remains unimplemented and unvalidated.

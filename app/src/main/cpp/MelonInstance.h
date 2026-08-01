@@ -210,6 +210,7 @@ private:
     void logVulkanPerformanceIfNeeded();
     void setBatteryLevels();
     void setDateTime();
+    void sampleSm64dsGameLoopCounter();
     void saveRewindState(RewindSaveState* rewindSaveState);
     void clearLatchedSoftPackedFrameSnapshot();
     bool updateVulkanTemporal3dHistoryGate();
@@ -239,6 +240,15 @@ private:
     u32 inputMask;
     std::atomic<float> slot2AnalogX = 0.0f;
     std::atomic<float> slot2AnalogY = 0.0f;
+    mutable std::mutex sm64dsGameLoopTelemetryMutex;
+    bool sm64dsGameLoopCounterInitialized = false;
+    u32 sm64dsGameLoopCounterLast = 0;
+    u64 sm64dsGameLoopWindowStartNs = 0;
+    u64 sm64dsGameLoopWindowFrames = 0;
+    u32 sm64dsGameLoopWindowUpdates = 0;
+    u64 sm64dsGameLoopLatestWallNs = 0;
+    u64 sm64dsGameLoopLatestFrames = 0;
+    u32 sm64dsGameLoopLatestUpdates = 0;
 
     std::shared_ptr<EmulatorConfiguration> currentConfiguration;
     FrameQueue frameQueue;

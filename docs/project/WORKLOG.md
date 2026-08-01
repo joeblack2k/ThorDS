@@ -90,6 +90,23 @@
 - Counter instrumentation:
   `docs/evidence/m13/timing/game-loop-counter-instrumentation.txt`.
 
+## 2026-08-01 - M13 timed semantic-counter sampler
+
+### Result
+
+- Added a read-only native/Kotlin sampler for the EU decomp-mapped
+  `data_020a0db0` main-loop counter.
+- The sampler runs after each completed `NDS::RunFrame()` and publishes
+  one-second windows with `uniqueUpdates`, `emulatorFrames` and wall-clock
+  duration.
+- GitHub Prod Debug native/Kotlin build and APK packaging passed.
+
+### Boundary
+
+- This remains instrumentation only. It does not enable 60fps, change cadence,
+  or establish 60fps acceptance until a live EU ASMP session proves unique
+  semantic updates, normal timers/physics/audio, and stress behavior.
+
 ## 2026-08-01 - M10 native launch telemetry baseline
 
 ### Result

@@ -1135,22 +1135,54 @@ std::string MelonInstance::getArm9OverclockTelemetryJson() const
 
 std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
 {
+    std::lock_guard lock(sm64dsGameLoopTelemetryMutex);
+    if (!sm64dsGameLoopCounterInitialized)
+        return "{\"valid\":false,\"source\":\"sm64ds-eu-decomp-main-loop\"}";
+    return "{\"valid\":true,\"source\":\"sm64ds-eu-decomp-main-loop\",\"address\":\"0x020A0DB0\",\"windowWallNs\":"
+        + std::to_string(sm64dsGameLoopLatestWallNs)
+        + ",\"uniqueUpdates\":" + std::to_string(sm64dsGameLoopLatestUpdates)
+        + ",\"emulatorFrames\":" + std::to_string(sm64dsGameLoopLatestFrames) + "}";
+}
+
+void MelonInstance::sampleSm64dsGameLoopCounter()
+{
     constexpr u32 kMainRamBase = 0x02000000;
     constexpr u32 kGameLoopCounterAddress = 0x020A0DB0;
     if (nds == nullptr || nds->MainRAM == nullptr)
-        return "{\"valid\":false,\"source\":\"sm64ds-eu-decomp-main-loop\"}";
+        return;
 
     const u32 offset = (kGameLoopCounterAddress - kMainRamBase) & nds->MainRAMMask;
     if (offset > nds->MainRAMMask - 3)
-        return "{\"valid\":false,\"source\":\"sm64ds-eu-decomp-main-loop\"}";
+        return;
 
     const u8* bytes = nds->MainRAM + offset;
     const u32 counter = static_cast<u32>(bytes[0])
         | (static_cast<u32>(bytes[1]) << 8)
         | (static_cast<u32>(bytes[2]) << 16)
         | (static_cast<u32>(bytes[3]) << 24);
-    return "{\"valid\":true,\"source\":\"sm64ds-eu-decomp-main-loop\",\"address\":\"0x020A0DB0\",\"counter\":"
-        + std::to_string(counter) + "}";
+    const u64 nowNs = PerfNowNs();
+
+    std::lock_guard lock(sm64dsGameLoopTelemetryMutex);
+    if (!sm64dsGameLoopCounterInitialized)
+    {
+        sm64dsGameLoopCounterInitialized = true;
+        sm64dsGameLoopCounterLast = counter;
+        sm64dsGameLoopWindowStartNs = nowNs;
+        return;
+    }
+
+    sm64dsGameLoopWindowUpdates += counter - sm64dsGameLoopCounterLast;
+    sm64dsGameLoopCounterLast = counter;
+    sm64dsGameLoopWindowFrames++;
+    if (nowNs - sm64dsGameLoopWindowStartNs >= 1000000000ULL)
+    {
+        sm64dsGameLoopLatestWallNs = nowNs - sm64dsGameLoopWindowStartNs;
+        sm64dsGameLoopLatestFrames = sm64dsGameLoopWindowFrames;
+        sm64dsGameLoopLatestUpdates = sm64dsGameLoopWindowUpdates;
+        sm64dsGameLoopWindowStartNs = nowNs;
+        sm64dsGameLoopWindowFrames = 0;
+        sm64dsGameLoopWindowUpdates = 0;
+    }
 }
 
 MelonInstance::~MelonInstance()
@@ -1638,6 +1670,7 @@ u32 MelonInstance::runFrame()
     }
 
     u32 nLines = nds->RunFrame();
+    sampleSm64dsGameLoopCounter();
     if (measuringVulkan)
     {
         ndsRunEndNs = PerfNowNs();
