@@ -19,6 +19,9 @@ Implementation:
   diagnosing address/lifecycle mismatches;
 - also reports `cadenceValue`, the mapped `data_0208ee44` game-side cadence
   value, which distinguishes a 60 Hz loop from a two-tick gameplay schedule.
+- reports `stageTimer`, the mapped `data_0209f304` Stage timer consumed by
+  `Stage::Behavior`; it is a candidate semantic signal and is not yet claimed
+  as a complete gameplay-update counter.
 - emits the same aggregate window at native debug level with the stable
   `SM64DS game-loop window` marker, so a running Thor session can be sampled
   without changing pause/resume behavior.
@@ -52,6 +55,9 @@ Boundary:
   this counter is a loop/scheduler diagnostic, not by itself a semantic
   60fps discriminator; M13 still needs a gameplay-update or timer marker that
   differs meaningfully between the two modes.
+- The first mapped `Stage::Behavior` timer probe reported `stageTimer=0` in
+  the Castle Garden checkpoint, so that field is currently only a candidate
+  diagnostic and not a usable cadence signal for this scene.
 - It does not prove that the counter remains semantic through all scene,
   overlay, pause, transition and save/relaunch paths.
 - The 60fps mode remains unimplemented and unvalidated.

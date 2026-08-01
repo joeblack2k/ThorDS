@@ -111,6 +111,9 @@
   `60/61` and `cadence=1` result. The counter therefore cannot serve as the
   semantic 60fps discriminator; the next M13 slice must instrument a gameplay
   timer/update consumer or derive the actual patch effect.
+- Added the mapped `Stage::Behavior` timer candidate at `data_0209f304`;
+  it was `0` in the Castle Garden checkpoint and is not being used as a green
+  signal.
 
 ### Boundary
 

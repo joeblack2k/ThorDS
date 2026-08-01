@@ -1144,7 +1144,8 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"emulatorFrames\":" + std::to_string(sm64dsGameLoopLatestFrames)
         + ",\"counter\":" + std::to_string(sm64dsGameLoopLatestCounter)
         + ",\"lastDelta\":" + std::to_string(sm64dsGameLoopLatestDelta)
-        + ",\"cadenceValue\":" + std::to_string(sm64dsGameLoopLatestCadence) + "}";
+        + ",\"cadenceValue\":" + std::to_string(sm64dsGameLoopLatestCadence)
+        + ",\"stageTimer\":" + std::to_string(sm64dsGameLoopLatestStageTimer) + "}";
 }
 
 void MelonInstance::sampleSm64dsGameLoopCounter()
@@ -1152,6 +1153,7 @@ void MelonInstance::sampleSm64dsGameLoopCounter()
     constexpr u32 kMainRamBase = 0x02000000;
     constexpr u32 kGameLoopCounterAddress = 0x020A0DB0;
     constexpr u32 kCadenceAddress = 0x0208EE44;
+    constexpr u32 kStageTimerAddress = 0x0209F304;
     if (nds == nullptr || nds->MainRAM == nullptr)
         return;
 
@@ -1172,6 +1174,12 @@ void MelonInstance::sampleSm64dsGameLoopCounter()
         | (static_cast<u32>(cadenceBytes[1]) << 8)
         | (static_cast<u32>(cadenceBytes[2]) << 16)
         | (static_cast<u32>(cadenceBytes[3]) << 24);
+    const u32 stageTimerOffset = (kStageTimerAddress - kMainRamBase) & nds->MainRAMMask;
+    if (stageTimerOffset > nds->MainRAMMask - 1)
+        return;
+    const u8* stageTimerBytes = nds->MainRAM + stageTimerOffset;
+    const u32 stageTimer = static_cast<u32>(stageTimerBytes[0])
+        | (static_cast<u32>(stageTimerBytes[1]) << 8);
     const u64 nowNs = PerfNowNs();
 
     std::lock_guard lock(sm64dsGameLoopTelemetryMutex);
@@ -1204,15 +1212,17 @@ void MelonInstance::sampleSm64dsGameLoopCounter()
         sm64dsGameLoopLatestCounter = counter;
         sm64dsGameLoopLatestDelta = delta;
         sm64dsGameLoopLatestCadence = cadence;
+        sm64dsGameLoopLatestStageTimer = stageTimer;
         Platform::Log(
             Platform::LogLevel::Debug,
-            "SM64DS game-loop window wallNs=%llu uniqueUpdates=%u emulatorFrames=%llu counter=%u lastDelta=%u cadence=%u",
+            "SM64DS game-loop window wallNs=%llu uniqueUpdates=%u emulatorFrames=%llu counter=%u lastDelta=%u cadence=%u stageTimer=%u",
             static_cast<unsigned long long>(sm64dsGameLoopLatestWallNs),
             sm64dsGameLoopLatestUpdates,
             static_cast<unsigned long long>(sm64dsGameLoopLatestFrames),
             sm64dsGameLoopLatestCounter,
             sm64dsGameLoopLatestDelta,
-            sm64dsGameLoopLatestCadence);
+            sm64dsGameLoopLatestCadence,
+            sm64dsGameLoopLatestStageTimer);
         sm64dsGameLoopWindowStartNs = nowNs;
         sm64dsGameLoopWindowFrames = 0;
         sm64dsGameLoopWindowUpdates = 0;
