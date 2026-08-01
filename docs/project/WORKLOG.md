@@ -1885,3 +1885,15 @@ Evidence:
   harness/presentation robustness gap that must be isolated before using long
   forced camera sequences as acceptance evidence.
 - Evidence: `docs/evidence/m13/f4-camera-stress-anr.json`.
+## 2026-08-01 - M13 realtime camera trial harness
+
+- Added a debug-only realtime camera trial that injects one right-stick state
+  while emulation continues normally, waits for a bounded hold interval, then
+  neutralizes the state.
+- Built and installed `GitHubProdDebug` on the Thor.
+- Camera hold completed with valid frames and no ANR; neutral control also
+  completed with valid frames and no ANR.
+- Pixel deltas alone did not prove camera movement because normal gameplay
+  animation produced comparable changes. The new harness is stable, but a
+  stronger camera-specific observable is still needed.
+- Evidence: `docs/evidence/m13/f4-live-camera-trial.json`.

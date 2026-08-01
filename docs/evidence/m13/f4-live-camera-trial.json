@@ -1,0 +1,30 @@
+{
+  "milestone": "M13",
+  "gate": "realtime camera trial harness",
+  "device": "AYN Thor",
+  "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+  "cameraHold": {
+    "cameraX": 1.0,
+    "cameraY": 0.0,
+    "durationMs": 2000,
+    "inputHandled": true,
+    "frameShapeValid": true,
+    "changedPixels": 856,
+    "anr": false
+  },
+  "neutralControl": {
+    "cameraX": 0.0,
+    "cameraY": 0.0,
+    "durationMs": 2000,
+    "inputHandled": true,
+    "frameShapeValid": true,
+    "changedPixels": 1003,
+    "anr": false
+  },
+  "result": "REALTIME_HARNESS_PASS_CAMERA_EFFECT_UNPROVEN",
+  "notes": [
+    "The new debug action holds input while emulation runs normally and neutralizes it afterward.",
+    "Unlike the forced frame-step stress harness, this trial completed without ANR or presentation backlog.",
+    "Pixel changes alone cannot distinguish camera motion from ordinary gameplay animation; the neutral control is therefore required and camera direction remains unproven."
+  ]
+}

@@ -83,6 +83,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_SET_SLOT2_ANALOG_MAPPING_SUFFIX) -> { handleSetSlot2AnalogMapping(entryPoint, intent); true }
             context.debugCommandAction(ACTION_RUN_ANALOG_SWEEP_SUFFIX) -> handleRunAnalogSweep(context, entryPoint, intent)
             context.debugCommandAction(ACTION_RUN_ANALOG_GAMEPLAY_TRIAL_SUFFIX) -> handleRunAnalogGameplayTrial(context, entryPoint, intent)
+            context.debugCommandAction(ACTION_RUN_LIVE_CAMERA_TRIAL_SUFFIX) -> handleRunLiveCameraTrial(context, intent)
             context.debugCommandAction(ACTION_SET_VULKAN_FALLBACKS_SUFFIX) -> { handleSetVulkanFallbacks(intent); true }
             context.debugCommandAction(ACTION_TOUCH_SCREEN_SUFFIX) -> { handleTouchScreen(intent); true }
             context.debugCommandAction(ACTION_TAP_INPUT_SUFFIX) -> { handleTapInput(intent); true }
@@ -499,6 +500,51 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             "action=run_analog_gameplay_trial frames=$frames changedTop=${topReport?.mismatchedPixels ?: -1} result=${if (passed) "PASS" else "PARTIAL"}",
         )
         return passed
+    }
+
+    private suspend fun handleRunLiveCameraTrial(
+        context: Context,
+        intent: Intent,
+    ): Boolean {
+        if (!DebugCommandStateStore.isRunningRom()) {
+            Log.w(TAG, "action=run_live_camera_trial ready=0 result=PARTIAL")
+            return false
+        }
+
+        val cameraX = (intent.firstFloatExtra(EXTRA_CAMERA_X) ?: 0f).coerceIn(-1f, 1f)
+        val cameraY = (intent.firstFloatExtra(EXTRA_CAMERA_Y) ?: 0f).coerceIn(-1f, 1f)
+        val holdMs = (intent.firstNullableIntExtra(EXTRA_DURATION_MS) ?: 1_000)
+            .coerceIn(100, 5_000)
+        val before = RendererDebugBridge.captureCurrentFrame()
+        val inputHandled = dispatchControllerMotion(cameraX = cameraX, cameraY = cameraY)
+        delay(holdMs.toLong())
+        val after = RendererDebugBridge.captureCurrentFrame()
+        dispatchControllerMotion()
+
+        val expectedPixels = RendererDebugBridge.CAPTURE_WIDTH * RendererDebugBridge.CAPTURE_HEIGHT
+        val frameShapeValid = before?.size == expectedPixels && after?.size == expectedPixels
+        val changedPixels = if (frameShapeValid) {
+            before!!.indices.count { before[it] != after!![it] }
+        } else {
+            -1
+        }
+        val output = JSONObject()
+            .put("schemaVersion", 1)
+            .put("cameraX", cameraX)
+            .put("cameraY", cameraY)
+            .put("holdMs", holdMs)
+            .put("inputHandled", inputHandled)
+            .put("frameShapeValid", frameShapeValid)
+            .put("changedPixels", changedPixels)
+            .put("beforeFrameHash", before?.contentHashCode() ?: 0)
+            .put("afterFrameHash", after?.contentHashCode() ?: 0)
+            .put("result", if (inputHandled && frameShapeValid) "PASS" else "PARTIAL")
+        File(context.cacheDir, LIVE_CAMERA_TRIAL_OUTPUT_FILE).writeText(output.toString(2))
+        Log.w(
+            TAG,
+            "action=run_live_camera_trial cameraX=$cameraX cameraY=$cameraY holdMs=$holdMs changedPixels=$changedPixels result=${if (inputHandled && frameShapeValid) "PASS" else "PARTIAL"}",
+        )
+        return inputHandled && frameShapeValid
     }
 
     private fun createControllerMotionEvent(
@@ -1978,6 +2024,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ANALOG_SWEEP_DIRECTIONS = 16
         private const val ANALOG_SWEEP_OUTPUT_FILE = "analog-end-to-end.json"
         private const val ANALOG_GAMEPLAY_TRIAL_OUTPUT_FILE = "analog-gameplay-trial.json"
+        private const val LIVE_CAMERA_TRIAL_OUTPUT_FILE = "live-camera-trial.json"
         private const val M7_PRESENTER_TRACE_OUTPUT_FILE = "m7-presenter-trace.json"
         private const val M7_CASTLE_KEY_OUTPUT_FILE = "m7-castle-key.json"
         private const val M7_SURFACE_SEQUENCE_OUTPUT_DIR = "debug-evidence/m7-surface-sequence"
@@ -2019,6 +2066,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_SET_SLOT2_ANALOG_MAPPING_SUFFIX = "SET_SLOT2_ANALOG_MAPPING"
         private const val ACTION_RUN_ANALOG_SWEEP_SUFFIX = "RUN_ANALOG_SWEEP"
         private const val ACTION_RUN_ANALOG_GAMEPLAY_TRIAL_SUFFIX = "RUN_ANALOG_GAMEPLAY_TRIAL"
+        private const val ACTION_RUN_LIVE_CAMERA_TRIAL_SUFFIX = "RUN_LIVE_CAMERA_TRIAL"
         private const val ACTION_SET_VULKAN_FALLBACKS_SUFFIX = "SET_VULKAN_FALLBACKS"
         private const val ACTION_TOUCH_SCREEN_SUFFIX = "TOUCH_SCREEN"
         private const val ACTION_TAP_INPUT_SUFFIX = "TAP_INPUT"
