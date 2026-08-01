@@ -1,0 +1,47 @@
+{
+  "milestone": "M13",
+  "gate": "native camera-state observability",
+  "device": "AYN Thor",
+  "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+  "cameraHold": {
+    "cameraX": 1.0,
+    "cameraY": 0.0,
+    "durationMs": 1500,
+    "inputHandled": true,
+    "cameraStateBefore": {
+      "yawInputQ12": 0,
+      "pitchInputQ12": 0,
+      "yawUnitsPerTick": 0,
+      "recenterSequence": 0,
+      "flags": 0
+    },
+    "cameraStateDuring": {
+      "yawInputQ12": 4096,
+      "pitchInputQ12": 0,
+      "yawUnitsPerTick": 1001,
+      "recenterSequence": 0,
+      "flags": 3
+    },
+    "frameShapeValid": true,
+    "anr": false
+  },
+  "neutralControl": {
+    "cameraX": 0.0,
+    "cameraY": 0.0,
+    "cameraStateDuring": {
+      "yawInputQ12": 0,
+      "pitchInputQ12": 0,
+      "yawUnitsPerTick": 1001,
+      "recenterSequence": 0,
+      "flags": 3
+    },
+    "frameShapeValid": true,
+    "anr": false
+  },
+  "result": "NATIVE_CAMERA_STATE_REACHED",
+  "notes": [
+    "The native telemetry proves that the right-stick event reaches the camera protocol with the expected Q12 yaw and enabled flags.",
+    "The neutral control returns yaw input to zero.",
+    "This does not yet prove the physical direction seen by the player or that the game-side camera patch applies the yaw to the view."
+  ]
+}

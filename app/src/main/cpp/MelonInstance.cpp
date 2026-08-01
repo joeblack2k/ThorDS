@@ -2097,6 +2097,15 @@ void MelonInstance::setSlot2CameraState(s16 yawInputQ12, s16 pitchInputQ12, u16 
     slot2CameraFlags.store(flags, std::memory_order_relaxed);
 }
 
+std::string MelonInstance::getSlot2CameraStateTelemetryJson() const
+{
+    return "{\"yawInputQ12\":" + std::to_string(slot2CameraYawInputQ12.load(std::memory_order_relaxed))
+        + ",\"pitchInputQ12\":" + std::to_string(slot2CameraPitchInputQ12.load(std::memory_order_relaxed))
+        + ",\"yawUnitsPerTick\":" + std::to_string(slot2CameraYawUnitsPerTick.load(std::memory_order_relaxed))
+        + ",\"recenterSequence\":" + std::to_string(slot2CameraRecenterSequence.load(std::memory_order_relaxed))
+        + ",\"flags\":" + std::to_string(slot2CameraFlags.load(std::memory_order_relaxed)) + "}";
+}
+
 int MelonInstance::readAudioOutput(s16* buffer, int length)
 {
     return nds->SPU.ReadOutput(buffer, length);

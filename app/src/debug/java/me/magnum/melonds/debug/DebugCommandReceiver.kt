@@ -516,9 +516,11 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         val holdMs = (intent.firstNullableIntExtra(EXTRA_DURATION_MS) ?: 1_000)
             .coerceIn(100, 5_000)
         val before = RendererDebugBridge.captureCurrentFrame()
+        val cameraStateBefore = MelonEmulator.getSlot2CameraStateTelemetry()
         val inputHandled = dispatchControllerMotion(cameraX = cameraX, cameraY = cameraY)
         delay(holdMs.toLong())
         val after = RendererDebugBridge.captureCurrentFrame()
+        val cameraStateDuring = MelonEmulator.getSlot2CameraStateTelemetry()
         dispatchControllerMotion()
 
         val expectedPixels = RendererDebugBridge.CAPTURE_WIDTH * RendererDebugBridge.CAPTURE_HEIGHT
@@ -534,6 +536,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             .put("cameraY", cameraY)
             .put("holdMs", holdMs)
             .put("inputHandled", inputHandled)
+            .put("cameraStateBefore", cameraStateBefore)
+            .put("cameraStateDuring", cameraStateDuring)
             .put("frameShapeValid", frameShapeValid)
             .put("changedPixels", changedPixels)
             .put("beforeFrameHash", before?.contentHashCode() ?: 0)

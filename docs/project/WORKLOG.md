@@ -1897,3 +1897,16 @@ Evidence:
   animation produced comparable changes. The new harness is stable, but a
   stronger camera-specific observable is still needed.
 - Evidence: `docs/evidence/m13/f4-live-camera-trial.json`.
+## 2026-08-01 - M13 native camera-state telemetry
+
+- Added native/JNI telemetry for the transient Slot-2 camera protocol state.
+- Rebuilt and installed `GitHubProdDebug` on the Thor.
+- A realtime right-stick hold reported native state
+  `yawInputQ12=4096`, `yawUnitsPerTick=1001`, `flags=3`; input and frame shape
+  were valid and no ANR occurred.
+- The neutral control reported `yawInputQ12=0` while retaining the protocol
+  configuration, confirming that the input value is cleared after release.
+- This proves the Android input reaches the native camera protocol. It does
+  not yet prove the game-side camera patch visibly rotates the view or establish
+  physical axis direction.
+- Evidence: `docs/evidence/m13/f4-native-camera-state.json`.

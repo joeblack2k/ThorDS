@@ -185,6 +185,8 @@ object MelonEmulator {
         flags: Short,
     )
 
+    external fun getSlot2CameraStateTelemetry(): String
+
     external fun takeScreenshot(): Boolean
 
     external fun setFastForwardEnabled(enabled: Boolean)

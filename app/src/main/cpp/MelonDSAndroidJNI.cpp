@@ -2364,6 +2364,14 @@ Java_me_magnum_melonds_MelonEmulator_setSlot2CameraState(
         static_cast<u16>(recenterSequence), static_cast<u16>(flags));
 }
 
+JNIEXPORT jstring JNICALL
+Java_me_magnum_melonds_MelonEmulator_getSlot2CameraStateTelemetry(JNIEnv* env, jobject thiz)
+{
+    (void)thiz;
+    const std::string telemetry = MelonDSAndroid::getSlot2CameraStateTelemetryJson();
+    return env->NewStringUTF(telemetry.c_str());
+}
+
 JNIEXPORT void JNICALL
 Java_me_magnum_melonds_MelonEmulator_setFastForwardEnabled(JNIEnv* env, jobject thiz, jboolean enabled)
 {

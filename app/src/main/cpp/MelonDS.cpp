@@ -684,6 +684,14 @@ namespace MelonDSAndroid
             instance->setSlot2CameraState(yawInputQ12, pitchInputQ12, yawUnitsPerTick, recenterSequence, flags);
     }
 
+    std::string getSlot2CameraStateTelemetryJson()
+    {
+        auto currentInstance = GetInstanceSnapshot();
+        return currentInstance == nullptr
+            ? "{\"yawInputQ12\":0,\"pitchInputQ12\":0,\"yawUnitsPerTick\":0,\"recenterSequence\":0,\"flags\":0}"
+            : currentInstance->getSlot2CameraStateTelemetryJson();
+    }
+
     void start()
     {
         startAudio();
