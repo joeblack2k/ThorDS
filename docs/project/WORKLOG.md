@@ -827,9 +827,24 @@ W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
   image, so it cannot itself prove pixels outside the final primary 4:3 safe
   rectangle. Internal edge-strip diagnostics were non-empty and changing on
   the left, but no semantic right-side animated landmark was established.
-- Decision: W-03 is `PARTIAL`, not a pass. The remaining gate is a
-  final-primary sequence that tracks an identifiable animated landmark
-  outside the mapped 4:3 safe rectangle across consecutive frames. W-01
+- A follow-up host-polled final-primary sample captured 16 `1920x1080`
+  screenshots during the same movement. Both measured outer side ROIs were
+  non-black in all samples and changed across all 15 adjacent pairs; the
+  Android edge handle was excluded. The polling was not synchronized to
+  explicit emulator-frame acknowledgements, and no single identifiable
+  landmark was tracked across those exact frames.
+- A clean warmed exact-step follow-up then captured 30 final-primary
+  `1920x1080` screenshots, one after each successful `STEP_FRAMES 1`
+  acknowledgement. All 30 frames were fully rendered, had
+  `2,073,600` non-black pixels, and none of the 29 adjacent pairs was
+  byte-identical. Subsampled left and right outer-ROI measurements changed
+  in all 29 pairs. The camera pan moved castle wall, trees, hill and path
+  through the side regions, but no single landmark stayed wholly inside one
+  side ROI for the whole sequence.
+- Decision: W-03 is `PARTIAL`, not a pass. The remaining gate is an
+  exact-step final-primary sequence that tracks an identifiable animated
+  landmark outside the mapped 4:3 safe rectangle across consecutive frames.
+  W-01
   formal round/square repeat, W-04 HUD, W-05 glyph, W-06 bottom geometry and
   W-20 transition proof remain open.
 - No ROM, save, private screenshot, device identifier or credential material

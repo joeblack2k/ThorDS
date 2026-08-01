@@ -25,6 +25,34 @@ Burst integrity:
   final primary screenshot showed upright terrain, side geometry and dust
   without a visible black hole or broken edge.
 
+Final-primary follow-up:
+- A separate final-primary sample captured `16` screenshots at `1920x1080`
+  while the same Castle Garden movement input was held. The host-side polling
+  interval was approximately `80 ms`; these images were not tied to explicit
+  one-frame emulator-step acknowledgements.
+- The native 4:3 safe rectangle was mapped to `x=240..1679`. The left outer
+  ROI `x=0..239,y=45..1035` and the right outer ROI
+  `x=1680..1859,y=45..1035` were non-black in all 16 samples and changed
+  across all 15 adjacent sample pairs. The rightmost Android edge handle was
+  excluded from the measured right ROI.
+- Visual inspection showed upright Castle Garden terrain in both side regions
+  and player movement between the first and last sample. This is useful
+  final-primary side-presence evidence, but the sample does not identify and
+  track one game-world landmark at exact emulator-frame boundaries.
+
+Exact-step final-primary follow-up:
+- After dismissing a Thor anti-image-retention overlay, a warmed sequence
+  captured `30/30` final-primary screenshots using one explicit
+  `STEP_FRAMES 1` acknowledgement per image. The earlier overlay-containing
+  attempt was discarded and is not evidence.
+- Every retained image was a valid `1920x1080` Castle Garden frame with
+  `2,073,600` non-black pixels. No adjacent pair was byte-identical.
+- Subsampled measurements of the left and right outer ROIs changed in all
+  `29/29` adjacent pairs. The camera pan visibly moved the castle wall,
+  trees, hill and path through the side regions. No single landmark remained
+  wholly inside one side ROI for the full sequence, so this does not yet
+  satisfy the semantic-landmark tracking requirement.
+
 Measurement boundary:
 - The `256x384` burst is the native DS composition: its top half is already
   the complete native `256x192` 4:3 image. It therefore has no pixels outside
@@ -38,10 +66,12 @@ Measurement boundary:
 Decision:
 - This advances W-03 from no movement evidence to `PARTIAL`: the fixed
   Castle Garden movement and 120-frame capture are reproducible, intact and
-  visually coherent.
+  visually coherent, and the final-primary sample confirms changing side
+  content outside the mapped native rectangle. The clean 30-frame exact-step
+  primary sequence strengthens that result.
 - W-03 is not a pass. The remaining proof must capture an identifiable
   animated landmark in the final 16:9 primary side region across consecutive
-  frames, with the native 4:3 bounds overlaid for comparison.
+  exact-step frames, with the native 4:3 bounds overlaid for comparison.
 - W-01 formal round/square repeat, W-04 HUD, W-05 glyph, W-06 bottom geometry
   and W-20 world-to-pause-to-world transition proof remain open.
 
