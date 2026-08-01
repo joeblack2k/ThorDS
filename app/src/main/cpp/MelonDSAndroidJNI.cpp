@@ -1521,6 +1521,22 @@ Java_me_magnum_melonds_MelonEmulator_getSm64dsGameLoopTelemetry(JNIEnv* env, job
     return env->NewStringUTF(telemetry.c_str());
 }
 
+JNIEXPORT void JNICALL
+Java_me_magnum_melonds_MelonEmulator_setSm64dsSemanticMonitorEnabled(JNIEnv* env, jobject thiz, jboolean enabled)
+{
+    (void)env;
+    (void)thiz;
+    MelonDSAndroid::setSm64dsSemanticMonitorEnabled(enabled == JNI_TRUE);
+}
+
+JNIEXPORT jstring JNICALL
+Java_me_magnum_melonds_MelonEmulator_getSm64dsSemanticTelemetry(JNIEnv* env, jobject thiz)
+{
+    (void)thiz;
+    const std::string telemetry = MelonDSAndroid::getSm64dsSemanticTelemetryJson();
+    return env->NewStringUTF(telemetry.c_str());
+}
+
 JNIEXPORT jintArray JNICALL
 Java_me_magnum_melonds_impl_emulator_debug_RendererDebugBridge_captureCurrentFrame(JNIEnv* env, jobject thiz)
 {

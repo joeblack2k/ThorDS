@@ -715,6 +715,21 @@ namespace MelonDSAndroid
             : currentInstance->getSm64dsGameLoopTelemetryJson();
     }
 
+    void setSm64dsSemanticMonitorEnabled(bool enabled)
+    {
+        auto currentInstance = GetInstanceSnapshot();
+        if (currentInstance != nullptr)
+            currentInstance->setSm64dsSemanticMonitorEnabled(enabled);
+    }
+
+    std::string getSm64dsSemanticTelemetryJson()
+    {
+        auto currentInstance = GetInstanceSnapshot();
+        return currentInstance == nullptr
+            ? "{\"enabled\":false,\"generation\":0,\"lastPc\":0}"
+            : currentInstance->getSm64dsSemanticTelemetryJson();
+    }
+
     u32 loop()
     {
         MPInterface::Get().Process();

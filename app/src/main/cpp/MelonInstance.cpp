@@ -1150,6 +1150,31 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"cameraBehaviorCalls\":" + std::to_string(nds->GetSm64dsCameraBehaviorCalls()) + "}";
 }
 
+void MelonInstance::setSm64dsSemanticMonitorEnabled(bool enabled)
+{
+    if (nds != nullptr)
+        nds->SetSm64dsSemanticMonitorEnabled(enabled);
+}
+
+std::string MelonInstance::getSm64dsSemanticTelemetryJson() const
+{
+    if (nds == nullptr)
+        return "{\"enabled\":false,\"generation\":0,\"lastPc\":0}";
+
+    const auto snapshot = nds->GetSm64dsSemanticSnapshot();
+    std::string result = "{\"enabled\":" + std::string(snapshot.enabled ? "true" : "false")
+        + ",\"generation\":" + std::to_string(snapshot.generation)
+        + ",\"lastPc\":" + std::to_string(snapshot.lastPc)
+        + ",\"counters\":[";
+    for (std::size_t i = 0; i < snapshot.counters.size(); ++i)
+    {
+        if (i != 0)
+            result += ",";
+        result += std::to_string(snapshot.counters[i]);
+    }
+    return result + "]}";
+}
+
 void MelonInstance::sampleSm64dsGameLoopCounter()
 {
     constexpr u32 kMainRamBase = 0x02000000;

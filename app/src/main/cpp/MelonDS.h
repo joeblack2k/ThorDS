@@ -156,6 +156,8 @@ namespace MelonDSAndroid {
     extern u32 getArm9OverclockPercent();
     extern std::string getArm9OverclockTelemetryJson();
     extern std::string getSm64dsGameLoopTelemetryJson();
+    extern void setSm64dsSemanticMonitorEnabled(bool enabled);
+    extern std::string getSm64dsSemanticTelemetryJson();
     extern u32 loop();
     extern Frame* getPresentationFrame(std::optional<std::chrono::time_point<std::chrono::steady_clock>> deadline);
     extern bool waitForPresentationFrame(Frame* frame, u64 timeoutNs);

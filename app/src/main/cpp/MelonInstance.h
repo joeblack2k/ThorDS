@@ -47,6 +47,8 @@ public:
     u32 getArm9OverclockPercent() const;
     std::string getArm9OverclockTelemetryJson() const;
     std::string getSm64dsGameLoopTelemetryJson() const;
+    void setSm64dsSemanticMonitorEnabled(bool enabled);
+    std::string getSm64dsSemanticTelemetryJson() const;
     melonDS::u32 runFrame();
     void stop();
 

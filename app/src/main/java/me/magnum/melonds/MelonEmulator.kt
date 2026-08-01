@@ -128,6 +128,8 @@ object MelonEmulator {
 
     external fun getArm9OverclockTelemetry(): String
     external fun getSm64dsGameLoopTelemetry(): String
+    external fun setSm64dsSemanticMonitorEnabled(enabled: Boolean)
+    external fun getSm64dsSemanticTelemetry(): String
 
     external fun getCurrentRenderer(): Int
 
