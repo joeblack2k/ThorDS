@@ -71,6 +71,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_SET_JIT_SUFFIX) -> { handleSetJit(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_ARM9_PERCENT_SUFFIX) -> { handleSetArm9Percent(context, intent); true }
             context.debugCommandAction(ACTION_DUMP_ARM9_TELEMETRY_SUFFIX) -> { handleDumpArm9Telemetry(); true }
+            context.debugCommandAction(ACTION_SET_SM64DS_SEMANTIC_MONITOR_SUFFIX) -> { handleSetSm64dsSemanticMonitor(intent); true }
+            context.debugCommandAction(ACTION_DUMP_SM64DS_SEMANTIC_TELEMETRY_SUFFIX) -> { handleDumpSm64dsSemanticTelemetry(); true }
             context.debugCommandAction(ACTION_SET_BGOBJ_LOG_SUFFIX) -> { handleSetBgObjLog(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_LATCH_TRACE_SUFFIX) -> { handleSetLatchTrace(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_FAST_FORWARD_SUFFIX) -> { handleSetFastForward(intent); true }
@@ -194,6 +196,17 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         val clampedY = y.coerceIn(-1f, 1f)
         MelonEmulator.setSlot2AnalogInput(clampedX, clampedY)
         Log.w(TAG, "action=set_slot2_analog x=$clampedX y=$clampedY")
+    }
+
+    private fun handleSetSm64dsSemanticMonitor(intent: Intent) {
+        val enabled = intent.firstBooleanExtra(EXTRA_ENABLED, EXTRA_VALUE)
+            ?: throw IllegalArgumentException("Missing enabled extra")
+        MelonEmulator.setSm64dsSemanticMonitorEnabled(enabled)
+        Log.w(TAG, "action=set_sm64ds_semantic_monitor enabled=${if (enabled) 1 else 0}")
+    }
+
+    private fun handleDumpSm64dsSemanticTelemetry() {
+        Log.w(TAG, "action=dump_sm64ds_semantic_telemetry json=${MelonEmulator.getSm64dsSemanticTelemetry()}")
     }
 
     private fun handleSetSlot2AnalogMapping(entryPoint: DebugCommandEntryPoint, intent: Intent) {
@@ -1965,6 +1978,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_SET_JIT_SUFFIX = "SET_JIT"
         private const val ACTION_SET_ARM9_PERCENT_SUFFIX = "SET_ARM9_PERCENT"
         private const val ACTION_DUMP_ARM9_TELEMETRY_SUFFIX = "DUMP_ARM9_TELEMETRY"
+        private const val ACTION_SET_SM64DS_SEMANTIC_MONITOR_SUFFIX = "SET_SM64DS_SEMANTIC_MONITOR"
+        private const val ACTION_DUMP_SM64DS_SEMANTIC_TELEMETRY_SUFFIX = "DUMP_SM64DS_SEMANTIC_TELEMETRY"
         private const val ACTION_SET_BGOBJ_LOG_SUFFIX = "SET_BGOBJ_LOG"
         private const val ACTION_SET_LATCH_TRACE_SUFFIX = "SET_LATCH_TRACE"
         private const val ACTION_SET_FAST_FORWARD_SUFFIX = "SET_FAST_FORWARD"
