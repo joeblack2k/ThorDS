@@ -110,25 +110,25 @@ Findings: `192`
 | `src/_ZN7Minimap6RenderEv.cpp` | 180 | `Minimap::Render` | read | render/OAM | `*(u8 *)(((int)((char*)this + i) + 0x22e) & 0xFFFFFFFFFFFFFFFF) += data_0208ee44;` |
 | `src/_ZN7Minimap8BehaviorEv.cpp` | 76 | `` | read | render/OAM | `extern s32  data_0208ee44;` |
 | `src/_ZN7Minimap8BehaviorEv.cpp` | 146 | `_ZN7Minimap8BehaviorEv` | read | render/OAM | `F254 -= data_0208ee44;` |
-| `src/func_02005418.c` | 19 | `` | read | unknown | `extern int data_0208ee44;` |
+| `src/func_02005418.c` | 19 | `` | read | unresolved-function | `extern int data_0208ee44;` |
 | `src/func_02005418.c` | 44 | `dScBoot_c_Behavior` | read | scene-update | `r4 = data_0208ee44;` |
-| `src/func_02005a58.c` | 23 | `func_0201a244` | read | unknown | `extern char data_0208ee44;` |
+| `src/func_02005a58.c` | 23 | `func_0201a244` | read | unresolved-function | `extern char data_0208ee44;` |
 | `src/func_02005a58.c` | 91 | `dScBoot_c_InitResources` | read | boot/init | `*(int*)(&data_0208ee44) = 1;` |
-| `src/func_020199a4.c` | 9 | `func_020132d8` | read | unknown | `extern int data_0208ee44;` |
-| `src/func_020199a4.c` | 24 | `func_020199a4` | read | unknown | `int dt = data_0208ee44;` |
-| `src/func_02019ac4.c` | 16 | `func_02011db4` | read | unknown | `extern int data_0208ee44;` |
-| `src/func_02019ac4.c` | 39 | `func_02019ac4` | read | unknown | `delta = data_0208ee44;` |
-| `src/func_02020768.c` | 4 | `func_0202043c` | read | unknown | `extern int data_0208ee44;` |
-| `src/func_02020768.c` | 15 | `func_02020768` | read | unknown | `*acc += data_0208ee44;` |
-| `src/func_020326ac.c` | 25 | `` | read | unknown | `extern s32 data_0208ee44;` |
-| `src/func_020326ac.c` | 96 | `func_020326ac` | read | unknown | `if (data_020a0db0 & (0x10 / data_0208ee44)) {` |
-| `src/func_020326ac.c` | 123 | `func_020326ac` | read | unknown | `if (data_020a0db0 & (0x10 / data_0208ee44)) {` |
-| `src/func_020326ac.c` | 198 | `func_020326ac` | read | unknown | `if (data_020a0db0 & (0x10 / data_0208ee44)) {` |
-| `src/func_020326ac.c` | 219 | `func_020326ac` | read | unknown | `if (!(data_020a0db0 & (0x10 / data_0208ee44))) {` |
+| `src/func_020199a4.c` | 9 | `func_020132d8` | read | unresolved-function | `extern int data_0208ee44;` |
+| `src/func_020199a4.c` | 24 | `func_020199a4` | read | unresolved-function | `int dt = data_0208ee44;` |
+| `src/func_02019ac4.c` | 16 | `func_02011db4` | read | unresolved-function | `extern int data_0208ee44;` |
+| `src/func_02019ac4.c` | 39 | `func_02019ac4` | read | unresolved-function | `delta = data_0208ee44;` |
+| `src/func_02020768.c` | 4 | `func_0202043c` | read | unresolved-function | `extern int data_0208ee44;` |
+| `src/func_02020768.c` | 15 | `func_02020768` | read | unresolved-function | `*acc += data_0208ee44;` |
+| `src/func_020326ac.c` | 25 | `` | read | unresolved-function | `extern s32 data_0208ee44;` |
+| `src/func_020326ac.c` | 96 | `func_020326ac` | read | unresolved-function | `if (data_020a0db0 & (0x10 / data_0208ee44)) {` |
+| `src/func_020326ac.c` | 123 | `func_020326ac` | read | unresolved-function | `if (data_020a0db0 & (0x10 / data_0208ee44)) {` |
+| `src/func_020326ac.c` | 198 | `func_020326ac` | read | unresolved-function | `if (data_020a0db0 & (0x10 / data_0208ee44)) {` |
+| `src/func_020326ac.c` | 219 | `func_020326ac` | read | unresolved-function | `if (!(data_020a0db0 & (0x10 / data_0208ee44))) {` |
 | `src/func_02034b40.c` | 18 | `_ZN3OAM4LoadEv` | read | render/OAM | `extern int data_0208ee44;` |
-| `src/func_02034b40.c` | 62 | `func_02034b40` | read | unknown | `*(int*)(((long long)(int)(self + 8)) & 0xFFFFFFFFFFFFFFFFLL) += (data_0208ee44 << 10);` |
-| `src/func_02034b40.c` | 69 | `func_02034b40` | read | unknown | `*(unsigned char*)(((long long)(int)(self + 0xc)) & 0xFFFFFFFFFFFFFFFFLL) -= data_0208ee44;` |
-| `src/func_0203506c.c` | 22 | `func_0201a244` | read | unknown | `extern u8 data_0208ee44[];` |
+| `src/func_02034b40.c` | 62 | `func_02034b40` | read | unresolved-function | `*(int*)(((long long)(int)(self + 8)) & 0xFFFFFFFFFFFFFFFFLL) += (data_0208ee44 << 10);` |
+| `src/func_02034b40.c` | 69 | `func_02034b40` | read | unresolved-function | `*(unsigned char*)(((long long)(int)(self + 0xc)) & 0xFFFFFFFFFFFFFFFFLL) -= data_0208ee44;` |
+| `src/func_0203506c.c` | 22 | `func_0201a244` | read | unresolved-function | `extern u8 data_0208ee44[];` |
 | `src/func_0203506c.c` | 77 | `dScMB_c_InitResources` | write | boot/init | `*(int *)&data_0208ee44 = 1;` |
 | `src/func_ov001_020ab550.c` | 1 | `` | read | scene-specific | `extern int data_0208ee44;` |
 | `src/func_ov001_020ab550.c` | 13 | `func_ov001_020ab550` | read | scene-specific | `*p = *p - data_0208ee44;` |
