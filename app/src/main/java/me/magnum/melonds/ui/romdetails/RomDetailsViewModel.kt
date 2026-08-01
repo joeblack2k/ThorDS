@@ -11,6 +11,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.magnum.melonds.common.Permission
 import me.magnum.melonds.common.UriPermissionManager
+import me.magnum.melonds.common.romprocessors.RomFileProcessorFactory
+import me.magnum.melonds.domain.model.enhancement.ProfileLaunchPlanner
+import me.magnum.melonds.domain.model.enhancement.RomIdentity
+import me.magnum.melonds.domain.model.enhancement.SharedPreferencesProfilePreferencesRepository
+import me.magnum.melonds.domain.model.enhancement.WidescreenPresentationMode
+import me.magnum.melonds.domain.model.enhancement.ProfileIntegrity
+import me.magnum.melonds.domain.model.enhancement.ProfileRaMode
+import me.magnum.melonds.impl.enhancement.EmbeddedProfileCatalog
 import me.magnum.melonds.domain.model.VideoFiltering
 import me.magnum.melonds.domain.model.VideoRenderer
 import me.magnum.melonds.domain.model.rom.Rom
@@ -24,6 +32,7 @@ import me.magnum.melonds.parcelables.RomParcelable
 import me.magnum.melonds.ui.romdetails.model.RomConfigUiState
 import me.magnum.melonds.ui.romdetails.model.RomConfigUpdateEvent
 import me.magnum.melonds.ui.romdetails.model.RomGbaSlotConfigUiModel
+import me.magnum.melonds.ui.romdetails.model.ThorProfileUiModel
 import me.magnum.melonds.ui.romlist.RomIcon
 import javax.inject.Inject
 
@@ -34,6 +43,8 @@ class RomDetailsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val romIconProvider: RomIconProvider,
     private val uriPermissionManager: UriPermissionManager,
+    private val romFileProcessorFactory: RomFileProcessorFactory,
+    private val context: android.content.Context,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -51,6 +62,9 @@ class RomDetailsViewModel @Inject constructor(
     val rom = _rom.asStateFlow()
 
     private val _romConfig = MutableStateFlow(_rom.value.config)
+    private val _thorProfile = MutableStateFlow<ThorProfileUiModel?>(null)
+    private val profileLaunchPlanner by lazy { ProfileLaunchPlanner(EmbeddedProfileCatalog(context).catalog) }
+    private val profilePreferencesRepository by lazy { SharedPreferencesProfilePreferencesRepository(context) }
 
     init {
         refreshRom()
@@ -59,6 +73,7 @@ class RomDetailsViewModel @Inject constructor(
     val romConfigUiState by lazy {
         val uiStateFlow = MutableStateFlow<RomConfigUiState>(RomConfigUiState.Loading)
         viewModelScope.launch {
+            resolveThorProfile()
             val globalCoreVideoConfig = combine(
                 settingsRepository.getVideoRenderer(),
                 settingsRepository.isThreadedRenderingEnabled(),
@@ -88,7 +103,7 @@ class RomDetailsViewModel @Inject constructor(
             ) { consoleType, micSource ->
                 consoleType to micSource
             }
-            combine(
+            val baseConfigUi = combine(
                 _romConfig,
                 globalRuntimeConfig,
                 globalCoreVideoConfig,
@@ -108,6 +123,9 @@ class RomDetailsViewModel @Inject constructor(
                     hasValidRetroArchShaderRoot = shaderConfig.third,
                     globalRetroAchievementsEnabled = globalRetroAchievementsEnabled,
                 )
+            }
+            combine(baseConfigUi, _thorProfile) { config, thorProfile ->
+                config.copy(thorProfile = thorProfile)
             }.collect {
                 uiStateFlow.value = RomConfigUiState.Ready(it)
             }
@@ -188,7 +206,35 @@ class RomDetailsViewModel @Inject constructor(
             }
             _rom.value = refreshedRom.copy(config = refreshedConfig)
             _romConfig.value = refreshedConfig
+            resolveThorProfile()
         }
+    }
+
+    private suspend fun resolveThorProfile() {
+        val rom = _rom.value
+        val info = romFileProcessorFactory.getFileRomProcessorForDocument(rom.uri)?.getRomInfo(rom)
+        val identity = info?.let { RomIdentity(it.gameCode, it.revision, rom.retroAchievementsHash) }
+        if (identity == null) {
+            _thorProfile.value = null
+            return
+        }
+        val preferences = profilePreferencesRepository.read(identity.stableKey())
+        val resolved = profileLaunchPlanner.resolve(
+            identity = identity,
+            currentSlot = rom.config.gbaSlotConfig,
+            userCheats = emptyList(),
+            enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
+            requestedRaMode = preferences.requestedRaMode,
+            requestedArm9Percent = preferences.requestedArm9Percent,
+        )
+        _thorProfile.value = ThorProfileUiModel(
+            profileId = resolved.plan.profileId,
+            match = resolved.plan.match.name,
+            integrity = resolved.plan.profileIntegrity.name,
+            arm9Percent = resolved.plan.effectiveArm9Percent,
+            retroAchievementsMode = resolved.plan.effectiveRaMode.name,
+            widescreenMode = resolved.effectiveWidescreenMode.name,
+        )
     }
 
     suspend fun getRomIcon(rom: Rom): RomIcon {

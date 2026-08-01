@@ -201,6 +201,27 @@ private fun Content(
                 end = contentPadding.calculateEndPadding(LocalLayoutDirection.current),
             ),
     ) {
+        romConfig.thorProfile?.let { profile ->
+            ConfigSection(title = stringResource(R.string.thords_profile_status)) {
+                ConfigRow(
+                    title = stringResource(R.string.thords_profile),
+                    value = profile.profileId,
+                    showDivider = true,
+                    onClick = {},
+                )
+                ConfigRow(
+                    title = stringResource(R.string.thords_profile_match),
+                    value = profile.match,
+                    showDivider = true,
+                    onClick = {},
+                )
+                ConfigRow(
+                    title = stringResource(R.string.thords_profile_effective),
+                    value = "${profile.integrity} / ARM9 ${profile.arm9Percent}% / RA ${profile.retroAchievementsMode} / ${profile.widescreenMode}",
+                    onClick = {},
+                )
+            }
+        }
         ConfigSection(title = stringResource(R.string.rom_details_configuration_tab)) {
             ConfigRow(
                 title = stringResource(R.string.label_rom_config_custom_name),

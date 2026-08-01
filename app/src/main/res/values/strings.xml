@@ -1,6 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">ThorDS Enhanced</string>
     <string name="thords_about">About ThorDS Enhanced</string>
+    <string name="thords_profile_status">ThorDS profile status</string>
+    <string name="thords_profile">Resolved profile</string>
+    <string name="thords_profile_match">Profile match</string>
+    <string name="thords_profile_effective">Effective runtime</string>
     <string name="thords_about_product_source">ThorDS product source</string>
     <string name="thords_about_product_source_summary">https://github.com/joeblack2k/ThorDS</string>
     <string name="thords_about_upstream_source">MelonDualDS upstream source</string>

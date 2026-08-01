@@ -53,7 +53,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M8 | PASS | 30fdad53 | docs/evidence/m8/ | exact-profile True Widescreen product path, layer-aware fallback, safe-mode/relaunch behavior, build and Thor smoke validated; no per-frame 16:9/4:3 flicker observed after the session-lock correction |
 | M9 | PASS | b9893fe4 | docs/evidence/m9/ | policy foundation, fail-closed launch gate and real Thor RetroAchievements unlock validated; inherited legacy-history bounds remain documented |
 | M10 | PARTIAL | ad3a5179 | docs/evidence/m10/ | guarded native/JNI config, scheduler snapshots, persisted preference fail-closed check, incompatible-ratio savestate guard, 100% telemetry and stability are green; 64-bit scaled-cycle truncation fixed; equivalence, drift and formal over-100 runtime gates remain open |
-| M11 | PARTIAL | feat: expose latched session status in pause menu | docs/evidence/m11/ | bounded read-only pause/session snapshot is tested and visible on Thor; firmware physical branch and full M11 acceptance remain open |
+| M11 | PARTIAL | pending | docs/evidence/m11/ | bounded read-only pause/session snapshot plus ROM-details resolved ThorDS profile status compile and smoke green; profile toggles, relaunch staging and full physical details-flow acceptance remain open |
 | M12 | BLOCKED | docs: record M12 release preflight matrix | docs/evidence/m12/ | inventory only; release remains blocked by incomplete product and device gates |
 | M13 | NOT_STARTED | | | |
 
@@ -70,8 +70,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Continue with M10 ARM9 overclock foundation. M8 and M9 are complete for the
-current product gate; do not restart either validation workstream. Over-100%
-ARM9 behavior remains disabled until timing evidence proves it safe.
-Remaining independent gaps, including M6 physical movement coverage and the
-later M11-M12 release gates, remain explicitly tracked above.
+Continue with the M11 profile-controls slice while M10 remains measurement-only.
+M8 and M9 are complete for the current product gate; do not restart either
+validation workstream. Over-100% ARM9 behavior remains disabled until timing
+evidence proves it safe. Remaining independent gaps, including M6 physical
+movement coverage and the later M11-M12 release gates, remain explicitly
+tracked above.

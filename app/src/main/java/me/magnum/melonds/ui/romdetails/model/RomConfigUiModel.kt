@@ -10,6 +10,7 @@ import me.magnum.melonds.domain.model.rom.config.RuntimeMicSource
 import java.util.UUID
 
 data class RomConfigUiModel(
+    val thorProfile: ThorProfileUiModel? = null,
     val runtimeConsoleType: RuntimeConsoleType = RuntimeConsoleType.DEFAULT,
     val globalRuntimeConsoleType: ConsoleType = ConsoleType.DS,
     val runtimeMicSource: RuntimeMicSource = RuntimeMicSource.DEFAULT,
@@ -36,4 +37,13 @@ data class RomConfigUiModel(
     val hasValidRetroArchShaderRoot: Boolean = false,
     val retroAchievementsEnabled: Boolean? = null,
     val globalRetroAchievementsEnabled: Boolean = true,
+)
+
+data class ThorProfileUiModel(
+    val profileId: String,
+    val match: String,
+    val integrity: String,
+    val arm9Percent: Int,
+    val retroAchievementsMode: String,
+    val widescreenMode: String,
 )

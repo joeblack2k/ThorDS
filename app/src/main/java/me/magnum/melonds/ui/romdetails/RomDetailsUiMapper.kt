@@ -11,6 +11,7 @@ import me.magnum.melonds.domain.model.rom.config.RomGbaSlotConfig
 import me.magnum.melonds.domain.repositories.LayoutsRepository
 import me.magnum.melonds.ui.romdetails.model.RomConfigUiModel
 import me.magnum.melonds.ui.romdetails.model.RomGbaSlotConfigUiModel
+import me.magnum.melonds.ui.romdetails.model.ThorProfileUiModel
 
 class RomDetailsUiMapper(
     private val context: Context,
@@ -29,8 +30,10 @@ class RomDetailsUiMapper(
         globalRetroArchShaderParameters: String?,
         hasValidRetroArchShaderRoot: Boolean,
         globalRetroAchievementsEnabled: Boolean,
+        thorProfile: ThorProfileUiModel? = null,
     ): RomConfigUiModel {
         return RomConfigUiModel(
+            thorProfile = thorProfile,
             runtimeConsoleType = romConfig.runtimeConsoleType,
             globalRuntimeConsoleType = globalRuntimeConsoleType,
             runtimeMicSource = romConfig.runtimeMicSource,

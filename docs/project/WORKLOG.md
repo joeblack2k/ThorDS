@@ -1406,3 +1406,32 @@ Evidence:
 `docs/evidence/m7/presenter-trace-analysis.json`,
 `docs/evidence/m7/surface-geometry-analysis.json` and
 `docs/evidence/m7/w06-touch-grid.json`.
+## 2026-08-01 - M11 ROM-details resolved profile status
+
+### Result
+
+- Added a read-only ThorDS profile status to the existing ROM-details
+  configuration screen.
+- The status is resolved from the ROM header identity, the embedded profile
+  catalog, the existing hash-bound `ProfilePreferencesRepository` and the
+  existing `ProfileLaunchPlanner`.
+- The UI shows the resolved profile, match classification, profile integrity,
+  effective ARM9 percentage, effective RetroAchievements mode and effective
+  widescreen mode.
+- Missing ROM identity does not claim an Enhanced profile; the status remains
+  absent until resolution succeeds.
+- No second settings store, ROM database field or new toggle was introduced.
+
+### Validation
+
+- `:app:compileGitHubProdDebugKotlin`: PASS.
+- Focused release unit tests: PASS; 32 tests, 0 failures, 0 errors.
+- `:app:assembleGitHubProdDebug`: PASS.
+- APK installed on AYN Thor; launcher reached `RomListActivity`.
+- Filtered logcat showed no `FATAL EXCEPTION` or `ANR in`.
+
+### Boundary
+
+- This closes the bounded read-only M11 status slice only.
+- Profile editing/toggle controls, atomic relaunch staging, physical ROM
+  details navigation and the full M11 acceptance gate remain open.

@@ -1,0 +1,32 @@
+M11 ROM-details resolved profile status
+Date: 2026-08-01
+Status: BOUNDED_SLICE_PASS
+
+The existing ROM-details configuration screen now exposes a read-only
+ThorDS profile status. Resolution uses the ROM header identity, the embedded
+profile catalog, the existing hash-bound ProfilePreferencesRepository and
+ProfileLaunchPlanner.
+
+Displayed resolved values:
+
+- profile id;
+- exact/unsupported match classification;
+- Original or Enhanced integrity;
+- effective ARM9 percentage;
+- effective RetroAchievements mode;
+- effective widescreen mode.
+
+Unknown or unreadable ROM identity does not silently claim Thor Enhanced.
+No second settings store or ROM database field was added.
+
+Validation:
+
+- GitHubProdDebug Kotlin compilation: PASS.
+- Focused release unit tests: 32 tests, 0 failures, 0 errors.
+- GitHubProdDebug APK build: PASS.
+- AYN Thor install: PASS.
+- Launcher smoke reached RomListActivity.
+- Filtered logcat: no FATAL EXCEPTION and no ANR in.
+
+This is a bounded read-only status slice. Profile toggles, relaunch staging,
+physical ROM-details navigation and the complete M11 acceptance remain open.
