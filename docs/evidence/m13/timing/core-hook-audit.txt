@@ -22,6 +22,12 @@ Findings:
 - NDS::RunFrame() advances one complete DS display period.
 - Frontend target FPS and presenter counters cannot prove unique SM64DS
   gameplay updates.
+- The public 60fps patch provenance found by the audit targets NTSC-U/USA
+  revision 1.1, not the target European ASMP revision 0.
+- Provenance URLs: https://www.youtube.com/watch?v=yJXEAIOFcNU and
+  https://www.sm64games.com/game/60-fps-patch
+- The public material identifies an xdelta distribution, but exposes no
+  source code, AR words or reproducible binary-to-source map.
 - The repository has no proven European 60fps Action Replay code or patched
   reference copy.
 - No 60fps runtime code was invented or added.

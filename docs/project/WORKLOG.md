@@ -10,6 +10,10 @@
   the existing Action Replay hook.
 - The current repository contains no proven European `ASMP` 60fps code or
   legal patched reference copy, so no unverified code words were added.
+- The public community patch reference is for NTSC-U/USA revision 1.1 and
+  cannot be copied into the European `ASMP` revision-0 profile.
+- Provenance is recorded as the gamemasterplc video and SM64Games patch
+  page; no source code or inspectable AR words were found.
 
 ### Boundary
 

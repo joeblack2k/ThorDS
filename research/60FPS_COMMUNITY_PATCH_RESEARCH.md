@@ -12,6 +12,22 @@ De gekoppelde AYN Thor-praktijkproef bewijst dat er een combinatie van:
 
 kan worden gestart en gespeeld. Dezelfde proef meldt echter reproduceerbare slow motion en gameplayvertraging in zwaardere scènes, waaronder Chain Chomp, de berg en King Bob-omb. Daarom is de communitypatch **onderzoeksmateriaal**, geen vertrouwde releasepatch.
 
+De publiek terugvindbare 60fps-patchprovenance verwijst naar de
+NTSC-U/USA revision 1.1-ROM. ThorDS ondersteunt als eerste doel de Europese
+`ASMP`, revision `0`; de Amerikaanse patch wordt daarom niet op de Europese
+profilecatalogus toegepast. Zie ook de publieke patchverwijzing in
+`SOURCE_INDEX.md`.
+
+Provenance:
+
+- oorspronkelijke patchvideo/auteur: `gamemasterplc`,
+  `https://www.youtube.com/watch?v=yJXEAIOFcNU`;
+- publieke distributiepagina:
+  `https://www.sm64games.com/game/60-fps-patch`;
+- de bronverwijzing beschrijft een xdelta-patch voor USA/NTSC-U v1.1;
+- publieke broncode, AR-codewoorden en reproduceerbare binary-to-source map
+  zijn niet gevonden.
+
 ## Productbesluit
 
 Voor v0.1:
