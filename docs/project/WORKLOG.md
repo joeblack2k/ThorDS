@@ -1839,3 +1839,16 @@ Evidence:
   gameplay cadence. Product acceptance remains open for movement, camera,
   audio, long-run stability and release gates.
 - Evidence: `docs/evidence/m13/f2-60fps-gameplay-checkpoint.json`.
+## 2026-08-01 - M13 independent input response smoke tests
+
+- Loaded the private 60-FPS gameplay checkpoint for each case and ran the
+  existing renderer-frame surface harness independently for left-stick movement
+  and right-stick camera input.
+- Left-stick case: all 4 input events handled, 4/4 frames advanced, 4 distinct
+  source frame hashes.
+- Right-stick camera case: all 4 input events handled, 4/4 frames advanced,
+  4 distinct source frame hashes.
+- The harness reports `PARTIAL` because optional Vulkan presenter metadata did
+  not complete; the input and rendered-frame measurements themselves passed.
+- Physical direction/feel and longer camera behavior remain a manual Thor gate.
+- Evidence: `docs/evidence/m13/f3-input-response-60fps.json`.

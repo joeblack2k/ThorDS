@@ -1,0 +1,40 @@
+{
+  "milestone": "M13",
+  "gate": "60 FPS input response smoke test",
+  "device": "AYN Thor",
+  "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+  "cases": {
+    "leftStick": {
+      "input": {
+        "leftX": 0.75,
+        "leftY": 0.0,
+        "cameraX": 0.0,
+        "cameraY": 0.0
+      },
+      "frames": 4,
+      "inputHandled": true,
+      "advancedFrames": 4,
+      "distinctSourceFrameHashes": 4
+    },
+    "rightStickCamera": {
+      "input": {
+        "leftX": 0.0,
+        "leftY": 0.0,
+        "cameraX": 0.65,
+        "cameraY": 0.0
+      },
+      "frames": 4,
+      "inputHandled": true,
+      "advancedFrames": 4,
+      "distinctSourceFrameHashes": 4
+    }
+  },
+  "result": "INPUT_ACCEPTED_AND_RENDERED",
+  "notes": [
+    "The left-stick and right-stick camera cases were run independently from the same private 60 FPS checkpoint.",
+    "Every injected motion event was accepted and every requested renderer frame advanced.",
+    "The source frame hash changed on every sampled frame in both cases.",
+    "The existing harness returned PARTIAL only because optional Vulkan presenter metadata was incomplete; this does not invalidate the input/frame evidence.",
+    "Physical feel, axis direction and long-run camera behavior still require manual Thor acceptance."
+  ]
+}
