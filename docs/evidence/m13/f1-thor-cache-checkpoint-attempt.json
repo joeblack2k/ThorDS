@@ -1,0 +1,42 @@
+{
+  "milestone": "M13",
+  "gate": "F1 gameplay baseline",
+  "device": "AYN Thor",
+  "profile": {
+    "requestedArm9Percent": 125,
+    "effectiveArm9Percent": 125,
+    "cadenceProbe": false
+  },
+  "attempts": [
+    {
+      "checkpoint": "thords-m7-castle-ground.ml0",
+      "loadSuccess": false
+    },
+    {
+      "checkpoint": "thords-m7-checkpoint.ml0",
+      "loadSuccess": false
+    },
+    {
+      "checkpoint": "thords-m7-castle-interior.ml0",
+      "loadSuccess": false
+    },
+    {
+      "checkpoint": "thords-m7-rabbit-search.ml0",
+      "loadSuccess": false
+    }
+  ],
+  "sampler": {
+    "valid": true,
+    "uniqueUpdates": 60,
+    "emulatorFrames": 60,
+    "cadenceValue": 1,
+    "stageTimer": 0,
+    "cameraBehaviorCalls": 0
+  },
+  "result": "PARTIAL_NON_GAMEPLAY",
+  "notes": [
+    "The private cache checkpoints were reachable by path but rejected by the current runtime.",
+    "The current display was black after the failed loads.",
+    "The one-second sampler result proves only that the mapped loop is running; it is not gameplay or 60 FPS acceptance evidence."
+  ]
+}

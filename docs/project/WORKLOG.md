@@ -1704,6 +1704,18 @@ Evidence:
   overlay-local declarations and incomplete symbol typing require binary and
   runtime confirmation before F4 changes any word.
 
+### 2026-08-01 - M13 private checkpoint retry
+
+- Reached the connected Thor with the existing private cache checkpoints and
+  retried `thords-m7-castle-ground.ml0`, `thords-m7-checkpoint.ml0`,
+  `thords-m7-castle-interior.ml0` and `thords-m7-rabbit-search.ml0` through the
+  debug `LOAD_STATE` API.
+- All four loads returned `success=0`. The running display was black afterward.
+- The game-loop sampler remained valid at 60 updates/s with `cadence=1`, but
+  `stageTimer=0` and the non-gameplay surface mean this is not F1 gameplay
+  evidence and does not advance the 60fps gate.
+- Evidence: `docs/evidence/m13/f1-thor-cache-checkpoint-attempt.json`.
+
 ### 2026-08-01 - M13 F3 developer cadence probe definition
 
 - Added the hidden, default-off exact-profile `60fps-dev-cadence` definition for
