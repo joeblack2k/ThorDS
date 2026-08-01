@@ -877,9 +877,14 @@ W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
 - Both world screenshots were fully non-black and all three screenshots were
   fully opaque. Filtered logcat contained no `FATAL EXCEPTION`, `ANR in` or
   `am_anr`.
+- A short host-polled soak added three pre-pause samples, ten pause samples
+  and ten return samples at approximately 50 ms intervals. Every sample was
+  opaque and non-black; after the second START, the first sample still showed
+  the overlay and the following nine showed the Castle Garden world.
 - Decision: W-20 advances to `PARTIAL_WITH_OBSERVED_TRANSITION`. A real
-  world-to-pause-to-world transition is now observed; longer no-flash/soak
-  cadence remains open.
+  world-to-pause-to-world transition is now observed and the short soak found
+  no black or transparent intermediate; longer no-flash/soak cadence remains
+  open.
 - Evidence: `docs/evidence/m7/castle-garden-w20-transition.txt`.
 
 ## M10 ARM9 overclock policy foundation - 2026-08-01

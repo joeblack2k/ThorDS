@@ -46,6 +46,20 @@ Direct final-primary transition:
 - No filtered `FATAL EXCEPTION`, `ANR in` or `am_anr` entry occurred during
   this direct transition attempt.
 
+Short transition soak:
+- Three pre-pause final-primary samples were captured at approximately
+  50 ms intervals; all were opaque world frames with `2,073,600` non-black
+  pixels.
+- Ten pause samples at the same host polling interval were all opaque pause
+  frames with `1,974,510..1,974,780` non-black pixels; no black or transparent
+  intermediate was observed.
+- After the second START command, the first sample still showed the pause
+  overlay and the following nine samples showed the Castle Garden world.
+  Every sample was opaque and non-black; the returned world frames had
+  `2,073,600` non-black pixels.
+- This is a bounded host-polled soak, not a continuous final-surface capture,
+  so it strengthens but does not replace longer no-flash cadence evidence.
+
 Decision:
 - W-20 advances to `PARTIAL_WITH_OBSERVED_TRANSITION`: the direct final-primary
   sequence now proves a real Castle Garden world-to-pause-to-world transition.
