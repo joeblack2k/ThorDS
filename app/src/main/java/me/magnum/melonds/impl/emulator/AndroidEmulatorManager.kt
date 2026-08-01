@@ -343,6 +343,10 @@ class AndroidEmulatorManager(
                     }
                     MelonEmulator.setupCheats(cheats.toTypedArray())
                     MelonEmulator.startEmulation(startPaused = true)
+                    Log.i(
+                        TAG,
+                        "ARM9Overclock launchRequested=$arm9OverclockPercent telemetry=${MelonEmulator.getArm9OverclockTelemetry()}",
+                    )
 
                     RomLaunchResult.LaunchSuccessful(loadResult != MelonEmulator.LoadResult.SUCCESS_GBA_FAILED)
                 }
