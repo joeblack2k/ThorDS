@@ -1751,6 +1751,16 @@ Evidence:
   60fps validation remain open.
 - Evidence: `docs/evidence/m13/f1-original-vs-enhanced-black-output.json`.
 
+### 2026-08-01 - M13 Vulkan versus software black-output isolation
+
+- Ran the same ROM and ARM9=125 profile with the Vulkan renderer and then the
+  software renderer.
+- Both renderer paths produced black DS-primary output. Vulkan was restored
+  afterward and the Enhanced profile preferences remain restored.
+- This excludes Vulkan as the sole cause. F1 gameplay evidence and 60fps
+  validation remain open.
+- Evidence: `docs/evidence/m13/f1-renderer-ab-black-output.json`.
+
 ### 2026-08-01 - M13 F3 developer cadence probe definition
 
 - Added the hidden, default-off exact-profile `60fps-dev-cadence` definition for

@@ -1,0 +1,27 @@
+{
+  "milestone": "M13",
+  "gate": "display isolation",
+  "device": "AYN Thor",
+  "rom": "Super Mario 64 DS",
+  "commonSettings": {
+    "requestedArm9Percent": 125,
+    "profile": "sm64ds.eu.thor-enhanced",
+    "trueWidescreenEffective": "NATIVE_4_3"
+  },
+  "runs": [
+    {
+      "renderer": "vulkan",
+      "surface": "BLACK"
+    },
+    {
+      "renderer": "software",
+      "surface": "BLACK"
+    }
+  ],
+  "result": "BLACK_OUTPUT_NOT_VULKAN_ONLY",
+  "notes": [
+    "The renderer setting was restored to Vulkan after the comparison.",
+    "The profile preference file was restored to Enhanced with true-widescreen enabled.",
+    "No 60fps gameplay claim is made."
+  ]
+}
