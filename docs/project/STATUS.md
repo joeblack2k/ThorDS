@@ -78,7 +78,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M9 | IN_PROGRESS | policy-foundation + M9.2 launch-policy wiring | docs/evidence/m9/ | Android-free policy foundation, unsupported-mode fail-closed handling and pre-bootstrap launch gate verified; native/network/offline validation and full M9 acceptance remain open; publication is PASS_WITH_KNOWN_LEGACY_HISTORY |
 | M10 | IN_PROGRESS | | docs/evidence/m10/ | ARM9 overclock policy foundation only; current plumbing resolves effective 100; no native/JNI/UI/runtime over-100 behavior |
 | M11 | IN_PROGRESS | feat: expose latched session status in pause menu | docs/evidence/m11/ | bounded read-only pause/session snapshot is tested and visible on Thor; firmware physical branch and full M11 acceptance remain open |
-| M12 | NOT_STARTED | | | |
+| M12 | IN_PROGRESS | docs: record M12 release preflight matrix | docs/evidence/m12/ | inventory only; public source and M11 are green within bounds, while M7/M9/M10/M11 acceptance blockers remain |
 | M13 | NOT_STARTED | | | |
 
 ## Feature status
@@ -109,4 +109,7 @@ renderer layers were black and the state restore was not proven. The next
 useful M7 action is to obtain a valid Castle Garden renderer checkpoint before
 retrying W-01; keep M8 and full M9 acceptance blocked until remaining evidence
 is green.
-The M6 gameplay checklist also remains pending.
+The M6 gameplay checklist also remains pending. M12 has an explicit
+release-preflight inventory at `docs/evidence/m12/release-preflight.txt`;
+its result is `BLOCKED`, not a release candidate. The next runnable
+implementation gate is a valid Castle Garden renderer checkpoint for W-01.

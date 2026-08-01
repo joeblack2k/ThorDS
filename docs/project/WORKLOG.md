@@ -849,3 +849,24 @@ the firmware physical branch are not claimed. M7 Castle Garden remains the
 active release blocker, and Bob-omb Battlefield is out of scope.
 
 Evidence: `docs/evidence/m11/session-status-pause.txt`.
+
+## M12 release preflight inventory - 2026-08-01
+
+- Recorded the current public repository, publication-safety, build/install,
+  M7, M9, M10 and M11 gates as an explicit PASS/BLOCKED/OPEN matrix.
+- Confirmed the public source is `joeblack2k/ThorDS` with `main` as the
+  default branch and `upstream` preserved for MelonDualDS synchronization.
+- Corrected the publication row to distinguish a clean current tree from the
+  inherited public history: three deleted upstream firmware/romlist binary
+  paths remain reachable, alongside the known NIST AES test-vector finding.
+  No history rewrite or force-push was attempted.
+- Kept M7 Castle Garden as the only representative scene. W-01 remains
+  BLOCKED by the missing valid renderer checkpoint and black paired layers;
+  W-20 remains PARTIAL because no actual pause transition was observed.
+- Kept M9 and M10 policy foundations separate from their unimplemented
+  native/runtime/network/physical gates. M11 is PASS_WITH_BOUNDS with the
+  firmware physical branch still open.
+- Decision: M12 preflight result is `BLOCKED`; no production release or M8
+  completion claim is made.
+
+Evidence: `docs/evidence/m12/release-preflight.txt`.

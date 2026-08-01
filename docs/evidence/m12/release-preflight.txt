@@ -1,0 +1,49 @@
+M12 ThorDS release preflight inventory
+Date: 2026-08-01
+Branch: thords/enhancement-platform-v1
+Public source: https://github.com/joeblack2k/ThorDS
+HEAD at inventory: a92ee710b3a6b24210346b5d18d934d4b4d289c6
+Result: BLOCKED
+
+Purpose:
+- This is an inventory gate, not a release claim.
+- Each row records the strongest current evidence and the remaining
+  acceptance boundary.
+- A BLOCKED or OPEN row prevents a production release and prevents M8 from
+  being declared complete.
+
+Gate matrix:
+
+| Area | Result | Evidence | Boundary |
+|---|---|---|---|
+| Public repository identity | PASS | `gh repo view joeblack2k/ThorDS`; `git ls-remote origin` | Public `joeblack2k/ThorDS`, default branch `main`; upstream remote preserved |
+| Publication safety | BLOCKED_BY_KNOWN_LEGACY_HISTORY | `docs/evidence/m7/publication-safety.txt`; `docs/evidence/m9/launch-policy-tests.txt`; `docs/evidence/m11/session-status-pause.txt` | Current tree and staged scan contain no ROM/save/credential/private evidence; inherited public history still reaches `app/src/main/assets/bios/drastic_bios_arm7.bin`, `app/src/main/assets/bios/drastic_bios_arm9.bin`, and `app/src/main/assets/romlist.bin`, plus one pre-existing public NIST AES false positive |
+| M3 product identity and offline/default gates | PASS | `docs/evidence/m3/` | No new M3 regression observed in the M11 build |
+| M4/M5 profile catalog and exact identity | PASS | `docs/evidence/m4/`; `docs/evidence/m5/` | Runtime gameplay acceptance remains a later gate |
+| M6 analog/profile runtime | IN_PROGRESS | `docs/evidence/m6/` | Physical walk/run, swim/fly/slide, camera response and reconnect checklist remain |
+| M7 Castle Garden presentation/classifier | PARTIAL | `docs/evidence/m7/launch-probe.txt`; `docs/evidence/m7/castle-garden-live-stability.txt` | Projection/presentation and unique live cadence are evidenced; exact geometry and transition proof remain |
+| M7 W-01 object aspect | BLOCKED | `docs/evidence/m7/castle-garden-w01-object-aspect.txt` | Castle Garden renderer checkpoint restore was not proven and paired renderer layers were black |
+| M7 W-20 transition | PARTIAL | `docs/evidence/m7/castle-garden-w20-transition.txt` | No observed world-to-pause-to-world transition; repeated adjacent frames remain |
+| M8 true widescreen release gate | BLOCKED | `docs/project/STATUS.md` | M7 object aspect, side culling, HUD/glyph/bottom geometry and transition gates are open |
+| M9 RetroAchievements policy | PASS_WITH_BOUNDS | `docs/evidence/m9/policy-tests.txt`; `docs/evidence/m9/launch-policy-tests.txt` | Native/runtime, network/offline, conflict UI, save-state enforcement and physical session proof remain |
+| M10 ARM9 policy | PASS_WITH_BOUNDS | `docs/evidence/m10/policy-foundation.txt` | Native/JNI plumbing, UI, telemetry and effective over-100 runtime behavior remain; live effective value is 100 |
+| M11 pause session status | PASS_WITH_BOUNDS | `docs/evidence/m11/session-status-pause.txt` | Firmware physical pause branch and broader M11 acceptance remain |
+| Release build/install smoke | PASS | M11 full build and physical smoke evidence | This does not override the blocked feature gates above |
+
+Required next work:
+- Obtain a valid Castle Garden renderer checkpoint through the existing
+  app-private route and retry W-01 with native/probe paired captures.
+- Measure the remaining Castle Garden side-region culling, HUD/glyph and
+  bottom-screen geometry.
+- Produce an actual pause/world transition proof for W-20.
+- Keep M9 native/offline/physical acceptance and M10 native/JNI/runtime work
+  separate from policy-only passes.
+
+Safety:
+- No ROM, save state, device serial, private capture, credential or
+  authentication material is included in this inventory.
+- The current tree does not add or restore the inherited binary paths listed
+  in the publication-safety row. They remain reachable in the already
+  published history; no history rewrite or force-push was attempted.
+- Bob-omb Battlefield is not an M7 requirement; Castle Garden is the sole
+  owner-selected representative scene.
