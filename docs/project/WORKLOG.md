@@ -1,5 +1,24 @@
 # Worklog
 
+## 2026-08-01 - M11 pre-launch Hardcore recovery choice
+
+### Result
+
+- Selecting `Hardcore` while `Thor Enhanced` is selected now fails closed in
+  the ROM-details UI before Play starts a session.
+- The user receives two explicit choices: `Original + restart` or
+  `Enhanced + Casual`.
+- No preference is committed until the normal validated Play path, preserving
+  the existing pending-edit behavior.
+- GitHubProdDebug compilation, focused Profile/RA tests, APK build, Thor
+  installation and launcher smoke passed.
+
+### Boundary
+
+- This is a source-level and smoke-validated recovery slice, not a complete
+  physical M11 matrix. Physical dialog selection, safe-mode recovery,
+  process-recreation and both-display acceptance remain open.
+
 ## 2026-08-01 - M13 60fps timing-hook audit
 
 ### Result

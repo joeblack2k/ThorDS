@@ -111,6 +111,7 @@ private fun Content(
     val videoFilteringDialogState = rememberSingleChoiceDialogState<VideoFiltering?>()
     val retroAchievementsDialogState = rememberSingleChoiceDialogState<Boolean?>()
     val thorRaModeDialogState = rememberSingleChoiceDialogState<me.magnum.melonds.domain.model.enhancement.ProfileRaMode>()
+    val thorHardcoreRecoveryDialogState = rememberSingleChoiceDialogState<String>()
     val retroArchPresetPathDialogState = rememberTextInputDialogState()
     val retroArchParametersDialogState = rememberTextInputDialogState()
 
@@ -263,7 +264,34 @@ private fun Content(
                             items = me.magnum.melonds.domain.model.enhancement.ProfileRaMode.entries,
                             labelOf = { it.name },
                             selected = me.magnum.melonds.domain.model.enhancement.ProfileRaMode.valueOf(profile.requestedRaMode),
-                            onSelect = { onConfigUpdate(RomConfigUpdateEvent.ThorProfileRaModeUpdate(it)) },
+                            onSelect = {
+                                if (
+                                    it == me.magnum.melonds.domain.model.enhancement.ProfileRaMode.HARDCORE
+                                    && profile.enhancedRequested
+                                ) {
+                                    val original = context.getString(R.string.thords_profile_recovery_original)
+                                    val casual = context.getString(R.string.thords_profile_recovery_casual)
+                                    thorHardcoreRecoveryDialogState.show(
+                                        title = context.getString(R.string.thords_profile_hardcore_conflict),
+                                        items = listOf(original, casual),
+                                        labelOf = { it },
+                                        selected = original,
+                                        onSelect = { choice ->
+                                            if (choice == original) {
+                                                onConfigUpdate(RomConfigUpdateEvent.ThorProfileModeUpdate(false))
+                                            } else {
+                                                onConfigUpdate(
+                                                    RomConfigUpdateEvent.ThorProfileRaModeUpdate(
+                                                        me.magnum.melonds.domain.model.enhancement.ProfileRaMode.CASUAL,
+                                                    ),
+                                                )
+                                            }
+                                        },
+                                    )
+                                } else {
+                                    onConfigUpdate(RomConfigUpdateEvent.ThorProfileRaModeUpdate(it))
+                                }
+                            },
                         )
                     },
                 )

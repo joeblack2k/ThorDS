@@ -14,6 +14,9 @@
     <string name="thords_enhanced">Thor Enhanced</string>
     <string name="thords_original">Original</string>
     <string name="thords_profile_relaunch_required">Profile changed. Relaunch the ROM to apply it.</string>
+    <string name="thords_profile_hardcore_conflict">Hardcore requires the Original profile</string>
+    <string name="thords_profile_recovery_original">Original + restart</string>
+    <string name="thords_profile_recovery_casual">Enhanced + Casual</string>
     <string name="thords_about_product_source">ThorDS product source</string>
     <string name="thords_about_product_source_summary">https://github.com/joeblack2k/ThorDS</string>
     <string name="thords_about_upstream_source">MelonDualDS upstream source</string>
