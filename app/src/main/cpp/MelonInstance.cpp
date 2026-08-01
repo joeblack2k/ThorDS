@@ -1138,15 +1138,20 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
     std::lock_guard lock(sm64dsGameLoopTelemetryMutex);
     u32 cameraPointer = 0;
     u32 cameraHookWord = 0;
+    u32 cameraLegacyHookWord = 0;
+    u32 cameraModePointer = 0;
+    u32 cameraFlags = 0;
     s16 cameraCurrentYaw = 0;
     s16 cameraBaseYaw = 0;
     s16 cameraYawOffset = 0;
     if (nds != nullptr && nds->MainRAM != nullptr)
     {
         constexpr u32 kMainRamBase = 0x02000000;
-        constexpr u32 kCameraHookAddress = 0x0200BCF0;
+        constexpr u32 kCameraHookAddress = 0x0200BB28;
+        constexpr u32 kCameraLegacyHookAddress = 0x0200BCF0;
         constexpr u32 kCameraPointerAddress = 0x0209F318;
         cameraHookWord = nds->ARM9Read32(kCameraHookAddress);
+        cameraLegacyHookWord = nds->ARM9Read32(kCameraLegacyHookAddress);
         const u32 pointerOffset = (kCameraPointerAddress - kMainRamBase) & nds->MainRAMMask;
         if (pointerOffset <= nds->MainRAMMask - 3)
         {
@@ -1168,6 +1173,18 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
                 cameraCurrentYaw = readS16(0x180);
                 cameraBaseYaw = readS16(0x182);
                 cameraYawOffset = readS16(0x184);
+                cameraModePointer = static_cast<u32>(
+                    static_cast<u8>(cameraBytes[0x13c])
+                    | (static_cast<u32>(static_cast<u8>(cameraBytes[0x13d])) << 8)
+                    | (static_cast<u32>(static_cast<u8>(cameraBytes[0x13e])) << 16)
+                    | (static_cast<u32>(static_cast<u8>(cameraBytes[0x13f])) << 24)
+                );
+                cameraFlags = static_cast<u32>(
+                    static_cast<u8>(cameraBytes[0x154])
+                    | (static_cast<u32>(static_cast<u8>(cameraBytes[0x155])) << 8)
+                    | (static_cast<u32>(static_cast<u8>(cameraBytes[0x156])) << 16)
+                    | (static_cast<u32>(static_cast<u8>(cameraBytes[0x157])) << 24)
+                );
             }
         }
     }
@@ -1176,6 +1193,9 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
             + std::to_string(nds == nullptr ? 0u : nds->GetSm64dsCameraBehaviorCalls())
             + ",\"cameraPointer\":" + std::to_string(cameraPointer)
             + ",\"cameraHookWord\":" + std::to_string(cameraHookWord)
+            + ",\"cameraLegacyHookWord\":" + std::to_string(cameraLegacyHookWord)
+            + ",\"cameraModePointer\":" + std::to_string(cameraModePointer)
+            + ",\"cameraFlags\":" + std::to_string(cameraFlags)
             + ",\"cameraProtocolReads\":" + std::to_string(nds == nullptr ? 0u : nds->GBACartSlot.GetCameraProtocolReadCount())
             + ",\"cameraCurrentYaw\":" + std::to_string(cameraCurrentYaw)
             + ",\"cameraBaseYaw\":" + std::to_string(cameraBaseYaw)
@@ -1191,6 +1211,9 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"cameraBehaviorCalls\":" + std::to_string(nds->GetSm64dsCameraBehaviorCalls())
         + ",\"cameraPointer\":" + std::to_string(cameraPointer)
         + ",\"cameraHookWord\":" + std::to_string(cameraHookWord)
+        + ",\"cameraLegacyHookWord\":" + std::to_string(cameraLegacyHookWord)
+        + ",\"cameraModePointer\":" + std::to_string(cameraModePointer)
+        + ",\"cameraFlags\":" + std::to_string(cameraFlags)
         + ",\"cameraProtocolReads\":" + std::to_string(nds->GBACartSlot.GetCameraProtocolReadCount())
         + ",\"cameraCurrentYaw\":" + std::to_string(cameraCurrentYaw)
         + ",\"cameraBaseYaw\":" + std::to_string(cameraBaseYaw)

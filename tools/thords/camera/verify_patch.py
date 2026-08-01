@@ -6,9 +6,9 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-HOOK = 0x0200BCF0
+HOOK = 0x02009E70
 PAYLOAD = 0x02075BB4
-EXPECTED_HOOK_WORD = 0xE2110C02
+EXPECTED_HOOK_WORD = 0xE92D4FF0
 ARM9_BASE = 0x02004000
 
 
