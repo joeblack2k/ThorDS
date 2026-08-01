@@ -9,8 +9,7 @@ import me.magnum.melonds.MelonEmulator
 import me.magnum.melonds.domain.model.ControllerConfiguration
 import me.magnum.melonds.domain.model.Input
 import me.magnum.melonds.domain.model.InputConfig
-import me.magnum.melonds.domain.model.enhancement.CameraDpadHysteresis
-import me.magnum.melonds.domain.model.enhancement.CameraDpadInputState
+import me.magnum.melonds.domain.model.enhancement.SmoothCameraInput
 import java.util.Locale
 import kotlin.math.absoluteValue
 
@@ -19,11 +18,17 @@ class InputProcessor(
     private val systemInputListener: IInputListener,
     private val frontendInputListener: IInputListener,
     private val slot2AnalogInput: (Float, Float) -> Unit = MelonEmulator::setSlot2AnalogInput,
+    private val slot2CameraState: (Short, Short, Short, Short, Short) -> Unit =
+        MelonEmulator::setSlot2CameraState,
 ) : INativeInputListener {
     companion object {
         private const val TAG = "InputProcessor"
         private const val SLOT2_ANALOG_LOG_INTERVAL_MS = 1500L
         private const val SLOT2_RAW_ANALOG_PRIORITY_MS = 150L
+        private const val SMOOTH_CAMERA_YAW_UNITS_PER_TICK = 1001
+        private const val SMOOTH_CAMERA_FLAG_ENABLED = 1
+        private const val SMOOTH_CAMERA_FLAG_RECENTER_SOUND = 1 shl 1
+        private const val SMOOTH_CAMERA_R3 = KeyEvent.KEYCODE_BUTTON_THUMBR
         private val slot2XAxisFallbackCodes = intArrayOf(
             MotionEvent.AXIS_X,
             MotionEvent.AXIS_HAT_X,
@@ -49,8 +54,8 @@ class InputProcessor(
     private var slot2DigitalRightPressed = false
     private var slot2DigitalUpPressed = false
     private var slot2DigitalDownPressed = false
-    private val profileCamera = CameraDpadHysteresis()
-    private val profileCameraInputState = CameraDpadInputState()
+    private val smoothCameraInput = SmoothCameraInput()
+    private var smoothCameraRecenterSequence: Short = 0
 
     init {
         val axis = controllerConfiguration.inputMapper.flatMap { inputConfig ->
@@ -65,6 +70,13 @@ class InputProcessor(
     }
 
     override fun onKeyEvent(keyEvent: KeyEvent): Boolean {
+        if (controllerConfiguration.profileCameraEnabled && keyEvent.keyCode == SMOOTH_CAMERA_R3) {
+            if (keyEvent.action == KeyEvent.ACTION_DOWN && keyEvent.repeatCount == 0) {
+                smoothCameraRecenterSequence = (smoothCameraRecenterSequence + 1).toShort()
+                sendSmoothCameraState()
+            }
+            return true
+        }
         val input = controllerConfiguration.keyToInput(keyEvent.keyCode) ?: return false
         val fromController = keyEvent.isFromSource(InputDevice.SOURCE_CLASS_JOYSTICK)
             || keyEvent.isFromSource(InputDevice.SOURCE_JOYSTICK)
@@ -94,7 +106,9 @@ class InputProcessor(
             deviceAxis.forEach {
                 val axis = it.key
                 val axisState = it.value
-                if (slot2Handled && isProfileSlot2Axis(axis.axisCode)) {
+                if (isSmoothCameraAxis(axis.axisCode)
+                    || (slot2Handled && isProfileSlot2Axis(axis.axisCode))
+                ) {
                     if (axisState.active) {
                         controllerConfiguration.axisToInput(axis.axisCode, axis.direction)?.let { input ->
                             dispatchInputReleased(input, fromController = true)
@@ -142,13 +156,28 @@ class InputProcessor(
     }
 
     private fun updateProfileCamera(motionEvent: MotionEvent) {
-        val next = profileCamera.update(
-            x = motionEvent.getAxisValue(MotionEvent.AXIS_Z).coerceIn(-1f, 1f),
-            y = motionEvent.getAxisValue(MotionEvent.AXIS_RZ).coerceIn(-1f, 1f),
+        val yaw = smoothCameraInput.yaw(
+            rawX = motionEvent.getAxisValue(MotionEvent.AXIS_Z).coerceIn(-1f, 1f),
+            rawY = motionEvent.getAxisValue(MotionEvent.AXIS_RZ).coerceIn(-1f, 1f),
         )
-        val edges = profileCameraInputState.updateCamera(next)
-        edges.released.forEach(systemInputListener::onKeyReleased)
-        edges.pressed.forEach(systemInputListener::onKeyPress)
+        sendSmoothCameraState(yaw)
+    }
+
+    private fun sendSmoothCameraState(yawInput: Float = 0f) {
+        val q12 = (yawInput.coerceIn(-1f, 1f) * 4096f).toInt().coerceIn(-4096, 4096).toShort()
+        val flags = (SMOOTH_CAMERA_FLAG_ENABLED or SMOOTH_CAMERA_FLAG_RECENTER_SOUND).toShort()
+        slot2CameraState(
+            q12,
+            0,
+            SMOOTH_CAMERA_YAW_UNITS_PER_TICK.toShort(),
+            smoothCameraRecenterSequence,
+            flags,
+        )
+    }
+
+    private fun isSmoothCameraAxis(axisCode: Int): Boolean {
+        return controllerConfiguration.profileCameraEnabled
+            && (axisCode == MotionEvent.AXIS_Z || axisCode == MotionEvent.AXIS_RZ)
     }
 
     override fun onMotionEventSlot2(motionEvent: MotionEvent): Boolean {
@@ -160,20 +189,18 @@ class InputProcessor(
 
     private fun dispatchInputPressed(input: Input, fromController: Boolean) {
         updateSlot2DigitalFallback(input, pressed = true, fromController = fromController)
-        val shouldDispatch = !fromController || profileCameraInputState.controllerPressed(input)
-        if (input.isSystemInput && shouldDispatch) {
+        if (input.isSystemInput) {
             systemInputListener.onKeyPress(input)
-        } else if (!input.isSystemInput && shouldDispatch) {
+        } else {
             frontendInputListener.onKeyPress(input)
         }
     }
 
     private fun dispatchInputReleased(input: Input, fromController: Boolean) {
         updateSlot2DigitalFallback(input, pressed = false, fromController = fromController)
-        val shouldDispatch = !fromController || profileCameraInputState.controllerReleased(input)
-        if (input.isSystemInput && shouldDispatch) {
+        if (input.isSystemInput) {
             systemInputListener.onKeyReleased(input)
-        } else if (!input.isSystemInput && shouldDispatch) {
+        } else {
             frontendInputListener.onKeyReleased(input)
         }
     }
@@ -260,14 +287,6 @@ class InputProcessor(
     }
 
     override fun releaseAllInputs() {
-        profileCamera.reset()
-        profileCameraInputState.releaseAll().forEach { input ->
-            if (input.isSystemInput) {
-                systemInputListener.onKeyReleased(input)
-            } else {
-                frontendInputListener.onKeyReleased(input)
-            }
-        }
         axisStates.values.forEach { axisState ->
             axisState.value = 0f
             axisState.active = false
@@ -278,6 +297,8 @@ class InputProcessor(
         slot2DigitalDownPressed = false
         lastSlot2RawAnalogEventAtMs = 0L
         slot2AnalogInput(0f, 0f)
+        smoothCameraRecenterSequence = 0
+        slot2CameraState(0, 0, 0, 0, 0)
     }
 
     private fun resolveSlot2AxisValue(
@@ -298,6 +319,9 @@ class InputProcessor(
         var bestAxisAbs = preferredValue.absoluteValue
         fallbackAxisCodes.forEach { axisCode ->
             if (axisCode == preferredAxisCode) {
+                return@forEach
+            }
+            if (isSmoothCameraAxis(axisCode)) {
                 return@forEach
             }
             if (controllerConfiguration.profileCameraEnabled

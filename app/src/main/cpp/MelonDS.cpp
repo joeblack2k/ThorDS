@@ -677,6 +677,13 @@ namespace MelonDSAndroid
             instance->setSlot2AnalogInput(x, y);
     }
 
+    void setSlot2CameraState(s16 yawInputQ12, s16 pitchInputQ12, u16 yawUnitsPerTick,
+        u16 recenterSequence, u16 flags)
+    {
+        if (instance)
+            instance->setSlot2CameraState(yawInputQ12, pitchInputQ12, yawUnitsPerTick, recenterSequence, flags);
+    }
+
     void start()
     {
         startAudio();

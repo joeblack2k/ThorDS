@@ -52,50 +52,56 @@ class InputProcessorInstrumentedTest {
     }
 
     @Test
-    fun leftStickMovesWithoutCameraWhileRightStickAndPhysicalDpadControlCamera() {
+    fun leftStickMovesWithoutCameraWhileRightStickProducesSmoothCameraState() {
         val outputs = mutableListOf<Pair<Float, Float>>()
+        val cameraStates = mutableListOf<List<Short>>()
         val systemInputs = RecordingInputListener()
-        val processor = createProcessor(outputs, systemInputs)
+        val processor = createProcessor(outputs, systemInputs, cameraStates)
 
         controllerMotion(0.75f, 0f).useEvent(processor::onMotionEvent)
         assertEquals((0.75f - 0.1f) / 0.9f, outputs.last().first, 0.0001f)
         assertTrue(systemInputs.pressed.isEmpty())
 
         controllerMotion(0f, 0f, cameraX = -0.8f).useEvent(processor::onMotionEvent)
+        assertTrue(cameraStates.last()[0] < 0)
+        assertTrue(systemInputs.pressed.isEmpty())
+        controllerMotion(0f, 0f).useEvent(processor::onMotionEvent)
+        assertEquals(0, cameraStates.last()[0])
+
+        controllerMotion(0f, 0f, hatX = -1f).useEvent(processor::onMotionEvent)
         assertEquals(listOf(Input.LEFT), systemInputs.pressed)
+        assertEquals(0f to 0f, outputs.last())
         controllerMotion(0f, 0f).useEvent(processor::onMotionEvent)
         assertEquals(listOf(Input.LEFT), systemInputs.released)
 
-        controllerMotion(0f, 0f, hatX = -1f).useEvent(processor::onMotionEvent)
+        assertTrue(processor.onKeyEvent(controllerKey(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_LEFT)))
         assertEquals(listOf(Input.LEFT, Input.LEFT), systemInputs.pressed)
         assertEquals(0f to 0f, outputs.last())
-        controllerMotion(0f, 0f).useEvent(processor::onMotionEvent)
+        assertTrue(processor.onKeyEvent(controllerKey(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_LEFT)))
         assertEquals(listOf(Input.LEFT, Input.LEFT), systemInputs.released)
 
-        assertTrue(processor.onKeyEvent(controllerKey(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_LEFT)))
-        assertEquals(listOf(Input.LEFT, Input.LEFT, Input.LEFT), systemInputs.pressed)
-        assertEquals(0f to 0f, outputs.last())
-        assertTrue(processor.onKeyEvent(controllerKey(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_LEFT)))
-        assertEquals(listOf(Input.LEFT, Input.LEFT, Input.LEFT), systemInputs.released)
-
         controllerMotion(0f, 0f, cameraX = 0.8f).useEvent(processor::onMotionEvent)
-        assertEquals(Input.RIGHT, systemInputs.pressed.last())
+        assertTrue(cameraStates.last()[0] > 0)
         processor.releaseAllInputs()
         assertEquals(0f to 0f, outputs.last())
-        assertEquals(Input.RIGHT, systemInputs.released.last())
+        assertEquals(0, cameraStates.last()[0])
 
         controllerMotion(0.75f, 0f).useEvent(processor::onMotionEvent)
-        assertEquals(listOf(Input.LEFT, Input.LEFT, Input.LEFT, Input.RIGHT), systemInputs.pressed)
+        assertEquals(listOf(Input.LEFT, Input.LEFT), systemInputs.pressed)
 
         val recreatedOutputs = mutableListOf<Pair<Float, Float>>()
-        val recreated = createProcessor(recreatedOutputs)
+        val recreated = createProcessor(recreatedOutputs, cameraStates = mutableListOf())
         controllerMotion(0f, 0f).useEvent(recreated::onMotionEvent)
         assertEquals(0f to 0f, recreatedOutputs.single())
+
+        processor.onKeyEvent(controllerKey(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BUTTON_THUMBR))
+        assertEquals(1, cameraStates.last()[3].toInt())
     }
 
     private fun createProcessor(
         outputs: MutableList<Pair<Float, Float>>,
         systemInputs: RecordingInputListener = RecordingInputListener(),
+        cameraStates: MutableList<List<Short>> = mutableListOf(),
     ): InputProcessor {
         val configuration = ControllerConfiguration(
             configList = listOf(
@@ -125,6 +131,9 @@ class InputProcessorInstrumentedTest {
             systemInputListener = systemInputs,
             frontendInputListener = RecordingInputListener(),
             slot2AnalogInput = { x, y -> outputs.add(x to y) },
+            slot2CameraState = { yaw, pitch, units, sequence, flags ->
+                cameraStates.add(listOf(yaw, pitch, units, sequence, flags))
+            },
         )
     }
 

@@ -2339,6 +2339,16 @@ Java_me_magnum_melonds_MelonEmulator_setSlot2AnalogInput(JNIEnv* env, jobject th
 }
 
 JNIEXPORT void JNICALL
+Java_me_magnum_melonds_MelonEmulator_setSlot2CameraState(
+    JNIEnv* env, jobject thiz, jshort yawInputQ12, jshort pitchInputQ12, jshort yawUnitsPerTick,
+    jshort recenterSequence, jshort flags)
+{
+    MelonDSAndroid::setSlot2CameraState(
+        yawInputQ12, pitchInputQ12, static_cast<u16>(yawUnitsPerTick),
+        static_cast<u16>(recenterSequence), static_cast<u16>(flags));
+}
+
+JNIEXPORT void JNICALL
 Java_me_magnum_melonds_MelonEmulator_setFastForwardEnabled(JNIEnv* env, jobject thiz, jboolean enabled)
 {
     const bool wasFastForwardEnabled = isFastForwardEnabled;

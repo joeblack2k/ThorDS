@@ -175,6 +175,14 @@ object MelonEmulator {
 
     external fun setSlot2AnalogInput(x: Float, y: Float)
 
+    external fun setSlot2CameraState(
+        yawInputQ12: Short,
+        pitchInputQ12: Short,
+        yawUnitsPerTick: Short,
+        recenterSequence: Short,
+        flags: Short,
+    )
+
     external fun takeScreenshot(): Boolean
 
     external fun setFastForwardEnabled(enabled: Boolean)
