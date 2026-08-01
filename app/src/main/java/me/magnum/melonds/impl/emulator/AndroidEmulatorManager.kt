@@ -546,6 +546,7 @@ class AndroidEmulatorManager(
 
     override suspend fun resumeEmulator() {
         MelonEmulator.resumeEmulation()
+        Log.i(TAG, "ARM9Overclock resumed telemetry=${MelonEmulator.getArm9OverclockTelemetry()}")
     }
 
     override suspend fun debugStepFrame(): Boolean = withContext(Dispatchers.Default) {
