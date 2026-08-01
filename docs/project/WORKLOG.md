@@ -70,6 +70,24 @@
   correctness remain open.
 - Evidence: `docs/evidence/m10/savestate-ratio-mismatch.txt`.
 
+## 2026-08-01 - M10 scaled-cycle accounting correction
+
+### Result
+
+- Corrected `NDS::AdvanceARM9Timestamp` so the rational scaled-cycle
+  numerator is kept as `u64` through division instead of being truncated to
+  `u32` before it is added to the 64-bit timestamp counters.
+- Rebuilt `GitHubProdDebug` successfully with `/tmp/thords-cargo`.
+- Reinstalled the safe APK on the connected AYN Thor and explicitly restored
+  the ASMP profile preference to 100%.
+- Published core commit `3c54a9c8` and parent commit `ad3a5179`.
+
+### Boundary
+
+- This removes an accounting-width defect; it does not prove scheduler
+  equivalence, timing drift, audio/RTC/ARM7/IPC/GPU behavior or a product
+  over-100% runtime gate. M10 remains `PARTIAL`.
+
 ## 2026-08-01 - M10 scheduler telemetry snapshot
 
 ### Result
