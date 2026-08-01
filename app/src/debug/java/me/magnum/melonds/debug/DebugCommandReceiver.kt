@@ -26,6 +26,7 @@ import me.magnum.melonds.domain.model.ControllerConfiguration
 import me.magnum.melonds.domain.model.Input
 import me.magnum.melonds.domain.model.SaveStateSlot
 import me.magnum.melonds.domain.model.VideoRenderer
+import me.magnum.melonds.domain.model.enhancement.SharedPreferencesProfilePreferencesRepository
 import me.magnum.melonds.impl.emulator.debug.RendererDebugCaptureKind
 import me.magnum.melonds.impl.emulator.debug.RendererDebugCapturePresets
 import me.magnum.melonds.impl.emulator.debug.RendererDebugCaptureLogger
@@ -68,6 +69,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_SET_RENDERER_SUFFIX) -> { handleSetRenderer(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_IR_SUFFIX) -> { handleSetInternalResolution(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_JIT_SUFFIX) -> { handleSetJit(entryPoint, intent); true }
+            context.debugCommandAction(ACTION_SET_ARM9_PERCENT_SUFFIX) -> { handleSetArm9Percent(context, intent); true }
             context.debugCommandAction(ACTION_SET_BGOBJ_LOG_SUFFIX) -> { handleSetBgObjLog(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_LATCH_TRACE_SUFFIX) -> { handleSetLatchTrace(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_FAST_FORWARD_SUFFIX) -> { handleSetFastForward(intent); true }
@@ -126,6 +128,20 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         }
         val refreshed = DebugCommandStateStore.requestSettingsRefresh()
         Log.w(TAG, "action=set_jit enabled=${if (enabled) 1 else 0} refreshed=${if (refreshed) 1 else 0}")
+    }
+
+    private fun handleSetArm9Percent(context: Context, intent: Intent) {
+        val romKey = intent.firstStringExtra(EXTRA_ROM_KEY)
+            ?: throw IllegalArgumentException("Missing rom_key extra")
+        val percent = intent.firstNullableIntExtra(EXTRA_PERCENT, EXTRA_VALUE)
+            ?: throw IllegalArgumentException("Missing percent extra")
+        require(percent in setOf(100, 125, 150, 175, 200)) {
+            "Unsupported ARM9 percent=$percent"
+        }
+        val repository = SharedPreferencesProfilePreferencesRepository(context)
+        val current = repository.read(romKey)
+        repository.write(romKey, current.copy(requestedArm9Percent = percent))
+        Log.w(TAG, "action=set_arm9_percent romKey=$romKey percent=$percent")
     }
 
     private fun handleSetBgObjLog(entryPoint: DebugCommandEntryPoint, intent: Intent) {
@@ -1845,6 +1861,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val KEY_RENDERER_DEBUG_LATCH_TRACE_ENABLED = "video_renderer_debug_latch_trace_enabled"
 
         private const val EXTRA_RENDERER = "renderer"
+        private const val EXTRA_ROM_KEY = "rom_key"
+        private const val EXTRA_PERCENT = "percent"
         private const val EXTRA_SCALE = "scale"
         private const val EXTRA_IR = "ir"
         private const val EXTRA_ENABLED = "enabled"
@@ -1940,6 +1958,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_SET_RENDERER_SUFFIX = "SET_RENDERER"
         private const val ACTION_SET_IR_SUFFIX = "SET_IR"
         private const val ACTION_SET_JIT_SUFFIX = "SET_JIT"
+        private const val ACTION_SET_ARM9_PERCENT_SUFFIX = "SET_ARM9_PERCENT"
         private const val ACTION_SET_BGOBJ_LOG_SUFFIX = "SET_BGOBJ_LOG"
         private const val ACTION_SET_LATCH_TRACE_SUFFIX = "SET_LATCH_TRACE"
         private const val ACTION_SET_FAST_FORWARD_SUFFIX = "SET_FAST_FORWARD"
