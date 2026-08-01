@@ -12,8 +12,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Summary
 
-- Current workstream: SM64DS Smooth Orbit Camera v1
-- Current gate: measurement-only ARM9 runtime work; over-100% remains disabled
+- Current workstream: M13 timing validation and SM64DS Smooth Orbit Camera v1
+- Current gate: semantic 60fps/product validation remains open; the generic
+  camera runtime hook is now hardware-validated
 - Overall status: PARTIAL
 - Latest verified result: M7 is `PASS`. W-01/W-03 use named Castle Garden
   geometry across exact frame sequences; W-04/W-05 prove top UI-safe geometry;
@@ -66,9 +67,13 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - ARM9 OC: EXPERIMENTAL / 125% relaunch and compatible state load pass; timing validation remains open
 - 60fps: REQUIRED / IMPLEMENTATION AND VALIDATION OPEN
 - SM64DS Smooth Orbit Camera v1: PARTIAL / frontend mapping, R3 sequence,
-  JNI bridge, transient Slot-2 protocol and exact-profile EU runtime patch are
-  implemented and compiled; HUD/tutorial-arrow suppression, sound-path proof
-  and physical Thor acceptance remain open.
+  JNI bridge, transient Slot-2 protocol and exact-profile EU generic camera
+  hook are implemented and Thor-validated; HUD/tutorial-arrow suppression,
+  sound-path proof and the broader physical acceptance matrix remain open.
+- F4 generic camera hook is validated on the generic `0x0208715C` camera mode:
+  61 unique updates, 9,907 protocol reads and a non-zero game-side yaw offset,
+  with no crash or ANR. Evidence:
+  `docs/evidence/m13/f4-generic-camera-hook.json`.
 - M13 research now records the EU game-side VBlank cadence hook, the unresolved
   scene vtable dispatch and the timer/animation dependency boundary. No
   unverified 60fps code is shipped; implementation and full timing validation

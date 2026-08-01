@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "gate": "SM64DS generic camera hook runtime validation",
+  "date": "2026-08-01",
+  "profile": "sm64ds.eu.thor-enhanced",
+  "hook": {
+    "address": "0x02009E70",
+    "originalWord": "E92D4FF0",
+    "continuation": "0x02009E7C",
+    "payload": "0x02075BB4",
+    "patchSha256": "b8eff2139fb12fc0b0f0fac9d2e7f3e5a494fa9c21815882df1ebd92ed61eb95"
+  },
+  "checkpoint": "thords-camera-generic-mode.ml4",
+  "input": {
+    "cameraX": 0.75,
+    "holdMs": 2500,
+    "trialResult": "PASS"
+  },
+  "telemetry": {
+    "uniqueUpdates": 61,
+    "emulatorFrames": 61,
+    "cadenceValue": 1,
+    "cameraPointer": "0x0217E080",
+    "cameraModePointer": "0x0208715C",
+    "cameraFlags": "0x00003000",
+    "cameraProtocolReads": 9907,
+    "cameraYawOffset": 25970
+  },
+  "stability": {
+    "crash": false,
+    "anr": false
+  },
+  "privacy": {
+    "romBytesPublished": false,
+    "savestatePublished": false,
+    "deviceIdentifierPublished": false
+  },
+  "interpretation": "The generic camera update entry consumes the transient Slot-2 protocol and produces a non-zero game-side yaw offset. This validates the runtime hook path, not the complete physical camera acceptance matrix or the full M13 60fps product gate."
+}

@@ -1,5 +1,29 @@
 # Worklog
 
+## 2026-08-01 - M13 F4 generic camera hook runtime validation
+
+### Result
+
+- Replaced the unused normal-orbit entry hook at `0x0200BB28` with a guarded
+  hook at the active generic camera update entry `0x02009E70`.
+- Preserved the original ARM9 prologue and resumed at `0x02009E7C`.
+- Loaded the private generic-camera checkpoint and held right-stick camera
+  input at `0.75` for `2500 ms`.
+- Runtime result: `PASS`; 61 unique updates, 9,907 protocol reads and a
+  non-zero game-side `cameraYawOffset` of `25970`.
+- No crash or ANR was observed. The green private follow-up checkpoint is
+  `thords-camera-generic-hook-green.ml5`.
+- Commit: `01cf152f fix: hook generic SM64DS camera update`.
+
+### Boundary
+
+- This validates the generic runtime hook path, not the complete physical
+  camera acceptance matrix.
+- HUD/tutorial-arrow suppression, ordinary-yaw sound proof, physical feel and
+  the full M13 semantic 60fps product gate remain open.
+- ROM bytes, savestates and device identifiers remain private and are not
+  included in the repository.
+
 ## 2026-08-01 - Smooth Orbit Camera v1 exact EU patch slice
 
 ### Result
