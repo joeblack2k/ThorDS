@@ -693,3 +693,23 @@ W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
   world-to-pause-to-world transition gate. Object aspect, side-region culling,
   HUD/glyph/bottom ratios and actual transitions remain open.
 - Evidence: `docs/evidence/m7/castle-garden-live-stability.txt`.
+
+## M9 RetroAchievements policy foundation - 2026-08-01
+
+- Added an Android-free `RetroAchievementsPolicyResolver` and synthetic JVM
+  matrix under `domain/model/retroachievements`.
+- Off remains Off, Casual remains Casual with enhancements, and Hardcore never
+  silently downgrades: any integrity conflict becomes explicit `BLOCKED`.
+- Stable reason codes cover profile/enhancement state, curated codes, enabled
+  cheats, non-100 ARM9, rewind, state load, save-state resume, slowdown and
+  frame advance.
+- Hardcore and BLOCKED deny integrity-affecting runtime permissions and require
+  a reset decision; this foundation does not yet alter the real launch flow.
+- Focused validation passed: 10 tests, 0 failures, 0 errors. The unexcluded
+  attempt stopped before Kotlin compilation in the pre-existing cargo/rustup
+  librashader wrapper path; the established full-build wrapper remains the
+  required build route.
+- Evidence: `docs/evidence/m9/policy-tests.txt`.
+- M9 remains `IN_PROGRESS`; runtime wiring, conflict UI, online/offline
+  validation, save-state enforcement and physical RA session proof remain
+  open. M7 Castle Garden remains the active release blocker.

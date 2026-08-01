@@ -1,0 +1,54 @@
+M9 RetroAchievements policy foundation
+Date: 2026-08-01
+Scope: pure Android-free policy resolver; no runtime wiring
+
+Implementation
+
+- Added `RetroAchievementsPolicyResolver`.
+- Requested modes remain Off, Casual and Hardcore.
+- Hardcore conflicts resolve to explicit `BLOCKED`; no silent downgrade.
+- Stable reason codes cover enhanced profile, active enhancements, curated
+  runtime codes, enabled user cheats, ARM9 percent not equal to 100, rewind,
+  state load, save-state resume, slowdown and frame advance.
+- Casual preserves enhancement-related runtime permissions.
+- Hardcore and BLOCKED deny integrity-affecting runtime permissions and require
+  a reset decision.
+
+Validation
+
+```text
+./gradlew --no-daemon :app:testGitHubProdReleaseUnitTest \
+  --tests 'me.magnum.melonds.domain.model.retroachievements.RetroAchievementsPolicyTest' \
+  -x :app:buildLibrashaderAndroid \
+  -x :app:regenerateVulkanSpirv
+result: PASS; 10 tests, 0 failures, 0 errors
+```
+
+The same focused task was also run without the two exclusions. That attempt
+stopped in existing librashader tooling before Kotlin compilation because the
+configured `/opt/homebrew/bin/cargo` does not accept the rustup `+stable`
+selector. The project build uses the established `/tmp/thords-cargo` wrapper
+for the full gate.
+
+Acceptance covered:
+
+- Off remains Off for Original and Enhanced.
+- Casual remains Casual with active enhancements and user cheats.
+- Clean Original Hardcore is eligible and requires reset.
+- Enhanced Hardcore and every individual integrity conflict become BLOCKED.
+- Ordinary lifecycle resume keeps clean Original Hardcore eligible; explicit
+  save-state resume becomes BLOCKED.
+- Conflict ordering is deterministic.
+- Disabled user cheats do not create a Hardcore conflict.
+
+Status
+
+This is M9 policy foundation only. Existing launch ordering, runtime wiring,
+conflict UI, online/offline validation, user-agent validation, save-state
+enforcement and real Casual/Hardcore session proof remain open. M7 remains the
+active release blocker; Castle Garden is still its sole representative scene.
+
+Safety
+
+Tests use synthetic domain objects only. No ROM, save state, account data,
+credential, token, network response or private capture is included.

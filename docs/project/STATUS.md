@@ -68,7 +68,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M6 | IN_PROGRESS | 883d00cf | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; physical gameplay scenarios remain |
 | M7 | IN_PROGRESS | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, newline-safe parser, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and Castle Garden classifier matrices verified; save-state-assisted Castle Garden route, native-versus-probe world/FOV comparison, measured game projection response, Thor-default world plus packed-UI rotation, readable pause overlay, 10-second `FPS: 60` movement smoke and a corrected 180-sample unique-frame live classifier burst recorded; object aspect, side-region culling, exact HUD/glyph/bottom geometry and transition gates remain open |
 | M8 | NOT_STARTED | | | |
-| M9 | NOT_STARTED | | | |
+| M9 | IN_PROGRESS | policy-foundation | docs/evidence/m9/ | Android-free RetroAchievements policy foundation and deterministic JVM matrix; runtime launch wiring and full M9 acceptance remain open |
 | M10 | NOT_STARTED | | | |
 | M11 | NOT_STARTED | | | |
 | M12 | NOT_STARTED | | | |
@@ -78,8 +78,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 - Analog: IMPLEMENTED_PENDING_GAMEPLAY
 - True Widescreen: SPIKE_IN_PROGRESS_NO_GO_FOR_M8
-- RA Casual: NOT_STARTED
-- RA Hardcore gate: NOT_STARTED
+- RA Casual: POLICY_FOUNDATION_ONLY
+- RA Hardcore gate: POLICY_FOUNDATION_ONLY
 - ARM9 OC: NOT_STARTED
 - 60fps: RESEARCH_ONLY
 - Thor GUI: NOT_STARTED
@@ -87,9 +87,11 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Run the remaining M7 Castle Garden measurements with the optimized debug APK:
+Keep the remaining M7 Castle Garden measurements on the critical path:
 object aspect, new-side-region culling, exact HUD/glyph/bottom geometry and
-longer transition stability. The live classifier now has unique contiguous
-frames, but that is not itself a game transition proof. Keep M8 blocked until
-the remaining evidence is green.
+longer transition stability. In parallel, wire the M9 policy foundation into
+launch planning only after the existing session-integrity contract is mapped.
+The live classifier now has unique contiguous frames, but that is not itself a
+game transition proof. Keep M8 and full M9 acceptance blocked until their
+remaining evidence is green.
 The M6 gameplay checklist also remains pending.
