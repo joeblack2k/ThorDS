@@ -1826,3 +1826,16 @@ Evidence:
 - The state remains device-private. No ROM, save-state bytes or private capture
   were copied into the repository.
 - Evidence: `docs/evidence/m13/f1-gameplay-savestate-roundtrip.json`.
+## 2026-08-01 - M13 60 FPS gameplay checkpoint
+
+- Enabled the exact EU SM64DS guarded cadence probe and loaded the reusable
+  gameplay checkpoint.
+- Created and round-tripped a second private checkpoint:
+  `/data/user/0/io.github.joeblack2k.thords.dev/cache/thords-m13-60fps-gameplay.ml0`.
+- A 15-second native telemetry window reported 60 or 61 unique game updates
+  per second in all steady-state windows, with one 51-update load/warm-up
+  window. No crash or ANR was observed.
+- This is the first strong Thor runtime evidence for the requested 60-FPS
+  gameplay cadence. Product acceptance remains open for movement, camera,
+  audio, long-run stability and release gates.
+- Evidence: `docs/evidence/m13/f2-60fps-gameplay-checkpoint.json`.

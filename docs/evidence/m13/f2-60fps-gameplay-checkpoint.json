@@ -1,0 +1,46 @@
+{
+  "milestone": "M13",
+  "gate": "60 FPS gameplay cadence and checkpoint",
+  "device": "AYN Thor",
+  "package": "io.github.joeblack2k.thords.dev",
+  "profile": "sm64ds.eu.thor-enhanced",
+  "cadenceProbe": {
+    "enabled": true,
+    "address": "0x0208EE44",
+    "value": 1
+  },
+  "state": {
+    "privatePath": "/data/user/0/io.github.joeblack2k.thords.dev/cache/thords-m13-60fps-gameplay.ml0",
+    "save": "success",
+    "load": "success"
+  },
+  "runtimeWindow": {
+    "durationSeconds": 15,
+    "uniqueUpdatesPerSecond": [
+      60,
+      60,
+      60,
+      61,
+      60,
+      51,
+      60,
+      61,
+      60,
+      61,
+      61,
+      60,
+      60,
+      60,
+      61
+    ],
+    "emulatorFramesPerSecond": "matched unique update rate",
+    "crashOrAnr": false
+  },
+  "result": "60FPS_GAMEPLAY_CADENCE_REPRODUCED_WITH_PRIVATE_CHECKPOINT",
+  "notes": [
+    "The 60 FPS mode is currently enabled through the exact EU SM64DS guarded developer cadence probe.",
+    "The single 51-update window occurred during state-load/warm-up transition; surrounding windows were 60 or 61.",
+    "This is strong runtime evidence, but broader product acceptance still requires movement, camera, audio, long-run and release-gate validation.",
+    "The ROM and savestate remain private on the device and are not tracked or copied to the repository."
+  ]
+}
