@@ -20,6 +20,18 @@
   an F4 patch manifest.
 - Evidence: `docs/evidence/m13/cadence-write-review.md`.
 
+## 2026-08-01 - M13 F2 primary semantic consumer mapping
+
+- Mapped `func_020199A4` at `0x020199A4` as the primary cadence scheduler
+  boundary: it reads `data_0208ee44` into `dt`, updates the scheduler
+  countdown and invokes the downstream timer/update path.
+- Mapped the principal downstream consumers at `0x02019AC4`, `0x020242C8`,
+  `0x0202BBBC`, `0x020326AC` and `0x02034B40`.
+- No cadence write or downstream read was promoted to an F4 patch. The next
+  runtime experiment is an entry count at `0x020199A4` correlated with the
+  existing semantic window and a known 30 FPS baseline.
+- Evidence: `docs/evidence/m13/f2-semantic-consumer-review.md`.
+
 ## 2026-08-01 - M13 F5 60fps stability window with camera hook
 
 ### Result

@@ -89,6 +89,10 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - The 18 source-level cadence writes were reviewed as initialization or
   scene/overlay-transition assignments and none was promoted to an F4 patch
   manifest. Binary/runtime consumer matching remains required.
+- F2 source review now maps `func_020199A4` at `0x020199A4` as the primary
+  cadence scheduler boundary, with timer, Stage behavior, HUD and OAM
+  consumers downstream. Runtime entry-count correlation against a 30 FPS
+  baseline is the next F2 experiment.
 - F3 now has a hidden exact-profile `60fps-dev-cadence` Action Replay definition
   with default-off and relaunch-required semantics. It is experimental only;
   no product or 60fps validation claim is made.
