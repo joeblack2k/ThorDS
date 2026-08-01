@@ -1,5 +1,15 @@
 # Worklog
 
+## 2026-08-01 - M13 F2 inventory status correction
+
+- Re-ran the pinned EU cadence-consumer scanner against the current source
+  tree: 192 findings, source-tree SHA-256
+  `1a9a06cd51443f7f28fda8c35edbc276fc8a6074aaf2e9b49c4340e14d490499`.
+- The generated inventory contains no generic `unknown` or
+  `unresolved-function` findings.
+- F2 remains open for semantic/manual review; classification output alone does
+  not authorize a cadence patch.
+
 ## 2026-08-01 - M13 F5 60fps stability window with camera hook
 
 ### Result

@@ -82,9 +82,10 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   `docs/research/sm64ds-60fps-decomp-map.md`,
   `docs/evidence/m13/timing/eu-overlay-original-hashes.txt`,
   `docs/evidence/m13/timing/game-loop-counter-instrumentation.txt`.
-- The cadence scanner now separates scheduler, render/OAM, scene-update and
-  boot/init consumers. Sixteen low-level `func_...` entries remain explicitly
-  `unresolved-function` pending manual decomp review; F2 is not claimed PASS.
+- The cadence scanner now separates 192 scheduler, render/OAM, scene-update,
+  boot/init, timer, message/HUD and scene-specific consumers with no generic
+  `unresolved-function` findings. F2 remains open for semantic/manual review
+  of those classified consumers; it is not claimed PASS.
 - F3 now has a hidden exact-profile `60fps-dev-cadence` Action Replay definition
   with default-off and relaunch-required semantics. It is experimental only;
   no product or 60fps validation claim is made.
