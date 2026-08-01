@@ -1,0 +1,18 @@
+{
+  "milestone": "M13",
+  "gate": "F1 gameplay baseline",
+  "checkpoint": "thords-m7-castle-ground.ml0",
+  "loadResult": "REJECTED",
+  "runtimeEvidence": {
+    "expectedSavestateConfigWord": "0x00020000",
+    "checkpointSavestateConfigWord": "0x00000000",
+    "error": "savestate: Expected config word 00020000, got 00000000. cannot load."
+  },
+  "interpretation": [
+    "The file is a valid melonDS savestate container with MELN/NDSG headers.",
+    "The checkpoint predates the ThorDS ARM9-overclock savestate metadata.",
+    "Changing only the header would be unsafe because the state layout after the configuration word also differs.",
+    "A fresh state must be created with the current runtime, or a separately verified migration must be implemented."
+  ],
+  "result": "LEGACY_STATE_FORMAT_INCOMPATIBLE"
+}

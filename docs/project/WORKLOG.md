@@ -1716,6 +1716,20 @@ Evidence:
   evidence and does not advance the 60fps gate.
 - Evidence: `docs/evidence/m13/f1-thor-cache-checkpoint-attempt.json`.
 
+### 2026-08-01 - M13 legacy savestate format root cause
+
+- The rejected `.ml0` checkpoint was inspected through the current runtime
+  error path. The file has valid `MELN` and `NDSG` sections, but its config word
+  is `0x00000000`.
+- The current ThorDS runtime requires `0x00020000`, which records the ARM9
+  overclock savestate format. The runtime reports:
+  `Expected config word 00020000, got 00000000. cannot load.`
+- This is a format/layout incompatibility, not a bad path or a corrupted ROM
+  state. A header-only edit would be unsafe because the subsequent serialized
+  fields differ.
+- F1 still needs a fresh current-format gameplay state. Evidence:
+  `docs/evidence/m13/f1-legacy-state-format.json`.
+
 ### 2026-08-01 - M13 F3 developer cadence probe definition
 
 - Added the hidden, default-off exact-profile `60fps-dev-cadence` definition for
