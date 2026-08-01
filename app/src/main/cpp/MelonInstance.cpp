@@ -1141,7 +1141,9 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
     return "{\"valid\":true,\"source\":\"sm64ds-eu-decomp-main-loop\",\"address\":\"0x020A0DB0\",\"windowWallNs\":"
         + std::to_string(sm64dsGameLoopLatestWallNs)
         + ",\"uniqueUpdates\":" + std::to_string(sm64dsGameLoopLatestUpdates)
-        + ",\"emulatorFrames\":" + std::to_string(sm64dsGameLoopLatestFrames) + "}";
+        + ",\"emulatorFrames\":" + std::to_string(sm64dsGameLoopLatestFrames)
+        + ",\"counter\":" + std::to_string(sm64dsGameLoopLatestCounter)
+        + ",\"lastDelta\":" + std::to_string(sm64dsGameLoopLatestDelta) + "}";
 }
 
 void MelonInstance::sampleSm64dsGameLoopCounter()
@@ -1171,7 +1173,17 @@ void MelonInstance::sampleSm64dsGameLoopCounter()
         return;
     }
 
-    sm64dsGameLoopWindowUpdates += counter - sm64dsGameLoopCounterLast;
+    if (counter < sm64dsGameLoopCounterLast)
+    {
+        sm64dsGameLoopCounterLast = counter;
+        sm64dsGameLoopWindowStartNs = nowNs;
+        sm64dsGameLoopWindowFrames = 0;
+        sm64dsGameLoopWindowUpdates = 0;
+        return;
+    }
+
+    const u32 delta = counter - sm64dsGameLoopCounterLast;
+    sm64dsGameLoopWindowUpdates += delta;
     sm64dsGameLoopCounterLast = counter;
     sm64dsGameLoopWindowFrames++;
     if (nowNs - sm64dsGameLoopWindowStartNs >= 1000000000ULL)
@@ -1179,6 +1191,8 @@ void MelonInstance::sampleSm64dsGameLoopCounter()
         sm64dsGameLoopLatestWallNs = nowNs - sm64dsGameLoopWindowStartNs;
         sm64dsGameLoopLatestFrames = sm64dsGameLoopWindowFrames;
         sm64dsGameLoopLatestUpdates = sm64dsGameLoopWindowUpdates;
+        sm64dsGameLoopLatestCounter = counter;
+        sm64dsGameLoopLatestDelta = delta;
         sm64dsGameLoopWindowStartNs = nowNs;
         sm64dsGameLoopWindowFrames = 0;
         sm64dsGameLoopWindowUpdates = 0;

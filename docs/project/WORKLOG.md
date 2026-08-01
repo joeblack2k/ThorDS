@@ -100,6 +100,9 @@
   one-second windows with `uniqueUpdates`, `emulatorFrames` and wall-clock
   duration.
 - GitHub Prod Debug native/Kotlin build and APK packaging passed.
+- A live Thor probe exposed a counter reset during launch/scene initialization;
+  the sampler now discards descending-counter deltas instead of interpreting
+  them as unsigned wraparound.
 
 ### Boundary
 

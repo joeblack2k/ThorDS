@@ -15,7 +15,8 @@ Implementation:
 - reads the existing `NDS::MainRAM` buffer without modifying emulation state;
 - samples the counter after each `MelonInstance::runFrame()` call;
 - reports one-second windows containing `windowWallNs`, `uniqueUpdates` and
-  `emulatorFrames`.
+  `emulatorFrames`, plus the latest raw `counter` and `lastDelta` for
+  diagnosing address/lifecycle mismatches.
 
 Build evidence:
 - `:app:compileGitHubProdDebugKotlin`
@@ -29,6 +30,13 @@ Boundary:
   validated against a live EU ASMP session on the Thor.
 - `emulatorFrames` counts completed `NDS::RunFrame()` calls in the sampled
   window; it is diagnostic context, not presenter FPS.
+- The first Thor probe produced `emulatorFrames=14` and an apparent
+  `uniqueUpdates=352293278`. Raw values showed that the game reset the counter
+  during launch/scene initialization; the sampler now treats a descending
+  counter as a new baseline instead of a 32-bit wrap.
+- The corrected probe is not promoted to a 60fps result yet: the observed
+  window was interrupted by launch/pause lifecycle state and did not provide
+  a stable gameplay interval.
 - It does not prove that the counter remains semantic through all scene,
   overlay, pause, transition and save/relaunch paths.
 - The 60fps mode remains unimplemented and unvalidated.

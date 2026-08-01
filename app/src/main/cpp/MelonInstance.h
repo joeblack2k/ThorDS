@@ -249,6 +249,8 @@ private:
     u64 sm64dsGameLoopLatestWallNs = 0;
     u64 sm64dsGameLoopLatestFrames = 0;
     u32 sm64dsGameLoopLatestUpdates = 0;
+    u32 sm64dsGameLoopLatestCounter = 0;
+    u32 sm64dsGameLoopLatestDelta = 0;
 
     std::shared_ptr<EmulatorConfiguration> currentConfiguration;
     FrameQueue frameQueue;
