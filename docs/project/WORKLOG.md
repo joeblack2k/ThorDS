@@ -810,6 +810,32 @@ W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
   material was retained.
 - Evidence: `docs/evidence/m7/castle-garden-w01-object-aspect.txt`.
 
+## M7 W-03 Castle Garden movement and culling probe - 2026-08-01
+
+- Reused the Castle Garden checkpoint and held Slot-2 analog `x=1,y=0` for
+  exactly 120 emulator frames, then neutralized the input.
+- The Vulkan dense live `screen` burst completed `120/120` with contiguous
+  frame IDs `845..964`, one-frame steps and no capture failures.
+- All frames were opaque `256x384` RGBA images with `97,786..97,789`
+  non-black pixels; no blank frame occurred. `59/119` adjacent pairs were
+  byte-identical and `60/119` changed, matching the observed duplicate
+  renderer cadence.
+- The movement visibly changed the player pose, dust, camera and terrain. A
+  final-primary endpoint remained upright and coherent with no visible black
+  hole or broken edge.
+- Important boundary: the burst is the complete native `256x192` top DS
+  image, so it cannot itself prove pixels outside the final primary 4:3 safe
+  rectangle. Internal edge-strip diagnostics were non-empty and changing on
+  the left, but no semantic right-side animated landmark was established.
+- Decision: W-03 is `PARTIAL`, not a pass. The remaining gate is a
+  final-primary sequence that tracks an identifiable animated landmark
+  outside the mapped 4:3 safe rectangle across consecutive frames. W-01
+  formal round/square repeat, W-04 HUD, W-05 glyph, W-06 bottom geometry and
+  W-20 transition proof remain open.
+- No ROM, save, private screenshot, device identifier or credential material
+  was retained. Bob-omb Battlefield remains out of scope.
+- Evidence: `docs/evidence/m7/castle-garden-w03-culling.txt`.
+
 ## M10 ARM9 overclock policy foundation - 2026-08-01
 
 - Added the Android-free ARM9 policy with explicit `UNSUPPORTED`,

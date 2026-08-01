@@ -1,0 +1,51 @@
+M7 W-03 Castle Garden side-region culling probe
+Date: 2026-08-01
+Scope: developer widescreen probe, fixed Castle Garden movement
+
+Result: PARTIAL
+
+Route:
+- Castle Garden/castle grounds is the sole M7 representative scene.
+- The existing app-private checkpoint loaded through the direct-path debug
+  route with `success=1`.
+- Slot-2 analog input was held at `x=1,y=0` for exactly 120 emulator frames,
+  then neutralized at `x=0,y=0`.
+- A Vulkan dense live burst requested only `screen` captured `120/120`
+  frames with frame IDs `845..964`, one-frame steps and no capture failures.
+
+Burst integrity:
+- Every frame decoded as an opaque `256x384` RGBA PNG:
+  `98,304/98,304` pixels had alpha `255`.
+- Visible non-black pixels ranged from `97,786` to `97,789` per frame; no
+  blank or fully black frame occurred.
+- `59/119` adjacent pairs were byte-for-byte equal and `60/119` changed.
+  The repeated pairs follow the renderer's observed duplicate cadence; they
+  are not treated as a culling failure.
+- The 120-frame run visibly advanced the player, animation and camera. A
+  final primary screenshot showed upright terrain, side geometry and dust
+  without a visible black hole or broken edge.
+
+Measurement boundary:
+- The `256x384` burst is the native DS composition: its top half is already
+  the complete native `256x192` 4:3 image. It therefore has no pixels outside
+  the final primary surface's 4:3 safe rectangle.
+- Fixed raw edge-strip diagnostics were still non-empty and changing on the
+  left (`gradient min=48, max=480, median=109`; 60/119 changing pairs).
+  These are internal DS edge strips, not a final-primary side-region proof.
+- The right edge strip remained filled but had median gradient `0`; no
+  semantic animated landmark was established there.
+
+Decision:
+- This advances W-03 from no movement evidence to `PARTIAL`: the fixed
+  Castle Garden movement and 120-frame capture are reproducible, intact and
+  visually coherent.
+- W-03 is not a pass. The remaining proof must capture an identifiable
+  animated landmark in the final 16:9 primary side region across consecutive
+  frames, with the native 4:3 bounds overlaid for comparison.
+- W-01 formal round/square repeat, W-04 HUD, W-05 glyph, W-06 bottom geometry
+  and W-20 world-to-pause-to-world transition proof remain open.
+
+Safety:
+- No ROM bytes, save-state bytes, private screenshots, device identifiers or
+  credentials are retained in this evidence file.
+- Bob-omb Battlefield is not part of this gate.

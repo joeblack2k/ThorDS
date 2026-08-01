@@ -23,6 +23,7 @@ Gate matrix:
 | M6 analog/profile runtime | IN_PROGRESS | `docs/evidence/m6/` | Physical walk/run, swim/fly/slide, camera response and reconnect checklist remain |
 | M7 Castle Garden presentation/classifier | PARTIAL | `docs/evidence/m7/launch-probe.txt`; `docs/evidence/m7/castle-garden-live-stability.txt` | Projection/presentation and unique live cadence are evidenced; exact geometry and transition proof remain |
 | M7 W-01 object aspect | PARTIAL | `docs/evidence/m7/castle-garden-w01-object-aspect.txt` | Direct Castle Garden checkpoint restore and paired non-black final-primary captures are proven; formal round/square reference and controlled camera repeat remain |
+| M7 W-03 side-region culling | PARTIAL | `docs/evidence/m7/castle-garden-w03-culling.txt` | 120/120 intact Castle Garden movement frames and coherent final-primary endpoint are proven; final-primary side-landmark animation remains unproven |
 | M7 W-20 transition | PARTIAL | `docs/evidence/m7/castle-garden-w20-transition.txt` | No observed world-to-pause-to-world transition; repeated adjacent frames remain |
 | M8 true widescreen release gate | BLOCKED | `docs/project/STATUS.md` | M7 object aspect, side culling, HUD/glyph/bottom geometry and transition gates are open |
 | M9 RetroAchievements policy | PASS_WITH_BOUNDS | `docs/evidence/m9/policy-tests.txt`; `docs/evidence/m9/launch-policy-tests.txt` | Native/runtime, network/offline, conflict UI, save-state enforcement and physical session proof remain |
@@ -34,6 +35,8 @@ Required next work:
 - Repeat W-01 with an explicit round/square Castle Garden reference object
   and a controlled camera move; the direct app-private checkpoint route and
   paired final-primary captures are now usable.
+- Capture a final-primary Castle Garden sequence with an identifiable
+  animated landmark outside the mapped 4:3 safe rectangle to close W-03.
 - Measure the remaining Castle Garden side-region culling, HUD/glyph and
   bottom-screen geometry.
 - Produce an actual pause/world transition proof for W-20.
