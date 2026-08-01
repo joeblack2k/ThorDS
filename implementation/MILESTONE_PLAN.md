@@ -17,7 +17,7 @@
 | M10 | ARM9 overclock foundation | ja, plumbing; >100% conditioneel |
 | M11 | Thor-first GUI | ja |
 | M12 | Stabiliteit/release | ja |
-| M13 | 60fps next goal | nee voor v0.1, wel researchfundering |
+| M13 | 60fps productfeature | verplicht; volledige implementatie en acceptatie |
 
 ## Regels per mijlpaal
 

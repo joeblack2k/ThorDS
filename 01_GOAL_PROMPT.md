@@ -39,7 +39,7 @@ De verplichte releasefunctionaliteit is:
 16. Bouwen, installeren en testen op de via ADB aangesloten fysieke Thor.
 17. Een APK, commits en volledig bewijsdossier.
 
-60fps is **niet** vereist als standaardfeature van v0.1. Bouw wel de overclockfundering en de reproduceerbare onderzoeksharness voor de volgende mijlpaal. Voeg geen onbekende 60fps-binary toe en claim geen 60fps zonder volledige acceptatie.
+60fps is **wel** vereist als productfeature. Bouw de reproduceerbare 60fps-implementatie en onderzoeksharness; voeg geen onbekende 60fps-binary toe en claim geen 60fps zonder volledige acceptatie.
 
 # Leesvolgorde
 
@@ -93,7 +93,7 @@ Vernietig of overschrijf geen bestaande repository. Als `.git` al bestaat, inspe
 
 # Uitvoering
 
-Werk de verplichte mijlpalen **M0 t/m M12** in volgorde af. M13 is de volgende 60fps-doelstelling; lever daarvoor alleen de in M13 vereiste research-, instrumentatie- en disabled-by-default-fundering op tenzij M0–M12 volledig bewezen zijn en een stabiele 60fps-implementatie werkelijk door alle gates komt.
+Werk de verplichte mijlpalen **M0 t/m M13** in volgorde af. M13 is een verplichte productmijlpaal; lever geen releaseclaim af voordat de stabiele 60fps-implementatie alle gates doorstaat.
 
 Voor iedere mijlpaal:
 

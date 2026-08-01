@@ -56,7 +56,9 @@ Een AYN Thor-eigenaar die:
 
 ## Productprincipes
 
-1. **Eerst speelbaar, daarna experimenteel.** Stabiele analog plus True Widescreen is waardevoller dan instabiele 60fps.
+1. **Eerst speelbaar, daarna experimenteel.** Analog, True Widescreen en
+   60fps moeten samen stabiel gevalideerd worden; geen van deze features mag
+   als compleet worden geclaimd zonder de bijbehorende gates.
 2. **Geen verborgen patches.** De actieve profielonderdelen zijn altijd zichtbaar.
 3. **Exacte ROM-match.** Geen patch wordt op “waarschijnlijk dezelfde” ROM toegepast.
 4. **Bron-ROM blijft intact.**

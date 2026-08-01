@@ -222,7 +222,35 @@ private fun Content(
                 )
                 ConfigRow(
                     title = stringResource(R.string.thords_profile_effective),
-                    value = "${profile.integrity} / ARM9 ${profile.arm9Percent}% / RA ${profile.retroAchievementsMode} / ${profile.widescreenMode}",
+                    value = "${profile.integrity} / RA ${profile.retroAchievementsMode}",
+                    showDivider = true,
+                    onClick = {},
+                )
+                ConfigRow(
+                    title = stringResource(R.string.thords_profile_analog),
+                    value = if (profile.analogControlsEnabled) {
+                        stringResource(R.string.on)
+                    } else {
+                        stringResource(R.string.off)
+                    },
+                    showDivider = true,
+                    onClick = {},
+                )
+                ConfigRow(
+                    title = stringResource(R.string.thords_profile_widescreen),
+                    value = "${profile.requestedWidescreenMode} -> ${profile.effectiveWidescreenMode}",
+                    showDivider = true,
+                    onClick = {},
+                )
+                ConfigRow(
+                    title = stringResource(R.string.thords_profile_arm9),
+                    value = "${profile.requestedArm9Percent}% -> ${profile.arm9Percent}% (${profile.arm9Capability})",
+                    showDivider = true,
+                    onClick = {},
+                )
+                ConfigRow(
+                    title = stringResource(R.string.thords_profile_60fps),
+                    value = stringResource(R.string.thords_profile_60fps_unvalidated),
                     showDivider = true,
                     onClick = {},
                 )

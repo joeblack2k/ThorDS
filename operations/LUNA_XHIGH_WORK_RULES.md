@@ -74,7 +74,9 @@ Bij iedere fase:
 
 ## Stopcriteria
 
-Stop niet omdat 60fps onopgelost is. Lever v0.1 stabiel en M13 foundation.
+Stop niet bij onderzoek naar 60fps, maar behandel 60fps als verplichte
+productgate. Lever geen complete releaseclaim zolang M13 niet volledig groen
+is; een niet-gevalideerde implementatie mag niet als klaar worden gepresenteerd.
 
 Stop wel met releaseclaim bij:
 

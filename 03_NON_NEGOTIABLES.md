@@ -67,7 +67,7 @@ Deze regels gaan vóór gemak, snelheid en esthetiek.
 - 60fps staat standaard uit.
 - Een 60fps-counter alleen is geen acceptatie.
 - Slow motion, versneld gedrag of dubbele gamelogica betekent fail.
-- Release 1 mag zonder 60fps uitkomen.
+- Release 1 mag niet als compleet worden gemarkeerd zonder de gevalideerde 60fps-feature.
 
 ## Thor-validatie
 

@@ -34,7 +34,8 @@ De eerste release heet voorlopig **ThorDS Enhanced** en levert:
 - RetroAchievements als gebruikerskeuze: `Uit`, `Casual` of `Hardcore`;
 - Hardcore alleen in een ongewijzigd `Original`-profiel;
 - een experimentele, standaard uitgeschakelde ARM9-overclockfundering;
-- geen standaard ingeschakelde 60fps-patch totdat die aantoonbaar stabiel is.
+- geen standaard ingeschakelde 60fps-patch totdat die aantoonbaar stabiel is;
+  60fps blijft wel een verplichte product- en release-eis.
 
 ## Belangrijk onderscheid
 
@@ -69,7 +70,7 @@ Luna leest en gebruikt minimaal:
 - geen Nintendo-assets;
 - geen vooraf gebouwde APK;
 - geen onbekende YouTube-60fps-patch;
-- geen garantie dat 60fps al onderdeel van release 1 wordt;
+- geen releaseclaim voor 60fps voordat de volledige gameplay-acceptatie groen is;
 - geen toestemming om de ROM of afgeleide volledige ROM-bestanden te committen of distribueren.
 
 Het pakket is de complete bouw-, onderzoeks-, test- en acceptatiespecificatie waarmee Luna de broncode en APK in deze werkmap moet maken.

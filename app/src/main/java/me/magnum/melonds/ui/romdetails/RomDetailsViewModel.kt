@@ -257,11 +257,16 @@ class RomDetailsViewModel @Inject constructor(
             profileId = resolved.plan.profileId,
             match = resolved.plan.match.name,
             integrity = resolved.plan.profileIntegrity.name,
+            analogControlsEnabled = resolved.useSlot2Analog,
+            requestedWidescreenMode = resolved.requestedWidescreenMode.name,
+            effectiveWidescreenMode = resolved.effectiveWidescreenMode.name,
+            requestedArm9Percent = resolved.plan.requestedArm9Percent,
             arm9Percent = resolved.plan.effectiveArm9Percent,
+            arm9Capability = resolved.plan.arm9OverclockCapability.name,
             retroAchievementsMode = resolved.plan.effectiveRaMode.name,
             widescreenMode = resolved.effectiveWidescreenMode.name,
             requestedRaMode = preferences.requestedRaMode.name,
-            enhancedRequested = preferences.selectedProfileId == "sm64ds.eu.thor-enhanced",
+            enhancedRequested = resolved.plan.profileIntegrity == ProfileIntegrity.ENHANCED,
         )
     }
 

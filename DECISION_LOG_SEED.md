@@ -28,10 +28,12 @@ Kopieer relevante items naar afzonderlijke ADR’s onder `docs/project/adr/`.
 **Besluit:** enhancements blokkeren RA Casual niet.  
 **Gevolg:** UI moet actieve enhancements transparant tonen.
 
-## ADR-seed 005 — Overclockfundering nu, 60fps later
+## ADR-seed 005 — Overclockfundering en verplichte 60fps-productmijlpaal
 
 **Status:** accepted  
-**Besluit:** v0.1 bevat OC-plumbing en telemetry; 60fps blijft volgende gate.  
+**Besluit:** OC-plumbing en telemetry zijn fundering; 60fps is een verplichte
+productgate en mag niet als voltooid worden gemarkeerd zonder volledige
+timing-, gameplay-, audio- en stabiliteitsacceptatie.
 **Gevolg:** v0.1 mag stabiel op originele gameplayframerate releasen.
 
 ## Nog te schrijven ADR’s

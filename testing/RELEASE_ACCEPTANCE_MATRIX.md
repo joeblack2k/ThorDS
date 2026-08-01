@@ -45,4 +45,5 @@ BLOCKED
 NOT_APPLICABLE
 ```
 
-Release alleen als alle verplichte gates `PASS`; M13 60fps mag `NOT_APPLICABLE` voor v0.1 zijn, maar OC foundation niet.
+Release alleen als alle verplichte gates `PASS`; M13 60fps is een verplichte
+releasegate en mag niet `NOT_APPLICABLE` worden verklaard.

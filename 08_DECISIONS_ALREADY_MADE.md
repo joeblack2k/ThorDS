@@ -17,7 +17,7 @@ Luna heropent deze keuzes alleen bij aantoonbaar technisch bewijs dat uitvoering
 | RA-toggle | gebruiker bepaalt |
 | RA Casual met enhancements | toegestaan |
 | RA Hardcore met enhancements | geblokkeerd |
-| 60fps in v0.1 | geen harde release-eis |
+| 60fps in v0.1 | harde product- en release-eis |
 | ARM9-OC-fundering in v0.1 | wel |
 | Onbekende 60fps-binary | niet als vertrouwde dependency |
 | ROMmodificatie | nooit in-place |

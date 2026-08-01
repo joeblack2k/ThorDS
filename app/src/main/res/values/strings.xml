@@ -6,6 +6,11 @@
     <string name="thords_profile_match">Profile match</string>
     <string name="thords_profile_effective">Effective runtime</string>
     <string name="thords_profile_ra_mode">Requested RetroAchievements mode</string>
+    <string name="thords_profile_analog">Analog Controls</string>
+    <string name="thords_profile_widescreen">True Widescreen requested/effective</string>
+    <string name="thords_profile_arm9">ARM9 requested/effective</string>
+    <string name="thords_profile_60fps">60 FPS</string>
+    <string name="thords_profile_60fps_unvalidated">Required; not yet validated for ThorDS</string>
     <string name="thords_enhanced">Thor Enhanced</string>
     <string name="thords_original">Original</string>
     <string name="thords_profile_relaunch_required">Profile changed. Relaunch the ROM to apply it.</string>

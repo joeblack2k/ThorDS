@@ -64,13 +64,14 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - RA Casual: PASS
 - RA Hardcore gate: PARTIAL
 - ARM9 OC: PARTIAL
-- 60fps: NOT_STARTED
+- 60fps: REQUIRED / NOT_STARTED
 - Thor GUI: PARTIAL
 - Stability: NOT_STARTED
 
 ## Next concrete action
 
-Continue with the M11 profile-controls slice while M10 remains measurement-only.
+Continue with the M11 profile-controls slice while M10 remains measurement-only,
+then implement and validate the now-required M13 60fps product mode.
 M8 and M9 are complete for the current product gate; do not restart either
 validation workstream. Over-100% ARM9 behavior remains disabled until timing
 evidence proves it safe. Remaining independent gaps, including M6 physical

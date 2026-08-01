@@ -23,7 +23,7 @@ save group:       sm64ds-eu-retail
 | Vulkan | voorkeur | vereist voor True WS |
 | High internal resolution | geteste Thorwaarde | vereist |
 | ARM9 overclock | 100% | foundation |
-| 60fps | uit/verborgen | volgende doel |
+| 60fps | vereist, nog niet gevalideerd | M13 productimplementatie |
 | RA | user global/first prompt | user choice |
 | Hardcore | niet in Enhanced | geblokkeerd |
 

@@ -73,7 +73,7 @@ analog: on
 true widescreen: on when validated/capable
 RA: preserve user global choice, prompt once
 OC: 100%
-60fps: hidden/disabled
+60fps: required product mode, hidden until validated
 ```
 
 Op niet-Thor: upstreamachtige defaults.

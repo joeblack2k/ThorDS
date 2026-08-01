@@ -1,8 +1,8 @@
-# M13 — 60fps — volgende doelstelling
+# M13 — 60fps — verplichte productmijlpaal
 
 ## Doel
 
-Een correcte 60fps-SM64DS-implementatie ontwikkelen op basis van decompanalyse en ARM9-headroom, zonder de instabiele communitybinary blind te distribueren.
+Een correcte 60fps-SM64DS-implementatie ontwikkelen op basis van decompanalyse en ARM9-headroom, zonder de instabiele communitybinary blind te distribueren. M13 is een verplichte product- en releasegate.
 
 ## Vereiste input
 
