@@ -844,7 +844,11 @@ class EmulatorViewModel @Inject constructor(
                 )
             }
 
-            val result = emulatorManager.loadRom(plannedLaunch.rom, plannedLaunch.cheats)
+            val result = emulatorManager.loadRom(
+                plannedLaunch.rom,
+                plannedLaunch.cheats,
+                plannedLaunch.plan.effectiveArm9Percent,
+            )
             when (result) {
                 is RomLaunchResult.LaunchFailedRomNotFound,
                 is RomLaunchResult.LaunchFailedRomNotSupported,

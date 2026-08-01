@@ -283,7 +283,11 @@ class AndroidEmulatorManager(
         }
     }
 
-    override suspend fun loadRom(rom: Rom, cheats: List<Cheat>): RomLaunchResult {
+    override suspend fun loadRom(
+        rom: Rom,
+        cheats: List<Cheat>,
+        arm9OverclockPercent: Int,
+    ): RomLaunchResult {
         return withContext(Dispatchers.IO) {
             try {
                 if (rom.isInstalledDsiWareShortcut) {
@@ -299,7 +303,9 @@ class AndroidEmulatorManager(
                     return@withContext RomLaunchResult.LaunchFailedSramProblem(exception)
                 }
 
-                val emulatorConfiguration = getRomEmulatorConfiguration(rom)
+                val emulatorConfiguration = getRomEmulatorConfiguration(rom).copy(
+                    arm9OverclockPercent = arm9OverclockPercent,
+                )
                     .withPreparedDldiConfiguration()
                     ?: return@withContext RomLaunchResult.LaunchFailed(MelonEmulator.LoadResult.NDS_FAILED)
                 setupEmulator(emulatorConfiguration)

@@ -19,7 +19,11 @@ interface EmulatorManager {
 
     val emulatorEvents: Flow<EmulatorEvent>
 
-    suspend fun loadRom(rom: Rom, cheats: List<Cheat>): RomLaunchResult
+    suspend fun loadRom(
+        rom: Rom,
+        cheats: List<Cheat>,
+        arm9OverclockPercent: Int = 100,
+    ): RomLaunchResult
 
     suspend fun loadFirmware(consoleType: ConsoleType): FirmwareLaunchResult
 
