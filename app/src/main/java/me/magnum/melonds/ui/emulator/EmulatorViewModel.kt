@@ -74,7 +74,9 @@ import me.magnum.melonds.domain.model.ConsoleType
 import me.magnum.melonds.domain.model.DualScreenPreset
 import me.magnum.melonds.domain.model.FpsCounterPosition
 import me.magnum.melonds.domain.model.RomInfo
+import me.magnum.melonds.domain.model.enhancement.RomIdentity
 import me.magnum.melonds.domain.model.enhancement.ProfileLaunchPlanner
+import me.magnum.melonds.domain.model.enhancement.SharedPreferencesProfilePreferencesRepository
 import me.magnum.melonds.domain.model.enhancement.ProfileRaMode
 import me.magnum.melonds.domain.model.enhancement.WidescreenPresentationMode
 import me.magnum.melonds.domain.model.RuntimeBackground
@@ -266,6 +268,7 @@ class EmulatorViewModel @Inject constructor(
 
     private val sessionCoroutineScope = EmulatorSessionCoroutineScope()
     private val profileLaunchPlanner by lazy { ProfileLaunchPlanner(EmbeddedProfileCatalog(context).catalog) }
+    private val profilePreferencesRepository by lazy { SharedPreferencesProfilePreferencesRepository(context) }
     private val developerWidescreenDiagnostic =
         savedStateHandle.get<Boolean>(EmulatorActivity.KEY_DEVELOPER_WIDESCREEN_PROBE) == true
     private var raBootstrapJob: Job? = null
@@ -743,6 +746,11 @@ class EmulatorViewModel @Inject constructor(
             }
             val romInfo = getRomInfo(rom)
             val userCheats = romInfo?.let { getRomEnabledCheats(it) } ?: emptyList()
+            val requestedArm9Percent = romInfo?.let {
+                profilePreferencesRepository.read(
+                    RomIdentity(it.gameCode, it.revision, rom.retroAchievementsHash).stableKey(),
+                ).requestedArm9Percent
+            } ?: 100
             val plannedLaunch = profileLaunchPlanner.plan(
                 rom = rom,
                 romInfo = romInfo,
@@ -754,6 +762,7 @@ class EmulatorViewModel @Inject constructor(
                 developerWidescreenDiagnosticSupported = isDeveloperWidescreenDiagnosticSupported(),
                 requestedRaMode = requestedRaMode,
                 saveStateResumeEnabled = settingsRepository.isAutoLoadStateOnLaunchEnabled(),
+                requestedArm9Percent = requestedArm9Percent,
             )
             val policy = plannedLaunch.retroAchievementsPolicy
             Log.i(
