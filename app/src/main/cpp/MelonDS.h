@@ -152,6 +152,7 @@ namespace MelonDSAndroid {
     extern void setSlot2AnalogInput(float x, float y);
     extern void start();
     extern u32 getArm9OverclockPercent();
+    extern std::string getArm9OverclockTelemetryJson();
     extern u32 loop();
     extern Frame* getPresentationFrame(std::optional<std::chrono::time_point<std::chrono::steady_clock>> deadline);
     extern bool waitForPresentationFrame(Frame* frame, u64 timeoutNs);

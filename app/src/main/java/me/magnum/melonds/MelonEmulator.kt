@@ -124,7 +124,9 @@ object MelonEmulator {
     external fun detachVulkanSurface(surfaceId: Int)
     external fun presentVulkanFrame(deadlineNs: Long, budgetDeadlineNs: Long)
 
-	external fun getFPS(): Float
+    external fun getFPS(): Float
+
+    external fun getArm9OverclockTelemetry(): String
 
     external fun getCurrentRenderer(): Int
 

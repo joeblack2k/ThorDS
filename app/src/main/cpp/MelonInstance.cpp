@@ -1115,6 +1115,19 @@ u32 MelonInstance::getArm9OverclockPercent() const
     return nds == nullptr ? 100u : nds->GetARM9OverclockPercent();
 }
 
+std::string MelonInstance::getArm9OverclockTelemetryJson() const
+{
+    if (nds == nullptr)
+        return "{\"percent\":100,\"remainder\":0,\"baseCycles\":0,\"scaledCycles\":0}";
+
+    const auto telemetry = nds->GetARM9OverclockTelemetry();
+    return "{\"percent\":" + std::to_string(telemetry.percent)
+        + ",\"remainder\":" + std::to_string(telemetry.remainder)
+        + ",\"baseCycles\":" + std::to_string(telemetry.baseCycles)
+        + ",\"scaledCycles\":" + std::to_string(telemetry.scaledCycles)
+        + "}";
+}
+
 MelonInstance::~MelonInstance()
 {
     VulkanSurfacePresenter::clearPrewarmedRetroArchFilters();

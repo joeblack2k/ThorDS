@@ -692,6 +692,14 @@ namespace MelonDSAndroid
         return currentInstance == nullptr ? 100u : currentInstance->getArm9OverclockPercent();
     }
 
+    std::string getArm9OverclockTelemetryJson()
+    {
+        auto currentInstance = GetInstanceSnapshot();
+        return currentInstance == nullptr
+            ? "{\"percent\":100,\"remainder\":0,\"baseCycles\":0,\"scaledCycles\":0}"
+            : currentInstance->getArm9OverclockTelemetryJson();
+    }
+
     u32 loop()
     {
         MPInterface::Get().Process();

@@ -45,6 +45,7 @@ public:
     void start();
     void reset();
     u32 getArm9OverclockPercent() const;
+    std::string getArm9OverclockTelemetryJson() const;
     melonDS::u32 runFrame();
     void stop();
 

@@ -1505,6 +1505,14 @@ Java_me_magnum_melonds_MelonEmulator_presentVulkanFrame(JNIEnv* env, jobject thi
     MelonDSAndroid::presentVulkanFrame(deadlineTime, budgetDeadlineTime);
 }
 
+JNIEXPORT jstring JNICALL
+Java_me_magnum_melonds_MelonEmulator_getArm9OverclockTelemetry(JNIEnv* env, jobject thiz)
+{
+    (void)thiz;
+    const std::string telemetry = MelonDSAndroid::getArm9OverclockTelemetryJson();
+    return env->NewStringUTF(telemetry.c_str());
+}
+
 JNIEXPORT jintArray JNICALL
 Java_me_magnum_melonds_impl_emulator_debug_RendererDebugBridge_captureCurrentFrame(JNIEnv* env, jobject thiz)
 {
