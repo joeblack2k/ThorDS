@@ -102,6 +102,26 @@ class ProfileEngineTest {
     }
 
     @Test
+    fun launchPlannerHonorsPerRomSelectedProfilePreference() {
+        val catalog = ProfileCatalog.parse(File("src/main/assets/enhancement-profiles.json").readText())
+        val planner = ProfileLaunchPlanner(catalog)
+        val identity = RomIdentity("ASMP", 0, "ba3c4052e00c5cc31df5d5534c39de1b")
+        val original = planner.resolve(
+            identity = identity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            requestedRaMode = ProfileRaMode.OFF,
+            profilePreferences = ProfilePreferences(
+                selectedProfileId = "original.sm64ds.eu",
+                requestedRaMode = ProfileRaMode.OFF,
+            ),
+        )
+        assertEquals("original.sm64ds.eu", original.plan.profileId)
+        assertEquals(ProfileIntegrity.ORIGINAL, original.plan.profileIntegrity)
+        assertFalse(original.useSlot2Analog)
+    }
+
+    @Test
     fun launchPlannerBindsPolicyToTheCompleteProfilePlan() {
         val catalog = ProfileCatalog.parse(File("src/main/assets/enhancement-profiles.json").readText())
         val planner = ProfileLaunchPlanner(catalog)

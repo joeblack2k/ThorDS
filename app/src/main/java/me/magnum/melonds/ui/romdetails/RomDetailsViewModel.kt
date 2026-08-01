@@ -63,6 +63,7 @@ class RomDetailsViewModel @Inject constructor(
 
     private val _romConfig = MutableStateFlow(_rom.value.config)
     private val _thorProfile = MutableStateFlow<ThorProfileUiModel?>(null)
+    private var thorIdentity: RomIdentity? = null
     private val profileLaunchPlanner by lazy { ProfileLaunchPlanner(EmbeddedProfileCatalog(context).catalog) }
     private val profilePreferencesRepository by lazy { SharedPreferencesProfilePreferencesRepository(context) }
 
@@ -186,12 +187,25 @@ class RomDetailsViewModel @Inject constructor(
             is RomConfigUpdateEvent.RetroArchShaderPresetPathUpdate -> currentRomConfig.copy(retroArchShaderPresetPath = event.presetPath)
             is RomConfigUpdateEvent.RetroArchShaderParametersUpdate -> currentRomConfig.copy(retroArchShaderParameters = event.parameters)
             is RomConfigUpdateEvent.RetroAchievementsEnabledUpdate -> currentRomConfig.copy(retroAchievementsEnabled = event.enabled)
+            is RomConfigUpdateEvent.ThorProfileModeUpdate,
+            is RomConfigUpdateEvent.ThorProfileRaModeUpdate -> currentRomConfig
         }
 
         newRomConfig?.let { newConfig ->
             _romConfig.value = newConfig
             _rom.update { it.copy(config = newConfig) }
             saveRomConfig(newConfig)
+        }
+        when (event) {
+            is RomConfigUpdateEvent.ThorProfileModeUpdate -> updateThorProfilePreferences {
+                it.copy(
+                    selectedProfileId = if (event.enhanced) "sm64ds.eu.thor-enhanced" else "original.sm64ds.eu",
+                    enabledEnhancements = mapOf("true-widescreen" to event.enhanced),
+                )
+            }
+            is RomConfigUpdateEvent.ThorProfileRaModeUpdate ->
+                updateThorProfilePreferences { it.copy(requestedRaMode = event.mode) }
+            else -> Unit
         }
     }
 
@@ -214,6 +228,7 @@ class RomDetailsViewModel @Inject constructor(
         val rom = _rom.value
         val info = romFileProcessorFactory.getFileRomProcessorForDocument(rom.uri)?.getRomInfo(rom)
         val identity = info?.let { RomIdentity(it.gameCode, it.revision, rom.retroAchievementsHash) }
+        thorIdentity = identity
         if (identity == null) {
             _thorProfile.value = null
             return
@@ -226,6 +241,7 @@ class RomDetailsViewModel @Inject constructor(
             enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
             requestedRaMode = preferences.requestedRaMode,
             requestedArm9Percent = preferences.requestedArm9Percent,
+            profilePreferences = preferences,
         )
         _thorProfile.value = ThorProfileUiModel(
             profileId = resolved.plan.profileId,
@@ -234,7 +250,18 @@ class RomDetailsViewModel @Inject constructor(
             arm9Percent = resolved.plan.effectiveArm9Percent,
             retroAchievementsMode = resolved.plan.effectiveRaMode.name,
             widescreenMode = resolved.effectiveWidescreenMode.name,
+            requestedRaMode = preferences.requestedRaMode.name,
+            enhancedRequested = preferences.selectedProfileId == "sm64ds.eu.thor-enhanced",
         )
+    }
+
+    private fun updateThorProfilePreferences(
+        update: (me.magnum.melonds.domain.model.enhancement.ProfilePreferences) -> me.magnum.melonds.domain.model.enhancement.ProfilePreferences,
+    ) {
+        val identity = thorIdentity ?: return
+        val key = identity.stableKey()
+        profilePreferencesRepository.write(key, update(profilePreferencesRepository.read(key)))
+        viewModelScope.launch { resolveThorProfile() }
     }
 
     suspend fun getRomIcon(rom: Rom): RomIcon {

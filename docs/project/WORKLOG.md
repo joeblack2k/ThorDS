@@ -1420,12 +1420,17 @@ Evidence:
   widescreen mode.
 - Missing ROM identity does not claim an Enhanced profile; the status remains
   absent until resolution succeeds.
+- Added per-ROM Original/Thor Enhanced and RetroAchievements mode controls.
+  These write the existing hash-bound preferences and are applied by the
+  normal launch path after relaunch.
 - No second settings store, ROM database field or new toggle was introduced.
 
 ### Validation
 
 - `:app:compileGitHubProdDebugKotlin`: PASS.
 - Focused release unit tests: PASS; 32 tests, 0 failures, 0 errors.
+- Added planner regression coverage proving `selectedProfileId` is honored;
+  the focused profile suite is now 6 tests and remains green.
 - `:app:assembleGitHubProdDebug`: PASS.
 - APK installed on AYN Thor; launcher reached `RomListActivity`.
 - Filtered logcat showed no `FATAL EXCEPTION` or `ANR in`.

@@ -751,6 +751,11 @@ class EmulatorViewModel @Inject constructor(
                     RomIdentity(it.gameCode, it.revision, rom.retroAchievementsHash).stableKey(),
                 ).requestedArm9Percent
             } ?: 100
+            val profilePreferences = romInfo?.let {
+                profilePreferencesRepository.read(
+                    RomIdentity(it.gameCode, it.revision, rom.retroAchievementsHash).stableKey(),
+                )
+            }
             val plannedLaunch = profileLaunchPlanner.plan(
                 rom = rom,
                 romInfo = romInfo,
@@ -763,6 +768,7 @@ class EmulatorViewModel @Inject constructor(
                 requestedRaMode = requestedRaMode,
                 saveStateResumeEnabled = settingsRepository.isAutoLoadStateOnLaunchEnabled(),
                 requestedArm9Percent = requestedArm9Percent,
+                profilePreferences = profilePreferences,
             )
             val policy = plannedLaunch.retroAchievementsPolicy
             Log.i(

@@ -46,4 +46,6 @@ data class ThorProfileUiModel(
     val arm9Percent: Int,
     val retroAchievementsMode: String,
     val widescreenMode: String,
+    val requestedRaMode: String,
+    val enhancedRequested: Boolean,
 )

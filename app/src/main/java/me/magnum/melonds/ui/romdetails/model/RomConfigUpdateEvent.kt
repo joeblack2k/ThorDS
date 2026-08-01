@@ -6,6 +6,7 @@ import me.magnum.melonds.domain.model.VideoRenderer
 import me.magnum.melonds.domain.model.rom.config.RomInputMode
 import me.magnum.melonds.domain.model.rom.config.RuntimeConsoleType
 import me.magnum.melonds.domain.model.rom.config.RuntimeMicSource
+import me.magnum.melonds.domain.model.enhancement.ProfileRaMode
 import java.util.UUID
 
 sealed class RomConfigUpdateEvent {
@@ -25,4 +26,6 @@ sealed class RomConfigUpdateEvent {
     data class RetroArchShaderPresetPathUpdate(val presetPath: String?) : RomConfigUpdateEvent()
     data class RetroArchShaderParametersUpdate(val parameters: String?) : RomConfigUpdateEvent()
     data class RetroAchievementsEnabledUpdate(val enabled: Boolean?) : RomConfigUpdateEvent()
+    data class ThorProfileModeUpdate(val enhanced: Boolean) : RomConfigUpdateEvent()
+    data class ThorProfileRaModeUpdate(val mode: ProfileRaMode) : RomConfigUpdateEvent()
 }

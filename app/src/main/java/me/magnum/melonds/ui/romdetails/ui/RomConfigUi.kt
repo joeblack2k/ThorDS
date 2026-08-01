@@ -110,6 +110,7 @@ private fun Content(
     val internalResolutionDialogState = rememberSingleChoiceDialogState<Int?>()
     val videoFilteringDialogState = rememberSingleChoiceDialogState<VideoFiltering?>()
     val retroAchievementsDialogState = rememberSingleChoiceDialogState<Boolean?>()
+    val thorRaModeDialogState = rememberSingleChoiceDialogState<me.magnum.melonds.domain.model.enhancement.ProfileRaMode>()
     val retroArchPresetPathDialogState = rememberTextInputDialogState()
     val retroArchParametersDialogState = rememberTextInputDialogState()
 
@@ -205,9 +206,13 @@ private fun Content(
             ConfigSection(title = stringResource(R.string.thords_profile_status)) {
                 ConfigRow(
                     title = stringResource(R.string.thords_profile),
-                    value = profile.profileId,
+                    value = if (profile.enhancedRequested) {
+                        stringResource(R.string.thords_enhanced)
+                    } else {
+                        stringResource(R.string.thords_original)
+                    },
                     showDivider = true,
-                    onClick = {},
+                    onClick = { onConfigUpdate(RomConfigUpdateEvent.ThorProfileModeUpdate(!profile.enhancedRequested)) },
                 )
                 ConfigRow(
                     title = stringResource(R.string.thords_profile_match),
@@ -218,7 +223,21 @@ private fun Content(
                 ConfigRow(
                     title = stringResource(R.string.thords_profile_effective),
                     value = "${profile.integrity} / ARM9 ${profile.arm9Percent}% / RA ${profile.retroAchievementsMode} / ${profile.widescreenMode}",
+                    showDivider = true,
                     onClick = {},
+                )
+                ConfigRow(
+                    title = stringResource(R.string.thords_profile_ra_mode),
+                    value = profile.requestedRaMode,
+                    onClick = {
+                        thorRaModeDialogState.show(
+                            title = context.getString(R.string.thords_profile_ra_mode),
+                            items = me.magnum.melonds.domain.model.enhancement.ProfileRaMode.entries,
+                            labelOf = { it.name },
+                            selected = me.magnum.melonds.domain.model.enhancement.ProfileRaMode.valueOf(profile.requestedRaMode),
+                            onSelect = { onConfigUpdate(RomConfigUpdateEvent.ThorProfileRaModeUpdate(it)) },
+                        )
+                    },
                 )
             }
         }
@@ -528,6 +547,7 @@ private fun Content(
     SingleChoiceDialog(internalResolutionDialogState)
     SingleChoiceDialog(videoFilteringDialogState)
     SingleChoiceDialog(retroAchievementsDialogState)
+    SingleChoiceDialog(thorRaModeDialogState)
     TextInputDialog(
         title = stringResource(R.string.video_retroarch_shader_preset_title),
         dialogState = retroArchPresetPathDialogState,

@@ -40,6 +40,7 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
         requestedRaMode: ProfileRaMode,
         saveStateResumeEnabled: Boolean = false,
         requestedArm9Percent: Int = Arm9OverclockPolicy.DEFAULT_PERCENT,
+        profilePreferences: ProfilePreferences? = null,
     ): PlannedRomLaunch {
         val identity = romInfo?.let { RomIdentity(it.gameCode, it.revision, rom.retroAchievementsHash) }
         val resolution = resolve(
@@ -54,6 +55,7 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
             requestedRaMode = requestedRaMode,
             saveStateResumeEnabled = saveStateResumeEnabled,
             requestedArm9Percent = requestedArm9Percent,
+            profilePreferences = profilePreferences,
         )
         val gbaSlotConfig = when {
             resolution.useSlot2Analog -> RomGbaSlotConfig.AnalogInput
@@ -82,9 +84,16 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
         requestedRaMode: ProfileRaMode,
         saveStateResumeEnabled: Boolean = false,
         requestedArm9Percent: Int = Arm9OverclockPolicy.DEFAULT_PERCENT,
+        profilePreferences: ProfilePreferences? = null,
     ): LaunchProfileResolution {
+        val preferences = profilePreferences ?: ProfilePreferences(
+            requestedRaMode = requestedRaMode,
+            requestedArm9Percent = requestedArm9Percent,
+        )
         val requestedProfile = if (enhancementsEnabled) {
-            identity?.let { catalog.exactProfiles(it).firstOrNull { profile -> profile.id == "sm64ds.eu.thor-enhanced" } }?.id
+            identity?.let { catalog.exactProfiles(it).firstOrNull { profile ->
+                profile.id == (preferences.selectedProfileId ?: "sm64ds.eu.thor-enhanced")
+            } }?.id
         } else {
             identity?.let { catalog.exactProfiles(it).firstOrNull { profile -> profile.id == "original.sm64ds.eu" } }?.id
         }
@@ -109,7 +118,7 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
         val resolved = sessionPlanBuilder.build(
             identity = identity,
             device = DeviceProfileContext(capabilities),
-            preferences = ProfilePreferences(
+            preferences = preferences.copy(
                 selectedProfileId = requestedProfile,
                 enabledEnhancements = mapOf(
                     "true-widescreen" to (
@@ -117,8 +126,8 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
                             (trueWidescreenRequested || developerWidescreenDiagnostic)
                         ),
                 ),
-                requestedRaMode = requestedRaMode,
-                requestedArm9Percent = requestedArm9Percent,
+                requestedRaMode = preferences.requestedRaMode,
+                requestedArm9Percent = preferences.requestedArm9Percent,
             ),
             userCheats = userCheats,
             safeMode = !enhancementsEnabled,
