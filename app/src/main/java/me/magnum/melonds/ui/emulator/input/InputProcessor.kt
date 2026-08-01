@@ -254,6 +254,11 @@ class InputProcessor(
 
     private fun processSlot2AnalogFromMotionEvent(motionEvent: MotionEvent): Boolean {
         val slot2Mapping = controllerConfiguration.slot2AnalogMapping
+        if (controllerConfiguration.profileCameraEnabled
+            && (isSmoothCameraAxis(slot2Mapping.axisXCode) || isSmoothCameraAxis(slot2Mapping.axisYCode))
+        ) {
+            return false
+        }
         val mappedDeviceId = slot2Mapping.effectiveDeviceId()
         val mappedDeviceConnected = mappedDeviceId == null || InputDevice.getDevice(mappedDeviceId) != null
         if (mappedDeviceId != null && mappedDeviceId != motionEvent.deviceId && mappedDeviceConnected) {
