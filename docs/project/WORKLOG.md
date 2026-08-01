@@ -1428,6 +1428,11 @@ Evidence:
 - Profile edits remain pending in the details ViewModel and are committed only
   from `onRomValidated`, so leaving the screen or failing validation does not
   change the persisted launch preference.
+- Physical Thor witness: long-pressing the SM64DS ROM card and selecting
+  `Details` opened `RomDetailsActivity`; the resolved profile rows, pending
+  Enhanced toggle, relaunch toast and RA Off/Casual/Hardcore dialog were
+  visibly usable on the 1920x1080 display. The pending edit was abandoned
+  without pressing Play.
 - No second settings store, ROM database field or new toggle was introduced.
 
 ### Validation

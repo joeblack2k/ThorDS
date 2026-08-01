@@ -35,6 +35,16 @@ Validation:
 - AYN Thor install: PASS.
 - Launcher smoke reached RomListActivity.
 - Filtered logcat: no FATAL EXCEPTION and no ANR in.
+- Physical ROM-details witness: long-pressing the SM64DS card opened the
+  context menu and selecting `Details` opened `RomDetailsActivity`.
+- On the 1920x1080 Thor display the profile status showed `MATCH_EXACT`,
+  `Original`, `ARM9 100%`, `RA Casual` and `NATIVE_4_3`.
+- Tapping the profile row changed the pending view to `Thor Enhanced` and
+  displayed the relaunch-required toast.
+- The RetroAchievements row opened a visible Off/Casual/Hardcore choice
+  dialog with Casual selected.
+- The pending change was abandoned without pressing Play; no preference was
+  committed by this physical witness.
 
 This is a bounded status/control slice. Explicit relaunch staging,
 physical ROM-details navigation and the complete M11 acceptance remain open.
