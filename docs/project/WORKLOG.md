@@ -69,6 +69,23 @@
 - This adds deterministic configuration plumbing only. It does not expose a
   user toggle or promote any ratio to `EXPERIMENTAL`/`VALIDATED`.
 
+## 2026-08-01 - M10 debug preference roundtrip
+
+### Result
+
+- Added a debug-only `SET_ARM9_PERCENT` broadcast for repeatable per-ROM
+  preference setup using the existing profile repository.
+- On the Thor, stored `requestedArm9=125` for the SM64DS identity and relaunched
+  the ROM. The launch log reported `requestedArm9=125`,
+  `effectiveArm9=100`, `arm9Capability=PLUMBING_ONLY`, and native telemetry
+  reported `percent=100`.
+- Reset the device preference to 100 after the probe.
+
+### Boundary
+
+- This validates persistence and fail-closed capability resolution only. It
+  does not promote the capability or claim a 125% product pass.
+
 ## 2026-08-01 - M9 RetroAchievements closeout
 
 ### Result

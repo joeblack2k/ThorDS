@@ -767,7 +767,7 @@ class EmulatorViewModel @Inject constructor(
             val policy = plannedLaunch.retroAchievementsPolicy
             Log.i(
                 "ProfileLaunch",
-                "profile=${plannedLaunch.plan.profileId} integrity=${plannedLaunch.plan.profileIntegrity} requestedRa=${plannedLaunch.plan.requestedRaMode} effectiveRa=${policy.effectiveMode} requestedWidescreen=${plannedLaunch.requestedWidescreenMode} effectiveWidescreen=${plannedLaunch.effectiveWidescreenMode} planSha256=${plannedLaunch.plan.planHash} curatedCodes=${plannedLaunch.plan.curatedRuntimeCodes.size} slot2Analog=${if (plannedLaunch.rom.config.gbaSlotConfig is RomGbaSlotConfig.AnalogInput) 1 else 0} camera=${if (plannedLaunch.plan.enhancements.any { it.id == "right-stick-camera" && it.enabled }) 1 else 0}",
+                "profile=${plannedLaunch.plan.profileId} integrity=${plannedLaunch.plan.profileIntegrity} requestedRa=${plannedLaunch.plan.requestedRaMode} effectiveRa=${policy.effectiveMode} requestedArm9=${plannedLaunch.plan.requestedArm9Percent} effectiveArm9=${plannedLaunch.plan.effectiveArm9Percent} arm9Capability=${plannedLaunch.plan.arm9OverclockCapability} requestedWidescreen=${plannedLaunch.requestedWidescreenMode} effectiveWidescreen=${plannedLaunch.effectiveWidescreenMode} planSha256=${plannedLaunch.plan.planHash} curatedCodes=${plannedLaunch.plan.curatedRuntimeCodes.size} slot2Analog=${if (plannedLaunch.rom.config.gbaSlotConfig is RomGbaSlotConfig.AnalogInput) 1 else 0} camera=${if (plannedLaunch.plan.enhancements.any { it.id == "right-stick-camera" && it.enabled }) 1 else 0}",
             )
             if (policy.effectiveMode == RetroAchievementsEffectiveMode.BLOCKED) {
                 Log.w(
