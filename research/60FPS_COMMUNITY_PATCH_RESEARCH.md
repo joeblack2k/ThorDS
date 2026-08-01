@@ -23,7 +23,7 @@ Provenance:
 - oorspronkelijke patchvideo/auteur: `gamemasterplc`,
   `https://www.youtube.com/watch?v=yJXEAIOFcNU`;
 - publieke distributiepagina:
-  `https://www.sm64games.com/game/60-fps-patch`;
+  `https://www.youtube.com/watch?v=yJXEAIOFcNU`;
 - de bronverwijzing beschrijft een xdelta-patch voor USA/NTSC-U v1.1;
 - publieke broncode, AR-codewoorden en reproduceerbare binary-to-source map
   zijn niet gevonden.
