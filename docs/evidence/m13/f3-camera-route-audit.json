@@ -1,0 +1,26 @@
+{
+  "milestone": "M13",
+  "gate": "right-stick camera route audit",
+  "sourceChecks": {
+    "androidAxes": [
+      "MotionEvent.AXIS_Z",
+      "MotionEvent.AXIS_RZ"
+    ],
+    "cameraUpdate": "InputProcessor.updateProfileCamera",
+    "nativeSink": "MelonEmulator.setSlot2CameraState",
+    "slot2Isolation": "profile camera axes are excluded from Slot-2 analog movement mapping"
+  },
+  "thorRuntime": {
+    "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+    "cameraX": 0.65,
+    "cameraY": 0.0,
+    "inputHandled": true,
+    "advancedFrames": 4,
+    "distinctSourceFrameHashes": 4
+  },
+  "result": "CAMERA_ROUTE_REACHES_NATIVE_PATH_AND_CHANGES_RENDERED_FRAMES",
+  "notes": [
+    "The automated route check does not prove physical camera direction or subjective control feel.",
+    "Manual Thor verification remains required for axis direction, sensitivity and absence of left-stick camera coupling."
+  ]
+}

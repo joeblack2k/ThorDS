@@ -1852,3 +1852,16 @@ Evidence:
   not complete; the input and rendered-frame measurements themselves passed.
 - Physical direction/feel and longer camera behavior remain a manual Thor gate.
 - Evidence: `docs/evidence/m13/f3-input-response-60fps.json`.
+## 2026-08-01 - M13 right-stick camera route audit
+
+- Audited the active camera path from Android `AXIS_Z/RZ` through
+  `InputProcessor.updateProfileCamera` and `MelonEmulator.setSlot2CameraState`
+  into the native Slot-2 camera interface.
+- Confirmed that profile camera axes are excluded from the Slot-2 analog
+  movement mapping, so the left stick and right stick do not share the same
+  analog movement path.
+- Repeated a camera-only Thor run from the private 60-FPS checkpoint:
+  input handled, 4/4 frames advanced, 4 distinct rendered-frame hashes.
+- Automated evidence cannot establish physical axis direction or feel; that
+  remains a manual Thor check.
+- Evidence: `docs/evidence/m13/f3-camera-route-audit.json`.
