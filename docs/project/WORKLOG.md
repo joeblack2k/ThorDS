@@ -713,3 +713,41 @@ W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
 - M9 remains `IN_PROGRESS`; runtime wiring, conflict UI, online/offline
   validation, save-state enforcement and physical RA session proof remain
   open. M7 Castle Garden remains the active release blocker.
+
+## M9.2 RetroAchievements launch-policy wiring - 2026-08-01
+
+- Built the complete profile/session plan before RA endpoint/session/native
+  bootstrap. The plan now carries explicit Original versus Enhanced integrity,
+  the unmodified requested RA mode, deterministic hash diagnostics, and the
+  resolved policy.
+- The planner requires requested RA mode explicitly; no launch path treats its
+  former Casual default as user intent.
+- Bound policy input to active enhancements, curated runtime codes, enabled
+  user cheats, ARM9 100%, rewind false, ordinary lifecycle resume, and the
+  explicit save-state autoload flag.
+- `BLOCKED` now returns through the existing ROM load error state before
+  `beginSession`, emulator `startSession`, or RA bootstrap. Off skips RA
+  bootstrap and Casual preserves enhancements. Clean Original Hardcore remains
+  eligible; no silent policy downgrade was added.
+- Stable reason codes remain in the policy value/test contract, plan
+  diagnostics, and a non-secret launch log line; no UI was added.
+- A requested RA mode that the selected profile does not allow now fails closed
+  with `requested_mode_unavailable` instead of silently becoming `OFF`.
+- If launch-decision resolution throws after endpoint acceptance,
+  `CancellationException` is rethrown; other failures end the endpoint
+  session, report `RomLoadError` and return before emulator/native bootstrap.
+- Focused validation passed: `ProfileEngineTest` 16/16 and the existing
+  `RetroAchievementsPolicyTest` 10/10, with 0 failures and 0 errors. The
+  source-order assertion and `git diff --check` also passed.
+- Focused validation also passed `EmulatorViewModelLaunchPolicyTest` 1/1,
+  proving the fail-closed cleanup and no fallback launch decision.
+- Evidence: `docs/evidence/m9/launch-policy-tests.txt`.
+- Publication audit: the current diff adds no ROM, save, private evidence or
+  credential material. Reachable public history already contains deleted
+  upstream binary paths `drastic_bios_arm7.bin`, `drastic_bios_arm9.bin` and
+  `romlist.bin`; these were not added, restored or modified. Status is
+  `PASS_WITH_KNOWN_LEGACY_HISTORY`; no history rewrite or force-push was
+  attempted or authorized.
+- This is M9.2 pre-bootstrap wiring only. Native/runtime, network/offline,
+  conflict UI, physical session and full M9 acceptance remain open. No commit
+  was created.

@@ -3,8 +3,10 @@ package me.magnum.melonds.domain.model.enhancement
 import me.magnum.melonds.domain.model.Cheat
 import me.magnum.melonds.domain.model.RomInfo
 import me.magnum.melonds.domain.model.rom.config.RomGbaSlotConfig
+import me.magnum.melonds.domain.model.retroachievements.RetroAchievementsEffectiveMode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -54,6 +56,8 @@ class ProfileEngineTest {
         val original = resolver.resolve(sm64ds, device, ProfilePreferences(selectedProfileId = "original.sm64ds.eu"), emptyList())
         assertEquals("sm64ds.eu.thor-enhanced", enhanced.profileId)
         assertEquals("original.sm64ds.eu", original.profileId)
+        assertEquals(ProfileIntegrity.ENHANCED, enhanced.profileIntegrity)
+        assertEquals(ProfileIntegrity.ORIGINAL, original.profileIntegrity)
         val analog = enhanced.curatedRuntimeCodes.single()
         assertEquals("sm64ds.eu.am64ds-analog.v1", analog.id)
         assertEquals(analog.codeSha256, sha256(analog.codeWords.joinToString("\n") + "\n"))
@@ -66,22 +70,127 @@ class ProfileEngineTest {
         val planner = ProfileLaunchPlanner(catalog)
         val exactInfo = RomInfo("ASMP", 0u, "SM64DS", "SM64DS", revision = 0)
         val identity = RomIdentity(exactInfo.gameCode, exactInfo.revision, "ba3c4052e00c5cc31df5d5534c39de1b")
-        val exact = planner.resolve(identity, RomGbaSlotConfig.None, listOf(userCheat))
+        val exact = planner.resolve(identity, RomGbaSlotConfig.None, listOf(userCheat), requestedRaMode = ProfileRaMode.CASUAL)
         assertTrue(exact.useSlot2Analog)
         assertEquals(listOf("ThorDS: sm64ds.eu.am64ds-analog.v1", "User"), RuntimeActionReplayComposer.compose(exact.plan).map { it.name })
 
-        val mismatch = planner.resolve(identity.copy(revision = 1), RomGbaSlotConfig.None, listOf(userCheat))
+        val mismatch = planner.resolve(identity.copy(revision = 1), RomGbaSlotConfig.None, listOf(userCheat), requestedRaMode = ProfileRaMode.CASUAL)
         assertFalse(mismatch.useSlot2Analog)
         assertEquals(listOf("User"), RuntimeActionReplayComposer.compose(mismatch.plan).map { it.name })
 
-        val protectedSlot = planner.resolve(identity, RomGbaSlotConfig.GbaRom(null, null), emptyList())
+        val protectedSlot = planner.resolve(
+            identity,
+            RomGbaSlotConfig.GbaRom(null, null),
+            emptyList(),
+            requestedRaMode = ProfileRaMode.CASUAL,
+        )
         assertFalse(protectedSlot.useSlot2Analog)
         assertTrue(RuntimeActionReplayComposer.compose(protectedSlot.plan).isEmpty())
 
-        val safeMode = planner.resolve(identity, RomGbaSlotConfig.None, emptyList(), enhancementsEnabled = false)
+        val safeMode = planner.resolve(
+            identity,
+            RomGbaSlotConfig.None,
+            emptyList(),
+            enhancementsEnabled = false,
+            requestedRaMode = ProfileRaMode.CASUAL,
+        )
         assertFalse(safeMode.useSlot2Analog)
         assertEquals("original.sm64ds.eu", safeMode.plan.profileId)
         assertTrue(RuntimeActionReplayComposer.compose(safeMode.plan).isEmpty())
+    }
+
+    @Test
+    fun launchPlannerBindsPolicyToTheCompleteProfilePlan() {
+        val catalog = ProfileCatalog.parse(File("src/main/assets/enhancement-profiles.json").readText())
+        val planner = ProfileLaunchPlanner(catalog)
+        val identity = RomIdentity("ASMP", 0, "ba3c4052e00c5cc31df5d5534c39de1b")
+
+        val casual = planner.resolve(
+            identity = identity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = listOf(userCheat),
+            requestedRaMode = ProfileRaMode.CASUAL,
+        )
+        assertEquals(ProfileIntegrity.ENHANCED, casual.plan.profileIntegrity)
+        assertEquals(ProfileRaMode.CASUAL, casual.plan.requestedRaMode)
+        assertEquals(RetroAchievementsEffectiveMode.CASUAL, casual.retroAchievementsPolicy.effectiveMode)
+        assertTrue(casual.plan.enhancements.any { it.id == "analog" && it.enabled })
+        assertTrue(casual.retroAchievementsPolicy.runtimeFeaturePermissions.allowEnhancements)
+
+        val off = planner.resolve(
+            identity = identity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = listOf(userCheat),
+            requestedRaMode = ProfileRaMode.OFF,
+        )
+        assertEquals(RetroAchievementsEffectiveMode.OFF, off.retroAchievementsPolicy.effectiveMode)
+        assertTrue(off.plan.enhancements.any { it.id == "analog" && it.enabled })
+
+        val blockedHardcore = planner.resolve(
+            identity = identity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            requestedRaMode = ProfileRaMode.HARDCORE,
+        )
+        assertEquals(ProfileIntegrity.ENHANCED, blockedHardcore.plan.profileIntegrity)
+        assertEquals(ProfileRaMode.HARDCORE, blockedHardcore.plan.requestedRaMode)
+        assertEquals(RetroAchievementsEffectiveMode.BLOCKED, blockedHardcore.retroAchievementsPolicy.effectiveMode)
+        assertTrue("enhanced_profile" in blockedHardcore.retroAchievementsPolicy.reasonCodeValues)
+        assertTrue("requested_mode_unavailable" in blockedHardcore.retroAchievementsPolicy.reasonCodeValues)
+
+        val cleanHardcore = planner.resolve(
+            identity = identity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            enhancementsEnabled = false,
+            requestedRaMode = ProfileRaMode.HARDCORE,
+        )
+        assertEquals(ProfileIntegrity.ORIGINAL, cleanHardcore.plan.profileIntegrity)
+        assertEquals(ProfileRaMode.HARDCORE, cleanHardcore.plan.requestedRaMode)
+        assertEquals(RetroAchievementsEffectiveMode.HARDCORE, cleanHardcore.retroAchievementsPolicy.effectiveMode)
+        assertFalse(cleanHardcore.retroAchievementsPolicy.runtimeFeaturePermissions.allowEnhancements)
+
+        val autoloadBlocked = planner.resolve(
+            identity = identity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            enhancementsEnabled = false,
+            requestedRaMode = ProfileRaMode.HARDCORE,
+            saveStateResumeEnabled = true,
+        )
+        assertEquals(RetroAchievementsEffectiveMode.BLOCKED, autoloadBlocked.retroAchievementsPolicy.effectiveMode)
+        assertEquals(
+            listOf("save_state_resume_enabled"),
+            autoloadBlocked.retroAchievementsPolicy.reasonCodeValues,
+        )
+    }
+
+    @Test
+    fun planHashIncludesRequestedModeAndIntegrity() {
+        val resolver = ProfileResolver(ProfileCatalog.from(EnhancementCatalogDocument(1, listOf(original(), enhanced()))))
+        val originalCasual = resolver.resolve(
+            exactIdentity,
+            DeviceProfileContext(emptySet()),
+            ProfilePreferences(selectedProfileId = "original.generic", requestedRaMode = ProfileRaMode.CASUAL),
+            emptyList(),
+        )
+        val originalHardcore = resolver.resolve(
+            exactIdentity,
+            DeviceProfileContext(emptySet()),
+            ProfilePreferences(selectedProfileId = "original.generic", requestedRaMode = ProfileRaMode.HARDCORE),
+            emptyList(),
+        )
+        val enhancedCasual = resolver.resolve(
+            exactIdentity,
+            DeviceProfileContext(setOf(EnhancementCapability.SLOT2_ANALOG)),
+            ProfilePreferences(selectedProfileId = "test.enhanced", requestedRaMode = ProfileRaMode.CASUAL),
+            emptyList(),
+        )
+
+        assertNotEquals(originalCasual.planHash, originalHardcore.planHash)
+        assertNotEquals(originalCasual.planHash, enhancedCasual.planHash)
+        assertTrue(originalHardcore.diagnostics().any { it == "requested_ra=HARDCORE" })
+        assertTrue(enhancedCasual.diagnostics().any { it == "integrity=ENHANCED" })
     }
 
     @Test
@@ -90,7 +199,7 @@ class ProfileEngineTest {
         val planner = ProfileLaunchPlanner(catalog)
         val identity = RomIdentity("ASMP", 0, "ba3c4052e00c5cc31df5d5534c39de1b")
 
-        val normal = planner.resolve(identity, RomGbaSlotConfig.None, emptyList())
+        val normal = planner.resolve(identity, RomGbaSlotConfig.None, emptyList(), requestedRaMode = ProfileRaMode.CASUAL)
         assertTrue(normal.plan.curatedRuntimeCodes.none { it.id == "sm64ds.eu.aspect-16x9.dev.v1" })
 
         val probe = planner.resolve(
@@ -98,6 +207,7 @@ class ProfileEngineTest {
             currentSlot = RomGbaSlotConfig.None,
             userCheats = emptyList(),
             developerWidescreenProbe = true,
+            requestedRaMode = ProfileRaMode.CASUAL,
         )
         val aspect = probe.plan.curatedRuntimeCodes.single { it.id == "sm64ds.eu.aspect-16x9.dev.v1" }
         assertEquals(
@@ -241,6 +351,7 @@ class ProfileEngineTest {
         id = "test.enhanced",
         profileVersion = 1,
         displayName = "Test Enhanced",
+        integrity = ProfileIntegrity.ENHANCED,
         game = ProfileGameIdentity("NDS", "TEST", 1, setOf(exactIdentity.retroAchievementsHash)),
         enhancements = enhancements,
         allowedRaModes = setOf(ProfileRaMode.OFF, ProfileRaMode.CASUAL),

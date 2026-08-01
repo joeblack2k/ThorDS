@@ -22,6 +22,7 @@ data class EnhancementProfile(
     val provenance: List<ProfileProvenance> = emptyList(),
     val enhancements: List<EnhancementDefinition> = emptyList(),
     val allowedRaModes: Set<ProfileRaMode> = setOf(ProfileRaMode.OFF, ProfileRaMode.CASUAL, ProfileRaMode.HARDCORE),
+    val integrity: ProfileIntegrity = ProfileIntegrity.ORIGINAL,
 )
 
 @Serializable
@@ -83,6 +84,12 @@ enum class ProfileRaMode {
 }
 
 @Serializable
+enum class ProfileIntegrity {
+    ORIGINAL,
+    ENHANCED,
+}
+
+@Serializable
 data class RuntimeActionReplayCode(
     val id: String,
     val codeWords: List<String>,
@@ -123,6 +130,8 @@ data class ResolvedSessionPlan(
     val profileId: String,
     val profileVersion: Int,
     val match: ProfileMatch,
+    val profileIntegrity: ProfileIntegrity,
+    val requestedRaMode: ProfileRaMode,
     val curatedRuntimeCodes: List<RuntimeActionReplayCode>,
     val userCheats: List<Cheat>,
     val enhancements: List<ResolvedEnhancement>,
@@ -130,7 +139,17 @@ data class ResolvedSessionPlan(
 ) {
     val planHash: String by lazy {
         val canonical = buildString {
-            append(profileId).append('|').append(profileVersion).append('|').append(match).append('|').append(effectiveRaMode)
+            append(profileId)
+                .append('|')
+                .append(profileVersion)
+                .append('|')
+                .append(match)
+                .append('|')
+                .append(profileIntegrity)
+                .append('|')
+                .append(requestedRaMode)
+                .append('|')
+                .append(effectiveRaMode)
             enhancements.sortedBy { it.id }.forEach {
                 append('|').append(it.id).append(':').append(it.enabled).append(':').append(it.reason.orEmpty())
             }
@@ -143,6 +162,8 @@ data class ResolvedSessionPlan(
     fun diagnostics(): List<String> = buildList {
         add("profile=$profileId@$profileVersion")
         add("match=$match")
+        add("integrity=$profileIntegrity")
+        add("requested_ra=$requestedRaMode")
         add("ra=$effectiveRaMode")
         enhancements.forEach { add("enhancement=${it.id}:${if (it.enabled) "enabled" else "disabled:${it.reason}"}") }
         curatedRuntimeCodes.forEach { add("curated_code=${it.id}:${it.codeSha256}") }

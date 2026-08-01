@@ -59,6 +59,8 @@ class ProfileResolver(private val catalog: ProfileCatalog) {
             profileId = profile.id,
             profileVersion = profile.profileVersion,
             match = effectiveMatch,
+            profileIntegrity = profile.integrity,
+            requestedRaMode = preferences.requestedRaMode,
             curatedRuntimeCodes = enabled.mapNotNull { definitions.getValue(it.id).runtimeCode }.sortedBy { it.id },
             userCheats = userCheats.toList(),
             enhancements = resolved.values.sortedBy { it.id },

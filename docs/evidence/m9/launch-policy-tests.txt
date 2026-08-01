@@ -1,0 +1,52 @@
+M9.2 RetroAchievements launch-policy wiring
+Date: 2026-08-01
+Base: 6b618f21889fb03bdd9bbfcd0225c0798ef3
+Scope: profile/session plan construction and pre-bootstrap policy gate only
+
+Implementation:
+- ProfileIntegrity and explicit requested RA mode are part of ResolvedSessionPlan.
+- Both values are included in planHash and diagnostics.
+- ProfileLaunchPlanner requires requestedRaMode and returns the plan-bound policy.
+- EmulatorViewModel constructs the plan before endpoint/session bootstrap and
+  blocks RetroAchievementsEffectiveMode.BLOCKED before beginSession,
+  startSession or native RA bootstrap.
+- OFF skips RA bootstrap; CASUAL retains the resolved enhancements; clean
+  Original HARDCORE remains eligible and requires reset.
+- A profile that does not allow the requested RA mode fails closed with the
+  stable requested_mode_unavailable reason rather than silently downgrading.
+- If launch-decision resolution throws after endpoint acceptance,
+  CancellationException is rethrown; other failures end the endpoint session,
+  report the generic RomLoadError and return before emulator/native bootstrap.
+
+Source-order evidence:
+PASS plan=738
+PASS blocked=752
+PASS beginSession=766
+PASS decision=771
+PASS failureCleanup=782
+PASS error=783
+PASS return=784
+PASS startSession=805
+PASS bootstrap=818
+
+Focused validation:
+PASS ProfileEngineTest: 16 tests
+PASS RetroAchievementsPolicyTest: 10 tests
+PASS EmulatorViewModelLaunchPolicyTest: 1 test
+PASS git diff --check
+
+Not covered by this bounded slice:
+- native RA bridge behavior;
+- online/offline endpoint and authentication behavior;
+- physical RA achievement submission;
+- full M9 acceptance and conflict-choice UI.
+
+Legacy-history clarification:
+Public origin/main already contains deleted upstream binary blobs at
+app/src/main/assets/bios/drastic_bios_arm7.bin,
+app/src/main/assets/bios/drastic_bios_arm9.bin and
+app/src/main/assets/romlist.bin. These paths are absent from the current tree
+but remain reachable in inherited Git history. This bounded M9.2 diff does not
+add, restore or modify them and adds no ROM or save files, private captures or
+evidence, or credential values. Status is PASS_WITH_KNOWN_LEGACY_HISTORY;
+no history rewrite or force-push was attempted or authorized.

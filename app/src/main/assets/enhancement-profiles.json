@@ -13,6 +13,7 @@
       "id": "original.sm64ds.eu",
       "profileVersion": 1,
       "displayName": "Super Mario 64 DS - Original",
+      "integrity": "ORIGINAL",
       "game": {
         "system": "NDS",
         "gameCode": "ASMP",
@@ -36,6 +37,7 @@
       "id": "sm64ds.eu.thor-enhanced",
       "profileVersion": 1,
       "displayName": "Super Mario 64 DS - Thor Enhanced",
+      "integrity": "ENHANCED",
       "game": {
         "system": "NDS",
         "gameCode": "ASMP",

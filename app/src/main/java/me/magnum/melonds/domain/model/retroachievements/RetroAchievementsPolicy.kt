@@ -1,7 +1,9 @@
 package me.magnum.melonds.domain.model.retroachievements
 
 import me.magnum.melonds.domain.model.Cheat
+import me.magnum.melonds.domain.model.enhancement.ProfileIntegrity
 import me.magnum.melonds.domain.model.enhancement.ProfileRaMode
+import me.magnum.melonds.domain.model.enhancement.ResolvedSessionPlan
 import me.magnum.melonds.domain.model.enhancement.RuntimeActionReplayCode
 
 enum class RetroAchievementsProfile {
@@ -27,6 +29,7 @@ enum class RetroAchievementsPolicyReason(val code: String) {
     SAVE_STATE_RESUME_ENABLED("save_state_resume_enabled"),
     SLOWDOWN_ENABLED("slowdown_enabled"),
     FRAME_ADVANCE_ENABLED("frame_advance_enabled"),
+    REQUESTED_MODE_UNAVAILABLE("requested_mode_unavailable"),
 }
 
 data class RetroAchievementsRuntimeFeaturePermissions(
@@ -66,6 +69,41 @@ data class RetroAchievementsPolicy(
 }
 
 class RetroAchievementsPolicyResolver {
+    fun resolve(
+        plan: ResolvedSessionPlan,
+        arm9Percent: Int = 100,
+        rewindEnabled: Boolean = false,
+        stateLoadEnabled: Boolean = false,
+        saveStateResumeEnabled: Boolean = false,
+        slowdownEnabled: Boolean = false,
+        frameAdvanceEnabled: Boolean = false,
+    ): RetroAchievementsPolicy {
+        val policy = resolve(
+            RetroAchievementsPolicyInput(
+                requestedRaMode = plan.requestedRaMode,
+                profile = when (plan.profileIntegrity) {
+                    ProfileIntegrity.ORIGINAL -> RetroAchievementsProfile.ORIGINAL
+                    ProfileIntegrity.ENHANCED -> RetroAchievementsProfile.ENHANCED
+                },
+                activeEnhancementIds = plan.enhancements.filter { it.enabled }.map { it.id }.toSet(),
+                curatedRuntimeCodes = plan.curatedRuntimeCodes,
+                enabledUserCheats = plan.userCheats,
+                arm9Percent = arm9Percent,
+                rewindEnabled = rewindEnabled,
+                stateLoadEnabled = stateLoadEnabled,
+                saveStateResumeEnabled = saveStateResumeEnabled,
+                slowdownEnabled = slowdownEnabled,
+                frameAdvanceEnabled = frameAdvanceEnabled,
+            ),
+        )
+        if (plan.requestedRaMode == plan.effectiveRaMode) return policy
+        return policy.copy(
+            effectiveMode = RetroAchievementsEffectiveMode.BLOCKED,
+            reasonCodes = (policy.reasonCodes + RetroAchievementsPolicyReason.REQUESTED_MODE_UNAVAILABLE).distinct(),
+            runtimeFeaturePermissions = hardcoreRuntimeFeatures(),
+        )
+    }
+
     fun resolve(input: RetroAchievementsPolicyInput): RetroAchievementsPolicy {
         val conflicts = hardcoreConflicts(input)
         val effectiveMode = when (input.requestedRaMode) {

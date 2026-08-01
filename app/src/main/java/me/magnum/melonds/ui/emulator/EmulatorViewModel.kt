@@ -73,6 +73,7 @@ import me.magnum.melonds.domain.model.DualScreenPreset
 import me.magnum.melonds.domain.model.FpsCounterPosition
 import me.magnum.melonds.domain.model.RomInfo
 import me.magnum.melonds.domain.model.enhancement.ProfileLaunchPlanner
+import me.magnum.melonds.domain.model.enhancement.ProfileRaMode
 import me.magnum.melonds.domain.model.RuntimeBackground
 import me.magnum.melonds.domain.model.Rect
 import me.magnum.melonds.domain.model.SaveStateSlot
@@ -112,6 +113,7 @@ import me.magnum.melonds.domain.model.retroachievements.RaSubmissionSessionIdGen
 import me.magnum.melonds.domain.model.retroachievements.RASimpleAchievement
 import me.magnum.melonds.domain.model.input.SoftInputBehaviour
 import me.magnum.melonds.domain.model.retroachievements.RASimpleLeaderboard
+import me.magnum.melonds.domain.model.retroachievements.RetroAchievementsEffectiveMode
 import me.magnum.melonds.domain.model.retroachievements.exception.RAGameNotExist
 import me.magnum.melonds.domain.model.rom.Rom
 import me.magnum.melonds.domain.model.rom.config.RomGbaSlotConfig
@@ -725,28 +727,61 @@ class EmulatorViewModel @Inject constructor(
     private suspend fun launchRom(rom: Rom) = coroutineScope {
         try {
             _emulatorState.value = EmulatorState.LoadingRom()
-            currentRom = rom
-            activeRomConfig.value = rom
-            val isRetroAchievementsEnabledForLaunch = isRetroAchievementsEnabledForLaunch(rom)
-            val endpointSnapshot = if (isRetroAchievementsEnabledForLaunch) {
+            val isRetroAchievementsRequested = isRetroAchievementsEnabledForLaunch(rom)
+            val requestedRaMode = when {
+                !isRetroAchievementsRequested -> ProfileRaMode.OFF
+                settingsRepository.isRetroAchievementsHardcoreEnabled() -> ProfileRaMode.HARDCORE
+                else -> ProfileRaMode.CASUAL
+            }
+            val romInfo = getRomInfo(rom)
+            val userCheats = romInfo?.let { getRomEnabledCheats(it) } ?: emptyList()
+            val plannedLaunch = profileLaunchPlanner.plan(
+                rom = rom,
+                romInfo = romInfo,
+                userCheats = userCheats,
+                enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
+                developerWidescreenProbe = developerWidescreenProbe,
+                requestedRaMode = requestedRaMode,
+                saveStateResumeEnabled = settingsRepository.isAutoLoadStateOnLaunchEnabled(),
+            )
+            val policy = plannedLaunch.retroAchievementsPolicy
+            Log.i(
+                "ProfileLaunch",
+                "profile=${plannedLaunch.plan.profileId} integrity=${plannedLaunch.plan.profileIntegrity} requestedRa=${plannedLaunch.plan.requestedRaMode} effectiveRa=${policy.effectiveMode} planSha256=${plannedLaunch.plan.planHash} curatedCodes=${plannedLaunch.plan.curatedRuntimeCodes.size} slot2Analog=${if (plannedLaunch.rom.config.gbaSlotConfig is RomGbaSlotConfig.AnalogInput) 1 else 0} camera=${if (plannedLaunch.plan.enhancements.any { it.id == "right-stick-camera" && it.enabled }) 1 else 0}",
+            )
+            if (policy.effectiveMode == RetroAchievementsEffectiveMode.BLOCKED) {
+                Log.w(
+                    "ProfileLaunch",
+                    "RetroAchievements launch blocked before session bootstrap: reasons=${policy.reasonCodeValues.joinToString(",")}",
+                )
+                _emulatorState.value = EmulatorState.RomLoadError
+                return@coroutineScope
+            }
+
+            currentRom = plannedLaunch.rom
+            activeRomConfig.value = plannedLaunch.rom
+            profileCameraEnabled.value = plannedLaunch.plan.enhancements.any { it.id == "right-stick-camera" && it.enabled }
+            val areRetroAchievementsEnabledForLaunch = policy.effectiveMode != RetroAchievementsEffectiveMode.OFF
+            val endpointSnapshot = if (areRetroAchievementsEnabledForLaunch) {
                 retroAchievementsEndpointProvider.beginSession()
             } else {
                 retroAchievementsEndpointProvider.endSession()
                 retroAchievementsEndpointProvider.currentSnapshot()
             }
-            val launchDecision = (if (isRetroAchievementsEnabledForLaunch) {
-                runCatching {
-                    decideRetroAchievementsLaunchDecision(rom, endpointSnapshot)
-                }.getOrElse { throwable ->
-                    Log.e("EmulatorViewModel", "RetroAchievements launch decision failed for '${rom.name}'", throwable)
-                    RetroAchievementsLaunchDecision(
-                        networkMode = RetroAchievementsNetworkMode.ONLINE_LIVE,
-                        sessionMode = RetroAchievementsSessionMode.SOFTCORE,
-                        initialOfflineType = null,
-                        isHardcoreEligibleAfterOnlineStart = false,
-                        offlineDueToNoInternetAtStart = false,
-                        hardcoreOfflineDisabled = false,
+            val launchDecision = (if (areRetroAchievementsEnabledForLaunch) {
+                try {
+                    decideRetroAchievementsLaunchDecision(
+                        rom = plannedLaunch.rom,
+                        endpointSnapshot = endpointSnapshot,
+                        requestedRaMode = policy.requestedRaMode,
                     )
+                } catch (exception: CancellationException) {
+                    throw exception
+                } catch (exception: Throwable) {
+                    Log.e("EmulatorViewModel", "RetroAchievements launch decision failed for '${plannedLaunch.rom.name}'", exception)
+                    retroAchievementsEndpointProvider.endSession()
+                    _emulatorState.value = EmulatorState.RomLoadError
+                    return@coroutineScope
                 }
             } else {
                 RetroAchievementsLaunchDecision(
@@ -768,8 +803,8 @@ class EmulatorViewModel @Inject constructor(
             startedSessionOnlineLive = launchDecision.networkMode == RetroAchievementsNetworkMode.ONLINE_LIVE
 
             startEmulatorSession(
-                sessionType = EmulatorSession.SessionType.RomSession(rom),
-                areRetroAchievementsEnabled = isRetroAchievementsEnabledForLaunch,
+                sessionType = EmulatorSession.SessionType.RomSession(plannedLaunch.rom),
+                areRetroAchievementsEnabled = areRetroAchievementsEnabledForLaunch,
                 isRetroAchievementsHardcoreModeEnabled = launchDecision.sessionMode == RetroAchievementsSessionMode.HARDCORE,
             )
             startObservingMainScreenBackground()
@@ -779,8 +814,8 @@ class EmulatorViewModel @Inject constructor(
             startObservingEmulatorEvents()
             startObservingAchievementEvents()
             startObservingLayoutForRom()
-            if (isRetroAchievementsEnabledForLaunch) {
-                startRetroAchievementsSession(rom, launchDecision).await()
+            if (areRetroAchievementsEnabledForLaunch) {
+                startRetroAchievementsSession(plannedLaunch.rom, launchDecision).await()
             } else {
                 activeRuntimeBridgeConfig = null
                 activeRuntimePath = RetroAchievementsRuntimePath.DISABLED
@@ -790,22 +825,6 @@ class EmulatorViewModel @Inject constructor(
                 )
             }
 
-            val romInfo = getRomInfo(rom)
-            val userCheats = romInfo?.let { getRomEnabledCheats(it) } ?: emptyList()
-            val plannedLaunch = profileLaunchPlanner.plan(
-                rom = rom,
-                romInfo = romInfo,
-                userCheats = userCheats,
-                enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
-                developerWidescreenProbe = developerWidescreenProbe,
-            )
-            currentRom = plannedLaunch.rom
-            activeRomConfig.value = plannedLaunch.rom
-            profileCameraEnabled.value = plannedLaunch.plan.enhancements.any { it.id == "right-stick-camera" && it.enabled }
-            Log.i(
-                "ProfileLaunch",
-                "profile=${plannedLaunch.plan.profileId} curatedCodes=${plannedLaunch.plan.curatedRuntimeCodes.size} slot2Analog=${if (plannedLaunch.rom.config.gbaSlotConfig is RomGbaSlotConfig.AnalogInput) 1 else 0} camera=${if (profileCameraEnabled.value) 1 else 0}",
-            )
             val result = emulatorManager.loadRom(plannedLaunch.rom, plannedLaunch.cheats)
             when (result) {
                 is RomLaunchResult.LaunchFailedRomNotFound,
@@ -869,9 +888,10 @@ class EmulatorViewModel @Inject constructor(
     private suspend fun decideRetroAchievementsLaunchDecision(
         rom: Rom,
         endpointSnapshot: RetroAchievementsEndpointSnapshot,
+        requestedRaMode: ProfileRaMode,
     ): RetroAchievementsLaunchDecision {
         val startedOnline = networkStatusProvider.isOnline()
-        val hardcoreSettingEnabled = settingsRepository.isRetroAchievementsHardcoreEnabled()
+        val hardcoreSettingEnabled = requestedRaMode == ProfileRaMode.HARDCORE
         val offlineSoftcoreEnabled = settingsRepository.isRetroAchievementsOfflineSoftcoreEnabled()
         val userAuth = retroAchievementsRepository.getUserAuthentication()
 
@@ -1580,6 +1600,11 @@ class EmulatorViewModel @Inject constructor(
                     userCheats = userCheats,
                     enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
                     developerWidescreenProbe = developerWidescreenProbe,
+                    requestedRaMode = when {
+                        !emulatorSession.isRetroAchievementsEnabledForSession() -> ProfileRaMode.OFF
+                        emulatorSession.isRetroAchievementsHardcoreModeEnabled -> ProfileRaMode.HARDCORE
+                        else -> ProfileRaMode.CASUAL
+                    },
                 )
                 emulatorManager.updateCheats(plannedLaunch.cheats)
             }

@@ -68,7 +68,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M6 | IN_PROGRESS | 883d00cf | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; physical gameplay scenarios remain |
 | M7 | IN_PROGRESS | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, newline-safe parser, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and Castle Garden classifier matrices verified; save-state-assisted Castle Garden route, native-versus-probe world/FOV comparison, measured game projection response, Thor-default world plus packed-UI rotation, readable pause overlay, 10-second `FPS: 60` movement smoke and a corrected 180-sample unique-frame live classifier burst recorded; object aspect, side-region culling, exact HUD/glyph/bottom geometry and transition gates remain open |
 | M8 | NOT_STARTED | | | |
-| M9 | IN_PROGRESS | policy-foundation | docs/evidence/m9/ | Android-free RetroAchievements policy foundation and deterministic JVM matrix; runtime launch wiring and full M9 acceptance remain open |
+| M9 | IN_PROGRESS | policy-foundation + M9.2 launch-policy wiring | docs/evidence/m9/ | Android-free policy foundation, unsupported-mode fail-closed handling and pre-bootstrap launch gate verified; native/network/offline validation and full M9 acceptance remain open; publication is PASS_WITH_KNOWN_LEGACY_HISTORY |
 | M10 | NOT_STARTED | | | |
 | M11 | NOT_STARTED | | | |
 | M12 | NOT_STARTED | | | |
@@ -78,8 +78,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 - Analog: IMPLEMENTED_PENDING_GAMEPLAY
 - True Widescreen: SPIKE_IN_PROGRESS_NO_GO_FOR_M8
-- RA Casual: POLICY_FOUNDATION_ONLY
-- RA Hardcore gate: POLICY_FOUNDATION_ONLY
+- RA Casual: POLICY_WIRED_PRE_BOOTSTRAP
+- RA Hardcore gate: POLICY_WIRED_PRE_BOOTSTRAP
 - ARM9 OC: NOT_STARTED
 - 60fps: RESEARCH_ONLY
 - Thor GUI: NOT_STARTED
@@ -89,9 +89,12 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 Keep the remaining M7 Castle Garden measurements on the critical path:
 object aspect, new-side-region culling, exact HUD/glyph/bottom geometry and
-longer transition stability. In parallel, wire the M9 policy foundation into
-launch planning only after the existing session-integrity contract is mapped.
-The live classifier now has unique contiguous frames, but that is not itself a
-game transition proof. Keep M8 and full M9 acceptance blocked until their
-remaining evidence is green.
+longer transition stability. The M9.2 policy gate is now wired into launch
+planning after the existing session-integrity contract was mapped. Unsupported
+requested RA modes and launch-decision exceptions fail closed before
+emulator/native bootstrap; keep native/network/offline and physical RA
+acceptance separate from this bounded evidence. The live classifier now has
+unique contiguous frames, but that is not itself a game transition proof.
+W-20 Castle Garden world-to-pause-to-world is the next runnable M7 gate. Keep
+M8 and full M9 acceptance blocked until their remaining evidence is green.
 The M6 gameplay checklist also remains pending.
