@@ -1,0 +1,23 @@
+{
+  "milestone": "M13",
+  "gate": "camera protocol consumption boundary",
+  "device": "AYN Thor",
+  "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+  "runtime": {
+    "cameraHookWord": "0xEA01A7AF",
+    "cameraPointer": "0x0217E080",
+    "cameraProtocolReadsBefore": 0,
+    "cameraProtocolReadsAfter": 0,
+    "nativeYawInputQ12": 4096,
+    "nativeYawUnitsPerTick": 1001,
+    "cameraYawOffsetBefore": 0,
+    "cameraYawOffsetAfter": 0
+  },
+  "result": "FAIL_HOOK_PATH_NOT_READING_PROTOCOL",
+  "notes": [
+    "The protocol-read counter is inside CartAnalog mode-2 ROMRead and is runtime-only diagnostic state.",
+    "The active hook word is present, but no mode-2 protocol read occurred during the realtime hold.",
+    "A local research arm9.bin was not used as a patch source because its bytes do not match the exact loaded EU runtime layout.",
+    "The existing camera payload remains unchanged; no unverified hook relocation was shipped."
+  ]
+}

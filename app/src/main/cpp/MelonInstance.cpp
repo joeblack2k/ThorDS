@@ -1176,6 +1176,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
             + std::to_string(nds == nullptr ? 0u : nds->GetSm64dsCameraBehaviorCalls())
             + ",\"cameraPointer\":" + std::to_string(cameraPointer)
             + ",\"cameraHookWord\":" + std::to_string(cameraHookWord)
+            + ",\"cameraProtocolReads\":" + std::to_string(nds == nullptr ? 0u : nds->GBACartSlot.GetCameraProtocolReadCount())
             + ",\"cameraCurrentYaw\":" + std::to_string(cameraCurrentYaw)
             + ",\"cameraBaseYaw\":" + std::to_string(cameraBaseYaw)
             + ",\"cameraYawOffset\":" + std::to_string(cameraYawOffset) + "}";
@@ -1190,6 +1191,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"cameraBehaviorCalls\":" + std::to_string(nds->GetSm64dsCameraBehaviorCalls())
         + ",\"cameraPointer\":" + std::to_string(cameraPointer)
         + ",\"cameraHookWord\":" + std::to_string(cameraHookWord)
+        + ",\"cameraProtocolReads\":" + std::to_string(nds->GBACartSlot.GetCameraProtocolReadCount())
         + ",\"cameraCurrentYaw\":" + std::to_string(cameraCurrentYaw)
         + ",\"cameraBaseYaw\":" + std::to_string(cameraBaseYaw)
         + ",\"cameraYawOffset\":" + std::to_string(cameraYawOffset) + "}";

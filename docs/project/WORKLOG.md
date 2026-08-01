@@ -1922,3 +1922,15 @@ Evidence:
 - The failure boundary is now the SM64DS game-side hook/protocol consumption;
   Android input and the native camera-state bridge are no longer the blocker.
 - Evidence: `docs/evidence/m13/f4-game-side-camera-hook.json`.
+## 2026-08-01 - M13 camera protocol read boundary
+
+- Added a runtime-only counter for `CartAnalog` mode-2 protocol reads.
+- On the Thor, a valid native yaw hold (`yawInputQ12=4096`,
+  `yawUnitsPerTick=1001`, `flags=3`) produced zero mode-2 protocol reads
+  before and after the hold.
+- The active hook word remained present, but the hook path did not consume the
+  protocol. This narrows the defect to the exact hook entry/overlay execution
+  path rather than the Android or native protocol bridge.
+- A local research ARM9 binary was rejected as a patch source because its bytes
+  do not match the exact loaded EU runtime layout.
+- Evidence: `docs/evidence/m13/f4-camera-protocol-read-boundary.json`.
