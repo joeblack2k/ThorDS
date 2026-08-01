@@ -1105,8 +1105,14 @@ MelonInstance::MelonInstance(int instanceId, std::shared_ptr<EmulatorConfigurati
     retroAchievementsManager = std::make_unique<RetroAchievements::RetroAchievementsManager>(nds);
 
     nds->Reset();
+    nds->SetARM9OverclockPercent(static_cast<u32>(configuration->arm9OverclockPercent));
     setBatteryLevels();
     setDateTime();
+}
+
+u32 MelonInstance::getArm9OverclockPercent() const
+{
+    return nds == nullptr ? 100u : nds->GetARM9OverclockPercent();
 }
 
 MelonInstance::~MelonInstance()

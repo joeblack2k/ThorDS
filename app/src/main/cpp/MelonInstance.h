@@ -44,6 +44,7 @@ public:
     bool precompileVulkanPipelines(const VulkanSurfaceConfig& retroArchConfig);
     void start();
     void reset();
+    u32 getArm9OverclockPercent() const;
     melonDS::u32 runFrame();
     void stop();
 

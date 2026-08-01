@@ -119,6 +119,7 @@ typedef struct
     SdCardSettings dldiSdCardSettings;
     Renderer renderer;
     uint32_t dsiWareAutoloadTitleId;
+    int arm9OverclockPercent;
 } EmulatorConfiguration;
 
 }

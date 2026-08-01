@@ -686,6 +686,12 @@ namespace MelonDSAndroid
         instance->start();
     }
 
+    u32 getArm9OverclockPercent()
+    {
+        auto currentInstance = GetInstanceSnapshot();
+        return currentInstance == nullptr ? 100u : currentInstance->getArm9OverclockPercent();
+    }
+
     u32 loop()
     {
         MPInterface::Get().Process();
