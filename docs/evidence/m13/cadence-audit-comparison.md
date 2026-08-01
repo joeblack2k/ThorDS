@@ -14,5 +14,7 @@ The read-only comparison checkout uses audit commit
 
 The two inventories are not interchangeable. The two-finding delta requires
 manual review of the changed files before any cadence consumer is patched.
-The product gate remains red while the inventory contains unresolved
-`unknown` consumers.
+The product gate remains red while the inventory contains consumers that still
+need manual decomp review. They are classified as `timer`, `scheduler`,
+`message/HUD`, `render/OAM`, `scene-update` or `boot/init`; none remain under
+the generic `unknown` or `unresolved-function` category.

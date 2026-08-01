@@ -10,9 +10,22 @@ from pathlib import Path
 
 SUFFIXES = {".c", ".cc", ".cpp", ".h", ".hpp"}
 FUNCTION = re.compile(r"^\s*(?:[\w:<>,~*&]+\s+)+([\w:~]+)\s*\([^;]*\)")
+FILE_CATEGORIES = {
+    "src/func_02005418.c": "scene-update",
+    "src/func_02005a58.c": "boot/init",
+    "src/func_020199a4.c": "scheduler",
+    "src/func_02019ac4.c": "timer",
+    "src/func_02020768.c": "timer",
+    "src/func_020326ac.c": "message/HUD",
+    "src/func_02034b40.c": "render/OAM",
+    "src/func_0203506c.c": "boot/init",
+}
 
 
 def category(path: Path, line: str, function: str | None) -> str:
+    explicit = FILE_CATEGORIES.get(path.as_posix())
+    if explicit:
+        return explicit
     text = f"{path} {line} {function or ''}".lower()
     if any(x in text for x in ("vblank", "irq", "mainloop", "main_loop", "slot1")):
         return "scheduler"
@@ -68,7 +81,7 @@ def main() -> int:
             findings.append({
                 "file": rel, "line": number, "function": function,
                 "kind": "write" if write else "read",
-                "category": category(path, line, function), "text": line.strip(),
+                "category": category(Path(rel), line, function), "text": line.strip(),
             })
     payload = {
         "schemaVersion": 1, "symbol": args.symbol, "sourceRoot": root.name,

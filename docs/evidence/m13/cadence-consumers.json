@@ -833,7 +833,7 @@
       "text": "F254 -= data_0208ee44;"
     },
     {
-      "category": "unresolved-function",
+      "category": "scene-update",
       "file": "src/func_02005418.c",
       "function": null,
       "kind": "read",
@@ -849,7 +849,7 @@
       "text": "r4 = data_0208ee44;"
     },
     {
-      "category": "unresolved-function",
+      "category": "boot/init",
       "file": "src/func_02005a58.c",
       "function": "func_0201a244",
       "kind": "read",
@@ -865,7 +865,7 @@
       "text": "*(int*)(&data_0208ee44) = 1;"
     },
     {
-      "category": "unresolved-function",
+      "category": "scheduler",
       "file": "src/func_020199a4.c",
       "function": "func_020132d8",
       "kind": "read",
@@ -873,7 +873,7 @@
       "text": "extern int data_0208ee44;"
     },
     {
-      "category": "unresolved-function",
+      "category": "scheduler",
       "file": "src/func_020199a4.c",
       "function": "func_020199a4",
       "kind": "read",
@@ -881,7 +881,7 @@
       "text": "int dt = data_0208ee44;"
     },
     {
-      "category": "unresolved-function",
+      "category": "timer",
       "file": "src/func_02019ac4.c",
       "function": "func_02011db4",
       "kind": "read",
@@ -889,7 +889,7 @@
       "text": "extern int data_0208ee44;"
     },
     {
-      "category": "unresolved-function",
+      "category": "timer",
       "file": "src/func_02019ac4.c",
       "function": "func_02019ac4",
       "kind": "read",
@@ -897,7 +897,7 @@
       "text": "delta = data_0208ee44;"
     },
     {
-      "category": "unresolved-function",
+      "category": "timer",
       "file": "src/func_02020768.c",
       "function": "func_0202043c",
       "kind": "read",
@@ -905,7 +905,7 @@
       "text": "extern int data_0208ee44;"
     },
     {
-      "category": "unresolved-function",
+      "category": "timer",
       "file": "src/func_02020768.c",
       "function": "func_02020768",
       "kind": "read",
@@ -913,7 +913,7 @@
       "text": "*acc += data_0208ee44;"
     },
     {
-      "category": "unresolved-function",
+      "category": "message/HUD",
       "file": "src/func_020326ac.c",
       "function": null,
       "kind": "read",
@@ -921,7 +921,7 @@
       "text": "extern s32 data_0208ee44;"
     },
     {
-      "category": "unresolved-function",
+      "category": "message/HUD",
       "file": "src/func_020326ac.c",
       "function": "func_020326ac",
       "kind": "read",
@@ -929,7 +929,7 @@
       "text": "if (data_020a0db0 & (0x10 / data_0208ee44)) {"
     },
     {
-      "category": "unresolved-function",
+      "category": "message/HUD",
       "file": "src/func_020326ac.c",
       "function": "func_020326ac",
       "kind": "read",
@@ -937,7 +937,7 @@
       "text": "if (data_020a0db0 & (0x10 / data_0208ee44)) {"
     },
     {
-      "category": "unresolved-function",
+      "category": "message/HUD",
       "file": "src/func_020326ac.c",
       "function": "func_020326ac",
       "kind": "read",
@@ -945,7 +945,7 @@
       "text": "if (data_020a0db0 & (0x10 / data_0208ee44)) {"
     },
     {
-      "category": "unresolved-function",
+      "category": "message/HUD",
       "file": "src/func_020326ac.c",
       "function": "func_020326ac",
       "kind": "read",
@@ -961,7 +961,7 @@
       "text": "extern int data_0208ee44;"
     },
     {
-      "category": "unresolved-function",
+      "category": "render/OAM",
       "file": "src/func_02034b40.c",
       "function": "func_02034b40",
       "kind": "read",
@@ -969,7 +969,7 @@
       "text": "*(int*)(((long long)(int)(self + 8)) & 0xFFFFFFFFFFFFFFFFLL) += (data_0208ee44 << 10);"
     },
     {
-      "category": "unresolved-function",
+      "category": "render/OAM",
       "file": "src/func_02034b40.c",
       "function": "func_02034b40",
       "kind": "read",
@@ -977,7 +977,7 @@
       "text": "*(unsigned char*)(((long long)(int)(self + 0xc)) & 0xFFFFFFFFFFFFFFFFLL) -= data_0208ee44;"
     },
     {
-      "category": "unresolved-function",
+      "category": "boot/init",
       "file": "src/func_0203506c.c",
       "function": "func_0201a244",
       "kind": "read",

@@ -1679,8 +1679,22 @@ Evidence:
   animation, physics, timer and scene-specific groups.
 - Re-ran the EU inventory: 192 findings; 16 low-level `func_...` entries remain
   explicitly `unresolved-function` for manual decomp review.
-- This reduces false `unknown` grouping but does not close F2 or authorize a
-  cadence patch.
+- The explicit file mapping now resolves those entries to timer, scheduler,
+  message/HUD, render/OAM, scene-update and boot/init categories. The generated
+  inventory has no `unknown` or `unresolved-function` category.
+- F2 remains open for semantic/manual review of the classified consumers and
+  still does not authorize a cadence patch.
+
+### 2026-08-01 - M13 F2 classification output consistency
+
+- Regenerated `docs/evidence/m13/cadence-consumers.json` and its Markdown view
+  from the pinned EU source tree after fixing the scanner to classify relative
+  source paths consistently.
+- The inventory remains 192 findings with the same source-tree SHA-256:
+  `1a9a06cd51443f7f28fda8c35edbc276fc8a6074aaf2e9b49c4340e14d490499`.
+- A self-check confirms there are no generic `unknown` or
+  `unresolved-function` findings. This is classification evidence only; F2
+  semantic review and 60fps runtime validation remain open.
 
 ### 2026-08-01 - M13 F3 developer cadence probe definition
 
