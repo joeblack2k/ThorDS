@@ -53,7 +53,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M8 | PASS | 30fdad53 | docs/evidence/m8/ | exact-profile True Widescreen product path, layer-aware fallback, safe-mode/relaunch behavior, build and Thor smoke validated; no per-frame 16:9/4:3 flicker observed after the session-lock correction |
 | M9 | PASS | b9893fe4 | docs/evidence/m9/ | policy foundation, fail-closed launch gate and real Thor RetroAchievements unlock validated; inherited legacy-history bounds remain documented |
 | M10 | PARTIAL | ad3a5179 | docs/evidence/m10/ | guarded native/JNI config, scheduler snapshots, persisted preference fail-closed check, incompatible-ratio savestate guard, 100% telemetry and stability are green; 64-bit scaled-cycle truncation fixed; equivalence, drift and formal over-100 runtime gates remain open |
-| M11 | PARTIAL | a9d3e0e7 | docs/evidence/m11/ | ROM-details resolved ThorDS profile status plus per-ROM Original/Enhanced and RA mode controls compile and smoke green; relaunch staging and full physical details-flow acceptance remain open |
+| M11 | PARTIAL | 760f3c2b | docs/evidence/m11/ | ROM-details resolved ThorDS profile status plus per-ROM Original/Enhanced and RA mode controls compile and smoke green; Enhanced relaunch and physical details navigation are witnessed; broader control matrix remains open |
 | M12 | BLOCKED | docs: record M12 release preflight matrix | docs/evidence/m12/ | inventory only; release remains blocked by incomplete product and device gates |
 | M13 | NOT_STARTED | | | |
 

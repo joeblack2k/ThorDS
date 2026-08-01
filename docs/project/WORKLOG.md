@@ -1452,6 +1452,9 @@ Evidence:
 
 ### Boundary
 
-- This closes the bounded read-only M11 status slice only.
-- Profile editing/toggle controls, atomic relaunch staging, physical ROM
-  details navigation and the full M11 acceptance gate remain open.
+- This closes the bounded M11 status/control slice, including the physical
+  Enhanced relaunch witness.
+- M9 RetroAchievements is already closed as `PASS`; the owner-confirmed real
+  Casual unlock must not be repeated. The broader M11 acceptance remains
+  open for the missing Analog, requested/effective widescreen, ARM9 ratio,
+  60 FPS labeling, conflict-recovery and full physical-flow gates.

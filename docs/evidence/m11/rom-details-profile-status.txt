@@ -56,5 +56,8 @@ Validation:
 - Confirmed launch and relaunch logcat contained no `FATAL EXCEPTION` or
   `ANR in`.
 
-This is a bounded status/control slice. Explicit relaunch staging,
-physical ROM-details navigation and the complete M11 acceptance remain open.
+This is a bounded status/control slice. Relaunch staging and physical
+ROM-details navigation are witnessed. M9 RetroAchievements Casual unlock is
+closed separately by owner-confirmed real gameplay evidence; it must not be
+repeated. The complete M11 acceptance remains open for the broader profile
+control matrix and recovery/physical-flow gates.
