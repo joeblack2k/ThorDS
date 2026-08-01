@@ -1910,3 +1910,15 @@ Evidence:
   not yet prove the game-side camera patch visibly rotates the view or establish
   physical axis direction.
 - Evidence: `docs/evidence/m13/f4-native-camera-state.json`.
+## 2026-08-01 - M13 game-side camera hook failure isolated
+
+- Added game-side camera telemetry for the EU camera pointer and yaw fields:
+  `data_0209F318`, `camera+0x180`, `camera+0x182` and `camera+0x184`.
+- Verified on the Thor that the hook word at `0x0200BCF0` is active and
+  branches to the payload at `0x02075BB4`.
+- During a valid native yaw hold (`yawInputQ12=4096`,
+  `yawUnitsPerTick=1001`, `flags=3`), the camera pointer remained
+  `0x0217E080`, but current yaw and yaw offset stayed zero.
+- The failure boundary is now the SM64DS game-side hook/protocol consumption;
+  Android input and the native camera-state bridge are no longer the blocker.
+- Evidence: `docs/evidence/m13/f4-game-side-camera-hook.json`.

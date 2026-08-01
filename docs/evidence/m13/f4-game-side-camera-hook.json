@@ -1,0 +1,36 @@
+{
+  "milestone": "M13",
+  "gate": "game-side camera hook application",
+  "device": "AYN Thor",
+  "checkpoint": "private thords-m13-60fps-gameplay.ml0",
+  "hook": {
+    "address": "0x0200BCF0",
+    "runtimeWord": "0xEA01A7AF",
+    "payload": "0x02075BB4",
+    "active": true
+  },
+  "nativeInput": {
+    "yawInputQ12": 4096,
+    "yawUnitsPerTick": 1001,
+    "flags": 3
+  },
+  "gameSideBefore": {
+    "cameraPointer": "0x0217E080",
+    "cameraCurrentYaw": 0,
+    "cameraBaseYaw": 0,
+    "cameraYawOffset": 0
+  },
+  "gameSideAfter": {
+    "cameraPointer": "0x0217E080",
+    "cameraCurrentYaw": 0,
+    "cameraBaseYaw": 0,
+    "cameraYawOffset": 0
+  },
+  "result": "FAIL_HOOK_DOES_NOT_APPLY_NATIVE_YAW",
+  "notes": [
+    "The Android and native protocol path is proven separately.",
+    "The runtime hook word is present at the expected ARM9 address.",
+    "The game-side camera fields did not change during the realtime yaw hold.",
+    "No camera-direction or 60 FPS product acceptance claim is made."
+  ]
+}

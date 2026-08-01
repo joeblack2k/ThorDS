@@ -1136,9 +1136,49 @@ std::string MelonInstance::getArm9OverclockTelemetryJson() const
 std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
 {
     std::lock_guard lock(sm64dsGameLoopTelemetryMutex);
+    u32 cameraPointer = 0;
+    u32 cameraHookWord = 0;
+    s16 cameraCurrentYaw = 0;
+    s16 cameraBaseYaw = 0;
+    s16 cameraYawOffset = 0;
+    if (nds != nullptr && nds->MainRAM != nullptr)
+    {
+        constexpr u32 kMainRamBase = 0x02000000;
+        constexpr u32 kCameraHookAddress = 0x0200BCF0;
+        constexpr u32 kCameraPointerAddress = 0x0209F318;
+        cameraHookWord = nds->ARM9Read32(kCameraHookAddress);
+        const u32 pointerOffset = (kCameraPointerAddress - kMainRamBase) & nds->MainRAMMask;
+        if (pointerOffset <= nds->MainRAMMask - 3)
+        {
+            const u8* pointerBytes = nds->MainRAM + pointerOffset;
+            cameraPointer = static_cast<u32>(pointerBytes[0])
+                | (static_cast<u32>(pointerBytes[1]) << 8)
+                | (static_cast<u32>(pointerBytes[2]) << 16)
+                | (static_cast<u32>(pointerBytes[3]) << 24);
+            const u32 cameraOffset = (cameraPointer - kMainRamBase) & nds->MainRAMMask;
+            if (cameraPointer >= kMainRamBase && cameraOffset <= nds->MainRAMMask - 0x186)
+            {
+                const u8* cameraBytes = nds->MainRAM + cameraOffset;
+                auto readS16 = [&](u32 offset) {
+                    return static_cast<s16>(
+                        static_cast<u16>(cameraBytes[offset])
+                        | (static_cast<u16>(cameraBytes[offset + 1]) << 8)
+                    );
+                };
+                cameraCurrentYaw = readS16(0x180);
+                cameraBaseYaw = readS16(0x182);
+                cameraYawOffset = readS16(0x184);
+            }
+        }
+    }
     if (!sm64dsGameLoopCounterInitialized)
         return "{\"valid\":false,\"source\":\"sm64ds-eu-decomp-main-loop\",\"cameraBehaviorCalls\":"
-            + std::to_string(nds == nullptr ? 0u : nds->GetSm64dsCameraBehaviorCalls()) + "}";
+            + std::to_string(nds == nullptr ? 0u : nds->GetSm64dsCameraBehaviorCalls())
+            + ",\"cameraPointer\":" + std::to_string(cameraPointer)
+            + ",\"cameraHookWord\":" + std::to_string(cameraHookWord)
+            + ",\"cameraCurrentYaw\":" + std::to_string(cameraCurrentYaw)
+            + ",\"cameraBaseYaw\":" + std::to_string(cameraBaseYaw)
+            + ",\"cameraYawOffset\":" + std::to_string(cameraYawOffset) + "}";
     return "{\"valid\":true,\"source\":\"sm64ds-eu-decomp-main-loop\",\"address\":\"0x020A0DB0\",\"windowWallNs\":"
         + std::to_string(sm64dsGameLoopLatestWallNs)
         + ",\"uniqueUpdates\":" + std::to_string(sm64dsGameLoopLatestUpdates)
@@ -1147,7 +1187,12 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"lastDelta\":" + std::to_string(sm64dsGameLoopLatestDelta)
         + ",\"cadenceValue\":" + std::to_string(sm64dsGameLoopLatestCadence)
         + ",\"stageTimer\":" + std::to_string(sm64dsGameLoopLatestStageTimer)
-        + ",\"cameraBehaviorCalls\":" + std::to_string(nds->GetSm64dsCameraBehaviorCalls()) + "}";
+        + ",\"cameraBehaviorCalls\":" + std::to_string(nds->GetSm64dsCameraBehaviorCalls())
+        + ",\"cameraPointer\":" + std::to_string(cameraPointer)
+        + ",\"cameraHookWord\":" + std::to_string(cameraHookWord)
+        + ",\"cameraCurrentYaw\":" + std::to_string(cameraCurrentYaw)
+        + ",\"cameraBaseYaw\":" + std::to_string(cameraBaseYaw)
+        + ",\"cameraYawOffset\":" + std::to_string(cameraYawOffset) + "}";
 }
 
 void MelonInstance::setSm64dsSemanticMonitorEnabled(bool enabled)
