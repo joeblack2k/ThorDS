@@ -125,6 +125,19 @@ internal object RendererDebugCaptureLogger {
 
         RendererDebugBridge.clearPreparedRendererSnapshot()
         RendererDebugBridge.clearDenseScreenBurstCapture()
+        val initialFrame = RendererDebugBridge.getCurrentFrameIndexForDebug()
+        if (initialFrame >= 0) {
+            // A resumed Vulkan stream can expose its old frame for a few
+            // polls; starting the native burst there records duplicate IDs.
+            val warmupDeadlineAt = System.nanoTime() +
+                minOf(timeoutMs.coerceAtLeast(1L), 500L) * 1_000_000L
+            while (
+                System.nanoTime() < warmupDeadlineAt
+                && RendererDebugBridge.getCurrentFrameIndexForDebug() <= initialFrame
+            ) {
+                kotlinx.coroutines.delay(8L)
+            }
+        }
         RendererDebugBridge.startDenseScreenBurstCapture(safeBurstCount, safeStepFrames, captureKindsMask)
 
         val deadlineAt = System.nanoTime() + timeoutMs.coerceAtLeast(1L) * 1_000_000L

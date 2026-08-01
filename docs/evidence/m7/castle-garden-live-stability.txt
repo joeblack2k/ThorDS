@@ -31,18 +31,34 @@ Observed classifier
   not yield a discriminating object or HUD mask, so no new pixel-ratio claim
   is made from them.
 
-Harness limitation
+Initial harness finding
 
 - The first nine burst samples carried `frameId=0`; subsequent populated
   samples advanced continuously from `frameId=19` through `frameId=189`.
 - No classifier change or crash/ANR occurred, but the repeated startup frame
   means this run is not a complete W-20 proof of unique frame cadence.
+
+Bounded harness correction
+
+- The debug-only dense-burst route now waits for one renderer frame advance
+  after resume before starting the native capture buffer.
+- The same Castle Garden checkpoint and 180-sample command were rerun after
+  rebuilding and reinstalling the GitHubProdDebug APK.
+- Captures completed: 180/180.
+- Frame ids were unique and contiguous: `20..199`, one sample per id.
+- The top/bottom classifier values remained identical to the first run.
+- No classifier change, crash or ANR occurred.
+
+Remaining M7 gates
+
+- The corrected run proves unique live-frame cadence for the Castle Garden
+  classifier, but it is not a game world-to-pause-to-world transition run.
 - The run does not close W-01 object aspect, W-03 side-region culling,
   W-04/W-05 HUD and glyph ratios, W-06 bottom ratio or W-20 transitions.
 
 Result
 
-`PARTIAL_PASS_M7_LIVE_CLASSIFIER_STABLE`
+`PARTIAL_PASS_M7_LIVE_CLASSIFIER_STABLE_UNIQUE_FRAMES`
 
 Castle Garden is sufficient as the M7 representative scene; Bob-omb
 Battlefield is not required. M8 remains blocked until the remaining geometry

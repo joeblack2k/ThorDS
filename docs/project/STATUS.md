@@ -47,8 +47,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   result, not yet object-aspect, side-region culling, exact HUD/glyph/bottom
   metrics or sustained transition proof. A fresh 180-sample Castle Garden
   live metadata burst kept the world-safe classifier stable for all populated
-  samples; its capture startup repeated frame 0 nine times, so it is not a
-  unique-frame W-20 pass.
+  samples. The bounded debug-capture warmup fix was then rebuilt, installed and
+  rerun: 180 unique contiguous frame ids (`20..199`) were captured without a
+  classifier change, crash or ANR. This is still not a game transition proof.
 - Active blocker: castle-grounds object-aspect, side-region culling, exact
   HUD/glyph/bottom geometry and transition measurements. The owner explicitly
   selected controllable castle grounds as the M7 representative scene;
@@ -65,7 +66,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M4 | PASS | 04ed45bd | docs/evidence/m4/ | catalog v1, exact resolver, safe Original fallback, curated/user separation and synthetic delta patches |
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
 | M6 | IN_PROGRESS | 883d00cf | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; physical gameplay scenarios remain |
-| M7 | IN_PROGRESS | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, newline-safe parser, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and Castle Garden classifier matrices verified; save-state-assisted Castle Garden route, native-versus-probe world/FOV comparison, measured game projection response, Thor-default world plus packed-UI rotation, readable pause overlay, 10-second `FPS: 60` movement smoke and a 180-sample stable live classifier burst recorded; object aspect, side-region culling, exact HUD/glyph/bottom geometry and transition gates remain open |
+| M7 | IN_PROGRESS | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, newline-safe parser, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and Castle Garden classifier matrices verified; save-state-assisted Castle Garden route, native-versus-probe world/FOV comparison, measured game projection response, Thor-default world plus packed-UI rotation, readable pause overlay, 10-second `FPS: 60` movement smoke and a corrected 180-sample unique-frame live classifier burst recorded; object aspect, side-region culling, exact HUD/glyph/bottom geometry and transition gates remain open |
 | M8 | NOT_STARTED | | | |
 | M9 | NOT_STARTED | | | |
 | M10 | NOT_STARTED | | | |
@@ -88,7 +89,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 Run the remaining M7 Castle Garden measurements with the optimized debug APK:
 object aspect, new-side-region culling, exact HUD/glyph/bottom geometry and
-longer transition stability. The live classifier is stable but its startup
-frame repetition is not a unique-frame transition proof. Keep M8 blocked until
-that evidence is green.
+longer transition stability. The live classifier now has unique contiguous
+frames, but that is not itself a game transition proof. Keep M8 blocked until
+the remaining evidence is green.
 The M6 gameplay checklist also remains pending.

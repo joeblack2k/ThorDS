@@ -676,3 +676,20 @@ Result:
 `PARTIAL_PASS_M7_LIVE_CLASSIFIER_STABLE`. Castle Garden remains the sole M7
 representative scene; Bob-omb Battlefield is explicitly out of scope. W-01,
 W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
+
+## Castle Garden live burst warmup correction - 2026-08-01
+
+- Root cause: the debug-only dense capture buffer started immediately after
+  resume and could collect the old renderer frame several times.
+- Bounded fix: `RendererDebugCaptureLogger` now waits for one renderer frame
+  advance before starting a live dense burst. Product rendering and frame
+  pacing are unchanged.
+- Validation: rebuilt and reinstalled GitHubProdDebug on the physical Thor,
+  then repeated the exact 180-sample Castle Garden metadata command.
+- Result: `180/180` populated samples with unique contiguous frame ids
+  `20..199`; the expected world-safe classifier remained unchanged, with no
+  classifier switch, ThorDS crash or ANR.
+- The fix closes the capture startup repetition, not the distinct W-20
+  world-to-pause-to-world transition gate. Object aspect, side-region culling,
+  HUD/glyph/bottom ratios and actual transitions remain open.
+- Evidence: `docs/evidence/m7/castle-garden-live-stability.txt`.
