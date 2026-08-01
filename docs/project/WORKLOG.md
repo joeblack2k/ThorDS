@@ -973,3 +973,40 @@ Evidence: `docs/evidence/m11/session-status-pause.txt`.
   completion claim is made.
 
 Evidence: `docs/evidence/m12/release-preflight.txt`.
+
+## G0 state reconciliation - 2026-08-01
+
+### Reconciliation
+
+- Imported the additive 40-file ThorDS Green Pass dossier after verifying every
+  manifest SHA-256.
+- Confirmed live `HEAD` and public `origin/main` at the documented
+  `a2aa88e5` baseline; the public default branch remains `main`.
+- Preserved `upstream` for MelonDualDS synchronization and verified the
+  initialized submodules. The pinned core commit is reachable from its public
+  upstream branch.
+- Kept the owner-requested `melon.zip` artifact untracked and outside the G0
+  documentation commit.
+
+### Device and ROM
+
+- Confirmed the connected device class as AYN Thor and both expected physical
+  display roles. Android display metadata alone does not resolve the owner's
+  observed 180-degree top-screen rendering defect.
+- Confirmed the local ROM is still ignored, unchanged and exactly ASMP,
+  revision 0, with the documented RetroAchievements system hash.
+
+### Safety
+
+- Tracked and reachable-history ROM/save extension scans are empty.
+- The tracked sensitive-name scan contains only the reviewed
+  `AndroidKeystoreOfflineLedgerSigner.kt` source file, with no key material.
+- Existing public-history bounds remain unchanged: deleted upstream firmware
+  and romlist binaries plus the documented NIST AES test-vector false positive.
+  G0 does not rewrite history or force-push.
+
+### Decision
+
+G0 is `PASS`. The active workstream is G1 analog closeout, followed by G2
+Castle Garden proof closeout. Evidence:
+`docs/evidence/g0/state-reconciliation.txt`.

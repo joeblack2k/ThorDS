@@ -1,0 +1,46 @@
+Date: 2026-08-01
+Commit: a2aa88e58031b15a5a77abe33feb2d7fe70a3721
+APK SHA-256: not applicable; state reconciliation only
+Device class without serial: AYN Thor
+Scope: G0 repository, dossier, device, ROM identity and publication safety
+Method: local Git, GitHub CLI, ADB display metadata, manifest hashes and scans
+Result: PASS
+Limitations: Android rotation metadata does not close the reported physical
+  180-degree top-screen rendering defect; no visual orientation claim is made
+Cleanup/safety: no ROM/save/private capture/device serial/credential retained
+
+Repository
+- HEAD exactly matches the documented baseline: PASS
+- baseline is an ancestor of HEAD: PASS
+- origin is joeblack2k/ThorDS and public default branch is main: PASS
+- upstream remains SapphireRhodonite/melonDS-android: PASS
+- origin/main matches the validated HEAD: PASS
+- all submodules initialized at recorded commits: PASS
+- pinned melonDS-android-lib commit is publicly reachable: PASS
+- only untracked inputs were the 40-file dossier and owner-requested melon.zip:
+  PASS; melon.zip excluded from the G0 commit
+
+Dossier
+- manifest entries: 40
+- SHA-256 mismatches: 0
+- live HEAD is not newer than 03_CURRENT_BASELINE.md: no baseline edit required
+
+Device
+- ADB state: connected
+- device class: AYN Thor
+- top physical display and presentation-capable lower display: present
+- physical output orientation: open; owner reports top output rotated 180 degrees
+
+ROM
+- local .nds path ignored by repository rules: PASS
+- identity: ASMP / revision 0 / documented RA system hash: PASS
+- full source hash matches the existing M5 pre-run record: PASS
+- tracked and reachable-history ROM/save extension scans: empty
+
+Publication safety
+- tracked private-evidence/credential/token paths: empty
+- reviewed sensitive-name result: AndroidKeystoreOfflineLedgerSigner.kt source
+  only; no keystore or key material
+- existing legacy public-history binary paths: unchanged and documented
+- existing NIST AES test-vector false positive: unchanged and documented
+- no history rewrite, force-push or private artifact publication performed

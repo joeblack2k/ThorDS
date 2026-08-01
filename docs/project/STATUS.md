@@ -2,7 +2,7 @@
 
 Project: ThorDS Enhanced
 Date: 2026-08-01
-Agent: Luna Xhigh
+Agent: Sol xHigh
 Branch: thords/enhancement-platform-v1
 Origin: https://github.com/joeblack2k/ThorDS
 Base: MelonDualDS 0.7.0.rc5
@@ -12,51 +12,23 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Summary
 
-- Current milestone: M7
-- Current gate: developer-only structured Vulkan widescreen spike
-- Overall status: IN_PROGRESS
-- Latest verified result: M7 SPIR-V synchronization and GitHub Prod debug
-  build pass; the developer APK installs on the physical Thor, falls back
-  through three measured title phases to a centered 1440x1080 4:3 top
-  rectangle, and selects the dual-UV world-safe diagnostic route for a
-  measured Peach-intro and controllable castle-grounds top-3D scene without a
-  ThorDS crash or ANR. A final `screencap` confirms the 1920x1080 primary
-  surface uses 240-pixel fallback sidebars and, at a structured 3D checkpoint,
-  issues separate full-width-world and 4:3-safe-overlay draw modes; the
-  Lakitu transition produced the expected dual-UV/fallback/dual-UV sequence,
-  while live debug scene metadata remains capture-safe during title
-  transitions. Temporary app-private save states now resume castle grounds
-  and the castle-entrance approach without replaying the title or intro, and
-  physical Touch Mode movement was observed after ThorDS foreground recovery.
-  The primary Vulkan rotation is now the product default for the detected
-  `AYN / AYN Thor` device, and the packed DS plane-1 path uses the matching
-  native top-down sample orientation. A fresh physical Castle Garden
-  checkpoint shows readable `CASTLE SECRET STARS` and `TOUCH TO SELECT` text
-  on the primary surface while the world remains upright and the lower
-  presentation remains unchanged. The normal native composite path was then
-  checked separately: its centered 4:3 world and pause menu are also upright
-  and readable, so the Thor rotation is no longer applied twice to an already
-  oriented composite frame. A 10-second Slot-2 movement smoke still reports
-  `FPS: 60` with no ThorDS crash or ANR, and a pause-to-world sample showed no
-  wrong previous frame. A same-checkpoint native-versus-probe comparison also
-  showed extra left/right castle-ground world content outside the native 4:3
-  rectangle. The Castle Garden camera probe also proves that the game
-  projection matrix changes from `x=0x20F8` to `x=0x18BA` with the y-scale
-  unchanged when the live camera aspect changes from `0x1555` to `0x1C72`.
-  This is a strong projection, presentation and scene-level performance
-  result, not yet formal round/square object-aspect, side-region culling,
-  exact HUD/glyph/bottom metrics or sustained transition proof. A fresh
-  180-sample Castle Garden
-  live metadata burst kept the world-safe classifier stable for all populated
-  samples. The bounded debug-capture warmup fix was then rebuilt, installed and
-  rerun: 180 unique contiguous frame ids (`20..199`) were captured without a
-  classifier change, crash or ANR. This is still not a game transition proof.
-- Active blocker: formal round/square object-aspect, final-primary side-region
-  culling, exact HUD/glyph geometry, final secondary-display bottom geometry
-  and transition measurements. Native W-06 bottom-raster capture is now
-  measured but does not prove the physical panel. The owner explicitly
-  selected controllable castle grounds as the M7 representative scene;
-  Bob-omb Battlefield is no longer an M7 exit gate.
+- Current workstream: G1 / M6 analog closeout
+- Current gate: deterministic post-Android analog and physical gameplay proof
+- Overall status: PARTIAL
+- Latest verified result: G0 reconciled the live checkout with the Green Pass
+  dossier. `HEAD` exactly matches the documented `a2aa88e5` baseline,
+  `origin/main` and public default `main` match that commit, `upstream` remains
+  the pinned MelonDualDS source, all submodules are initialized, and the core
+  commit is reachable from its public upstream branch. The 40-file dossier
+  manifest is intact. The local ASMP ROM remains ignored, identity-matched and
+  unchanged. The connected AYN Thor exposes the expected top and lower
+  physical displays. Android rotation metadata does not close the owner's
+  reported 180-degree top-screen rendering defect, which remains an open
+  physical product gate.
+- Active blocker: M6 has implemented exact-profile Slot-2 analog and camera
+  mapping, but still lacks deterministic post-Android sweeps plus witnessed
+  walk/run/sneak, swim/fly/slide, right-stick, reconnect and Original/Enhanced
+  relaunch behavior.
 - M11 now has a bounded read-only session-status slice: a ROM launch latches
   profile integrity, effective ARM9 percentage and effective
   RetroAchievements mode, and the pause menu displays that snapshot without
@@ -75,49 +47,33 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M3 | PASS | m3-product-identity | docs/evidence/m3/ | public source, identity, updater isolation, defaults, safe mode and offline notices verified |
 | M4 | PASS | 04ed45bd | docs/evidence/m4/ | catalog v1, exact resolver, safe Original fallback, curated/user separation and synthetic delta patches |
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
-| M6 | IN_PROGRESS | 883d00cf | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; physical gameplay scenarios remain |
-| M7 | IN_PROGRESS | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, newline-safe parser, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and Castle Garden classifier matrices verified; save-state-assisted Castle Garden route, direct-path checkpoint restore, native-versus-probe world/FOV comparison, measured game projection response, Thor-default world plus packed-UI rotation, readable pause overlay, 10-second `FPS: 60` movement smoke, corrected 180-sample live bursts, a 120-frame fixed Castle Garden movement burst, a clean 30-frame exact-step final-primary side sequence, a measured native `packedBottomPrimary` raster, a direct final-primary world-pause-world transition and a short opaque/non-black transition soak recorded; W-20 is PARTIAL_WITH_OBSERVED_TRANSITION with longer no-flash/soak coverage open; W-01 is PARTIAL after paired non-black final-primary captures and a 0.39% diagnostic object-mask ratio delta, while formal round/square and controlled-camera evidence remain open; W-03 is PARTIAL because side geometry moves coherently in the exact primary sequence but no single identifiable side landmark is tracked wholly within one side ROI; W-06 is PARTIAL because native bottom geometry is measured but final secondary-display placement remains open; exact HUD/glyph geometry remains open |
+| M6 | PARTIAL | 883d00cf | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; deterministic post-Android and physical gameplay scenarios remain |
+| M7 | PARTIAL | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, newline-safe parser, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and Castle Garden classifier matrices verified; save-state-assisted Castle Garden route, direct-path checkpoint restore, native-versus-probe world/FOV comparison, measured game projection response, Thor-default world plus packed-UI rotation, readable pause overlay, 10-second `FPS: 60` movement smoke, corrected 180-sample live bursts, a 120-frame fixed Castle Garden movement burst, a clean 30-frame exact-step final-primary side sequence, a measured native `packedBottomPrimary` raster, a direct final-primary world-pause-world transition and a short opaque/non-black transition soak recorded; W-20 is PARTIAL with longer no-flash/soak coverage open; W-01 is PARTIAL after paired non-black final-primary captures and a 0.39% diagnostic object-mask ratio delta, while formal round/square and controlled-camera evidence remain open; W-03 is PARTIAL because side geometry moves coherently in the exact primary sequence but no single identifiable side landmark is tracked wholly within one side ROI; W-06 is PARTIAL because native bottom geometry is measured but final secondary-display placement remains open; exact HUD/glyph geometry remains open |
 | M8 | NOT_STARTED | | | |
-| M9 | IN_PROGRESS | policy-foundation + M9.2 launch-policy wiring | docs/evidence/m9/ | Android-free policy foundation, unsupported-mode fail-closed handling and pre-bootstrap launch gate verified; native/network/offline validation and full M9 acceptance remain open; publication is PASS_WITH_KNOWN_LEGACY_HISTORY |
-| M10 | IN_PROGRESS | | docs/evidence/m10/ | ARM9 overclock policy foundation only; current plumbing resolves effective 100; no native/JNI/UI/runtime over-100 behavior |
-| M11 | IN_PROGRESS | feat: expose latched session status in pause menu | docs/evidence/m11/ | bounded read-only pause/session snapshot is tested and visible on Thor; firmware physical branch and full M11 acceptance remain open |
-| M12 | IN_PROGRESS | docs: record M12 release preflight matrix | docs/evidence/m12/ | inventory only; public source and M11 are green within bounds, while M7/M9/M10/M11 acceptance blockers remain |
+| M9 | PARTIAL | policy-foundation + M9.2 launch-policy wiring | docs/evidence/m9/ | Android-free policy foundation, unsupported-mode fail-closed handling and pre-bootstrap launch gate verified; native/network/offline validation and full M9 acceptance remain open; publication history has documented legacy bounds |
+| M10 | PARTIAL | | docs/evidence/m10/ | ARM9 overclock policy foundation only; current plumbing resolves effective 100; no native/JNI/UI/runtime over-100 behavior |
+| M11 | PARTIAL | feat: expose latched session status in pause menu | docs/evidence/m11/ | bounded read-only pause/session snapshot is tested and visible on Thor; firmware physical branch and full M11 acceptance remain open |
+| M12 | BLOCKED | docs: record M12 release preflight matrix | docs/evidence/m12/ | inventory only; release remains blocked by incomplete product and device gates |
 | M13 | NOT_STARTED | | | |
 
 ## Feature status
 
-- Analog: IMPLEMENTED_PENDING_GAMEPLAY
-- True Widescreen: SPIKE_IN_PROGRESS_NO_GO_FOR_M8
-- RA Casual: POLICY_WIRED_PRE_BOOTSTRAP
-- RA Hardcore gate: POLICY_WIRED_PRE_BOOTSTRAP
-- ARM9 OC: NOT_STARTED
-- 60fps: RESEARCH_ONLY
-- Thor GUI: NOT_STARTED
+- Analog: PARTIAL
+- True Widescreen: PARTIAL
+- RA Casual: PARTIAL
+- RA Hardcore gate: PARTIAL
+- ARM9 OC: PARTIAL
+- 60fps: NOT_STARTED
+- Thor GUI: PARTIAL
 - Stability: NOT_STARTED
 
 ## Next concrete action
 
-Keep the remaining M7 Castle Garden measurements on the critical path:
-object aspect, new-side-region culling, exact HUD/glyph/bottom geometry and
-longer transition stability. The M9.2 policy gate is now wired into launch
-planning after the existing session-integrity contract was mapped. Unsupported
-requested RA modes and launch-decision exceptions fail closed before
-emulator/native bootstrap; keep native/network/offline and physical RA
-acceptance separate from this bounded evidence. The live classifier now has
-unique contiguous frames, but that is not itself a game transition proof.
-W-20 Castle Garden world-to-pause-to-world is
-`PARTIAL_WITH_OBSERVED_TRANSITION`: the direct final-primary sequence showed
-world, readable pause overlay and world again without a filtered crash/ANR;
-longer no-flash/soak coverage remains. W-01 is now PARTIAL: the direct checkpoint restore and paired
-non-black final-primary captures are proven, with a 0.39% diagnostic
-object-mask ratio delta. The next useful M7 action is a formal round/square
-reference-object repeat with a controlled camera move, followed by culling,
-HUD/glyph/bottom and transition measurements; W-03 remains PARTIAL until a
-final-primary side landmark is tracked across consecutive frames; keep M8
-and full M9 acceptance blocked until the remaining evidence is green.
-The M6 gameplay checklist also remains pending. M12 has an explicit
-release-preflight inventory at `docs/evidence/m12/release-preflight.txt`;
-its result is `BLOCKED`, not a release candidate. The next runnable
-implementation gate is W-03 Castle Garden side-region culling with an
-identifiable animated landmark; the formal W-01 round/square repeat remains
-open.
+Close G1 first. Extend the existing debug harness through the actual
+post-Android analog path, run deterministic direction/magnitude/deadzone,
+D-pad-plus-camera, pipeline recreation and Original/Enhanced relaunch checks,
+then witness the required physical gameplay scenarios from the saved
+checkpoint. Do not claim G1 from JNI-value acceptance alone. Once G1 is
+`PASS_VALIDATED`, continue directly with G2's renderer-internal Castle Garden
+measurement layer. The reported top-screen 180-degree defect and low observed
+performance remain explicit physical gates throughout both workstreams.
