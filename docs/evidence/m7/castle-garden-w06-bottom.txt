@@ -1,0 +1,43 @@
+M7 W-06 Castle Garden bottom-primary raster probe
+Date: 2026-08-01
+Scope: developer Vulkan capture, Castle Garden checkpoint
+
+Result: PARTIAL
+
+Probe:
+- The existing app-private Castle Garden checkpoint was already restored
+  through the direct debug route; no title or intro replay was used.
+- A one-frame live Vulkan capture requested only `packedbottom` and returned
+  `success=1`.
+- The capture log reported:
+  `captureKindsFirst=packed_bottom_primary`,
+  `packedBottomPrimary=256x192:49152`,
+  `pixels=49152`, `opaque=49152`, `nonBlack=48635`,
+  `alphaRange=255-255` and `magenta=0`.
+- The resulting native bottom raster has the expected `256x192` 4:3
+  dimensions and contains non-empty Castle Garden bottom-screen content.
+- The filtered device log contained no `FATAL EXCEPTION`, `ANR in` or
+  `am_anr` entry during the probe.
+
+Measurement boundary:
+- This proves that the bottom source raster is captured at native DS geometry
+  and is populated for the Castle Garden checkpoint.
+- It does not prove the physical Thor secondary panel's placement, scaling,
+  orientation or final-display aspect. A final bottom-panel measurement still
+  requires a documented physical display capture or an equivalent final
+  surface readback.
+
+Decision:
+- W-06 advances from unmeasured to `PARTIAL`: native bottom-raster geometry is
+  now directly measured and reproducible.
+- W-06 remains open for final secondary-display geometry and the complete M7
+  bottom-screen acceptance gate.
+- W-01 formal round/square repeat, W-03 semantic side-landmark tracking,
+  W-04 HUD, W-05 glyph and W-20 world-to-pause-to-world transition proof
+  remain open.
+
+Safety:
+- No ROM bytes, save-state bytes, private screenshots, device identifiers or
+  credentials are retained in this evidence file.
+- Bob-omb Battlefield is not part of this gate; Castle Garden is the sole M7
+  representative scene.

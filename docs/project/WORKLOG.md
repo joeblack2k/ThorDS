@@ -851,6 +851,20 @@ W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
   was retained. Bob-omb Battlefield remains out of scope.
 - Evidence: `docs/evidence/m7/castle-garden-w03-culling.txt`.
 
+## M7 W-06 Castle Garden bottom-primary raster probe - 2026-08-01
+
+- Reused the app-private Castle Garden checkpoint and requested a single live
+  Vulkan capture with only `packedbottom`.
+- The receiver returned `success=1`; the log reported
+  `packed_bottom_primary` at `256x192` with `49,152` pixels.
+- All `49,152` pixels were opaque, `48,635` were non-black, alpha ranged from
+  `255-255`, and no magenta diagnostic pixels were present.
+- Filtered device logcat contained no `FATAL EXCEPTION`, `ANR in` or `am_anr`.
+- Decision: W-06 advances to `PARTIAL` for measured native bottom-raster
+  geometry. This does not prove final secondary-panel placement, scaling,
+  orientation or physical aspect; that display gate remains open.
+- Evidence: `docs/evidence/m7/castle-garden-w06-bottom.txt`.
+
 ## M10 ARM9 overclock policy foundation - 2026-08-01
 
 - Added the Android-free ARM9 policy with explicit `UNSUPPORTED`,
