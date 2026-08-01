@@ -93,6 +93,11 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   cadence scheduler boundary, with timer, Stage behavior, HUD and OAM
   consumers downstream. Runtime entry-count correlation against a 30 FPS
   baseline is the next F2 experiment.
+- Route-A runtime telemetry now confirms the active scene path through equal
+  Stage Behavior, Stage Render and VBlank counts (`376/376/376`) on the green
+  checkpoint. `MainLoopSlot1` was zero in this state and is not used as sole
+  proof. Evidence:
+  `docs/evidence/m13/f2-semantic-runtime-route.json`.
 - F3 now has a hidden exact-profile `60fps-dev-cadence` Action Replay definition
   with default-off and relaunch-required semantics. It is experimental only;
   no product or 60fps validation claim is made.

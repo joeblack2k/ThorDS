@@ -32,6 +32,16 @@
   existing semantic window and a known 30 FPS baseline.
 - Evidence: `docs/evidence/m13/f2-semantic-consumer-review.md`.
 
+## 2026-08-01 - M13 F2 Route-A semantic runtime route
+
+- Enabled the existing profile/debug-gated Route-A semantic monitor on the
+  green generic-camera checkpoint.
+- Runtime counters were coherent for the active scene: Stage Behavior `376`,
+  Stage Render `376` and VBlank `376`; no crash or ANR occurred.
+- MainLoopSlot1 remained `0` in this state, so it is not treated as the sole
+  semantic marker. The monitor was disabled again after the measurement.
+- Evidence: `docs/evidence/m13/f2-semantic-runtime-route.json`.
+
 ## 2026-08-01 - M13 F5 60fps stability window with camera hook
 
 ### Result

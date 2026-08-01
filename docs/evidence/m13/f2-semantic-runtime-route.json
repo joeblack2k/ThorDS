@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "gate": "M13 F2 semantic runtime route",
+  "date": "2026-08-01",
+  "profile": "sm64ds.eu.thor-enhanced",
+  "checkpoint": "thords-camera-generic-hook-green.ml5",
+  "monitor": {
+    "route": "A",
+    "enabled": true,
+    "generation": 0,
+    "lastPc": "0x01FFDE6C"
+  },
+  "counters": {
+    "mainLoopSlot1": 0,
+    "cadenceRender": 0,
+    "lagCallback": 0,
+    "stageBehavior": 376,
+    "stageRender": 376,
+    "entryBehavior": 0,
+    "entryRender": 0,
+    "entryInit": 0,
+    "vblankHandler": 376
+  },
+  "stability": {
+    "crash": false,
+    "anr": false
+  },
+  "interpretation": "The Route-A monitor observes the active Castle Garden semantic path at Stage Behavior, Stage Render and VBlank. The equal counts provide a coherent runtime route for the current checkpoint. The zero MainLoopSlot1 count means that marker is not the correct entry for this state and must not be used as the sole semantic counter.",
+  "privacy": {
+    "romBytesPublished": false,
+    "savestatePublished": false,
+    "rawDeviceLogPublished": false,
+    "deviceIdentifierPublished": false
+  }
+}
