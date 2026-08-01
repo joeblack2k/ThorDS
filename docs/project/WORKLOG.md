@@ -37,6 +37,22 @@
   not committed. Product code remains `PLUMBING_ONLY` with effective 100%.
 - Evidence: `docs/evidence/m10/telemetry-ratios.csv`.
 
+## 2026-08-01 - M10 temporary 125% stability soak
+
+### Result
+
+- With a temporary, uncommitted `EXPERIMENTAL` capability override and the
+  persisted 125% preference, the Thor launch reported effective 125%.
+- Twenty 30-second checks completed over 10 minutes with the process alive
+  throughout; filtered fatal, SIGSEGV and ANR counts remained zero.
+- The temporary source override and device preference were restored to
+  `PLUMBING_ONLY` and `100%` immediately after the run.
+
+### Boundary
+
+- This closes only a temporary 125% crash/stability slice. It does not prove
+  equivalence, drift, audio/RTC/ARM7/IPC/GPU correctness or product readiness.
+
 ## 2026-08-01 - M10 100% Thor stability slice
 
 ### Result

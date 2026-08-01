@@ -17,3 +17,9 @@ Boundary:
 - This closes only the 100% stability slice.
 - It does not prove 100% equivalence, timing drift, audio/RTC/ARM7/IPC/GPU
   correctness or a green effective 125% runtime.
+
+Related exploratory result:
+- A separate temporary 125% capability probe also completed 20 x 30-second
+  checks with the process alive and zero filtered fatal/segfault/ANR matches.
+- That probe used an uncommitted temporary `EXPERIMENTAL` default and was
+  reverted immediately; it is not a product acceptance result.
