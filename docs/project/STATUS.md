@@ -15,6 +15,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - Current workstream: M13 timing validation and SM64DS Smooth Orbit Camera v1
 - Current gate: semantic 60fps/product validation remains open; the generic
   camera runtime hook is now hardware-validated
+- ~~Original/safe-mode software rendering as a play path~~ — explicitly out
+  of scope for ThorDS Enhanced product validation. The product path is Vulkan.
 - Overall status: PARTIAL
 - Latest verified result: M7 is `PASS`. W-01/W-03 use named Castle Garden
   geometry across exact frame sequences; W-04/W-05 prove top UI-safe geometry;
@@ -54,7 +56,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M8 | PASS | 30fdad53 | docs/evidence/m8/ | exact-profile True Widescreen product path, layer-aware fallback, safe-mode/relaunch behavior, build and Thor smoke validated; no per-frame 16:9/4:3 flicker observed after the session-lock correction |
 | M9 | PASS | b9893fe4 | docs/evidence/m9/ | policy foundation, fail-closed launch gate and real Thor RetroAchievements unlock validated; inherited legacy-history bounds remain documented |
 | M10 | PARTIAL | ad3a5179 | docs/evidence/m10/ | guarded native/JNI config, scheduler snapshots, persisted preference fail-closed check, incompatible-ratio savestate guard, 100% telemetry and stability are green; 64-bit scaled-cycle truncation fixed; equivalence, drift and formal over-100 runtime gates remain open |
-| M11 | PARTIAL | 760f3c2b | docs/evidence/m11/ | ROM-details resolved ThorDS profile status, per-ROM Original/Enhanced and RA controls, physical Hardcore recovery branches and staged-edit process recreation pass; safe-mode and full physical details-flow acceptance remain open |
+| M11 | PARTIAL | 760f3c2b | docs/evidence/m11/ | ROM-details resolved ThorDS profile status, per-ROM Original/Enhanced and RA controls, physical Hardcore recovery branches and staged-edit process recreation pass; ~~safe-mode acceptance~~ is out of scope; full physical details-flow acceptance remains open |
 | M12 | BLOCKED | docs: record M12 release preflight matrix | docs/evidence/m12/ | inventory only; release remains blocked by incomplete product and device gates |
 | M13 | PARTIAL | arm9 profile/state-load gate | docs/evidence/m13/ | F1 monitor live; ARM9 125% relaunch and state 8 load pass; gameplay cadence and exact 60fps remain open |
 
@@ -66,6 +68,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - RA Hardcore gate: PARTIAL
 - ARM9 OC: EXPERIMENTAL / 125% relaunch and compatible state load pass; timing validation remains open
 - 60fps: REQUIRED / IMPLEMENTATION AND VALIDATION OPEN
+- ~~Safe mode / software renderer gameplay~~: OUT OF SCOPE / Vulkan is the
+  supported ThorDS Enhanced product renderer
 - SM64DS Smooth Orbit Camera v1: PARTIAL / frontend mapping, R3 sequence,
   JNI bridge, transient Slot-2 protocol and exact-profile EU generic camera
   hook are implemented and Thor-validated; HUD/tutorial-arrow suppression,
@@ -122,9 +126,10 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Continue F1/F2 with the loaded state: capture gameplay semantic counters and
-classify cadence consumers. 60fps remains required; this ARM9 gate is only an
-experimental timing prerequisite, not 60fps acceptance.
+Continue F1/F2 with the loaded Vulkan state: capture gameplay semantic counters
+and classify cadence consumers. 60fps remains required; this ARM9 gate is only
+an experimental timing prerequisite, not 60fps acceptance. ~~Do not spend
+product-gate time on Original/safe-mode software rendering.~~
 M8 and M9 are complete for the current product gate; do not restart either
 validation workstream. Over-100% ARM9 behavior remains disabled until timing
 evidence proves it safe. Remaining independent gaps, including M6 physical

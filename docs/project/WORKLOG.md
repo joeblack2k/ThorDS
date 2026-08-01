@@ -1,5 +1,14 @@
 # Worklog
 
+## 2026-08-01 - Vulkan product scope confirmed
+
+- The ThorDS Enhanced product path is Vulkan on the AYN Thor.
+- ~~Original/safe-mode software-renderer gameplay~~ is explicitly out of
+  scope for product validation and daily play; no further acceptance work will
+  be spent on that route.
+- The next active gate remains M13 F2/F5: semantic gameplay cadence and the
+  required 60fps acceptance evidence on the working Vulkan Enhanced state.
+
 ## 2026-08-01 - M13 F2 inventory status correction
 
 - Re-ran the pinned EU cadence-consumer scanner against the current source
