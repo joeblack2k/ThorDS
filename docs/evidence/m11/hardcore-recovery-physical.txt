@@ -31,3 +31,13 @@ Boundary:
 - Original + restart was visibly offered but not selected in this witness.
 - Full M11 safe-mode, process-recreation, both-display and complete
   Reset/Exit matrix remain open.
+
+Second recovery branch:
+- Repeated the same Enhanced + Hardcore flow.
+- Selected `Original + restart`.
+- The details screen showed `Original`, `MATCH_EXACT`, `ORIGINAL / RA
+  CASUAL` and Analog Controls `Off`.
+- A relaunch-required toast was visible.
+- `topResumedActivity` remained `RomDetailsActivity`; no emulator launch
+  occurred.
+- Screenshot: `/tmp/thor-original-recovery-profile.png`.

@@ -16,13 +16,16 @@
 - The repeated physical flow displayed both recovery choices, selected
   `Enhanced + Casual`, returned to the details screen and did not launch the
   emulator.
+- A second physical run selected `Original + restart`; the details screen
+  resolved to `Original / MATCH_EXACT`, showed Analog Controls `Off` and the
+  relaunch-required toast, and did not launch the emulator.
 - GitHubProdDebug compilation, focused Profile/RA tests, APK build, Thor
   installation and launcher smoke passed.
 
 ### Boundary
 
-- This closes the physical recovery-dialog slice, not the complete physical
-  M11 matrix. Original + restart selection, safe-mode recovery,
+- This closes both physical recovery-dialog branches, not the complete
+  physical M11 matrix. Safe-mode recovery,
   process-recreation and both-display acceptance remain open.
 
 ## 2026-08-01 - M13 60fps timing-hook audit
