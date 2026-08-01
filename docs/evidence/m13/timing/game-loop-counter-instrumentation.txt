@@ -47,6 +47,11 @@ Boundary:
   This confirms the native sampler is live, but it is not sufficient to claim
   60fps gameplay because timer/physics/audio semantics and the exact scene
   schedule still need comparison against a known baseline.
+- Same-session baseline comparison with the exact `Original` profile produced
+  the same approximately `60/61` loop updates and `cadenceValue=1`. Therefore
+  this counter is a loop/scheduler diagnostic, not by itself a semantic
+  60fps discriminator; M13 still needs a gameplay-update or timer marker that
+  differs meaningfully between the two modes.
 - It does not prove that the counter remains semantic through all scene,
   overlay, pause, transition and save/relaunch paths.
 - The 60fps mode remains unimplemented and unvalidated.

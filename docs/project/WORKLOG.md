@@ -107,6 +107,10 @@
   `60/61` loop updates per real second with `cadence=1`. This validates the
   measurement path, not the 60fps product gate; semantic timer/physics/audio
   and baseline comparison remain open.
+- Repeating the same run under the exact `Original` profile produced the same
+  `60/61` and `cadence=1` result. The counter therefore cannot serve as the
+  semantic 60fps discriminator; the next M13 slice must instrument a gameplay
+  timer/update consumer or derive the actual patch effect.
 
 ### Boundary
 
