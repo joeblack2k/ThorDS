@@ -25,7 +25,7 @@ Gate matrix:
 | M7 W-01 object aspect | PARTIAL | `docs/evidence/m7/castle-garden-w01-object-aspect.txt` | Direct Castle Garden checkpoint restore and paired non-black final-primary captures are proven; formal round/square reference and controlled camera repeat remain |
 | M7 W-03 side-region culling | PARTIAL | `docs/evidence/m7/castle-garden-w03-culling.txt` | 120/120 intact Castle Garden movement frames plus a clean 30-frame exact-step final-primary side sequence are proven; exact tracking of an identifiable landmark wholly within one side ROI remains unproven |
 | M7 W-06 bottom geometry | PARTIAL | `docs/evidence/m7/castle-garden-w06-bottom.txt` | Native `packedBottomPrimary` is measured at `256x192`, opaque and populated; final secondary-display placement, scaling and physical aspect remain unproven |
-| M7 W-20 transition | PARTIAL | `docs/evidence/m7/castle-garden-w20-transition.txt` | No observed world-to-pause-to-world transition; repeated adjacent frames remain |
+| M7 W-20 transition | PARTIAL_WITH_OBSERVED_TRANSITION | `docs/evidence/m7/castle-garden-w20-transition.txt` | Direct final-primary sequence shows Castle Garden world, readable pause overlay and world again; longer no-flash/soak cadence remains |
 | M8 true widescreen release gate | BLOCKED | `docs/project/STATUS.md` | M7 object aspect, side culling, HUD/glyph/bottom geometry and transition gates are open |
 | M9 RetroAchievements policy | PASS_WITH_BOUNDS | `docs/evidence/m9/policy-tests.txt`; `docs/evidence/m9/launch-policy-tests.txt` | Native/runtime, network/offline, conflict UI, save-state enforcement and physical session proof remain |
 | M10 ARM9 policy | PASS_WITH_BOUNDS | `docs/evidence/m10/policy-foundation.txt` | Native/JNI plumbing, UI, telemetry and effective over-100 runtime behavior remain; live effective value is 100 |
@@ -42,7 +42,8 @@ Required next work:
   semantic-landmark gate.
 - Measure the remaining Castle Garden side-region culling and HUD/glyph
   geometry, then validate the physical secondary-display bottom layout.
-- Produce an actual pause/world transition proof for W-20.
+- Extend W-20 with longer no-flash/soak cadence evidence between the world,
+  pause and restored-world states.
 - Keep M9 native/offline/physical acceptance and M10 native/JNI/runtime work
   separate from policy-only passes.
 

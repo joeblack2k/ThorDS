@@ -865,6 +865,23 @@ W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
   orientation or physical aspect; that display gate remains open.
 - Evidence: `docs/evidence/m7/castle-garden-w06-bottom.txt`.
 
+## M7 W-20 Castle Garden world-pause-world transition - 2026-08-01
+
+- Loaded the Castle Garden checkpoint through the existing direct debug route
+  and resumed without replaying the title or intro.
+- A direct `TAP_INPUT` START command returned `success=1`; the next
+  `1920x1080` final-primary screenshot showed the readable
+  `CASTLE SECRET STARS` pause overlay and `TOUCH TO SELECT`.
+- A second START command also returned `success=1`; the following
+  final-primary screenshot returned to the Castle Garden world.
+- Both world screenshots were fully non-black and all three screenshots were
+  fully opaque. Filtered logcat contained no `FATAL EXCEPTION`, `ANR in` or
+  `am_anr`.
+- Decision: W-20 advances to `PARTIAL_WITH_OBSERVED_TRANSITION`. A real
+  world-to-pause-to-world transition is now observed; longer no-flash/soak
+  cadence remains open.
+- Evidence: `docs/evidence/m7/castle-garden-w20-transition.txt`.
+
 ## M10 ARM9 overclock policy foundation - 2026-08-01
 
 - Added the Android-free ARM9 policy with explicit `UNSUPPORTED`,
@@ -941,7 +958,9 @@ Evidence: `docs/evidence/m11/session-status-pause.txt`.
   No history rewrite or force-push was attempted.
 - Kept M7 Castle Garden as the only representative scene. W-01 remains
   BLOCKED by the missing valid renderer checkpoint and black paired layers;
-  W-20 remains PARTIAL because no actual pause transition was observed.
+  W-20 is now `PARTIAL_WITH_OBSERVED_TRANSITION` after the direct
+  final-primary world-pause-world sample; longer no-flash/soak coverage
+  remains open.
 - Kept M9 and M10 policy foundations separate from their unimplemented
   native/runtime/network/physical gates. M11 is PASS_WITH_BOUNDS with the
   firmware physical branch still open.

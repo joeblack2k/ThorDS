@@ -2,7 +2,7 @@ M7 W-20 Castle Garden world-to-pause-to-world transition probe
 Date: 2026-08-01
 Scope: physical Castle Garden transition and live capture stability only
 
-Result: PARTIAL
+Result: PARTIAL_WITH_OBSERVED_TRANSITION
 
 Capture:
 - 180/180 live captures completed.
@@ -31,8 +31,24 @@ Stability:
 - No ROM bytes, save files, private screenshots or device identifiers are
   retained in this evidence.
 
+Direct final-primary transition:
+- The Castle Garden checkpoint was loaded with the existing direct debug route
+  and resumed without replaying the title or intro.
+- A `TAP_INPUT` START command with `duration_ms=100` returned `success=1`.
+  After approximately 200 ms, the final primary showed the readable
+  `CASTLE SECRET STARS` pause overlay and `TOUCH TO SELECT`.
+- A second START command with `duration_ms=100` also returned `success=1`.
+  After approximately 200 ms, the final primary returned to the Castle Garden
+  world view.
+- All three final-primary screenshots were `1920x1080` and fully opaque.
+  The world screenshots each had `2,073,600` non-black pixels; the pause
+  overlay screenshot had `1,974,510` non-black pixels.
+- No filtered `FATAL EXCEPTION`, `ANR in` or `am_anr` entry occurred during
+  this direct transition attempt.
+
 Decision:
-- W-20 remains OPEN/PARTIAL.
-- This result proves live capture cadence and classifier stability only.
-- Object aspect, side-region culling, HUD/glyph/bottom geometry and a real
-  world-to-pause-to-world transition remain open.
+- W-20 advances to `PARTIAL_WITH_OBSERVED_TRANSITION`: the direct final-primary
+  sequence now proves a real Castle Garden world-to-pause-to-world transition.
+- W-20 remains open for longer no-flash/soak coverage and exact cadence
+  evidence between the world, pause and restored-world states.
+- Object aspect, side-region culling and HUD/glyph geometry remain open.
