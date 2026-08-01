@@ -12,8 +12,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Summary
 
-- Current workstream: M9 RetroAchievements policy closeout
-- Current gate: bounded M9 native/network/offline validation
+- Current workstream: M10 ARM9 overclock foundation
+- Current gate: measurement-only ARM9 runtime work; over-100% remains disabled
 - Overall status: PARTIAL
 - Latest verified result: M7 is `PASS`. W-01/W-03 use named Castle Garden
   geometry across exact frame sequences; W-04/W-05 prove top UI-safe geometry;
@@ -33,6 +33,10 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   `Off` after a fresh ROM launch and process restart. Full M11 remains open
   because the firmware physical branch and broader release gates are not
   complete. Evidence: `docs/evidence/m11/session-status-pause.txt`.
+- M9 is now `PASS`: the owner verified a real RetroAchievements unlock during
+  normal gameplay on the Thor with the enhanced product active. Policy,
+  launch-gating and physical Casual submission evidence are recorded in
+  `docs/evidence/m9/`.
 
 ## Milestone status
 
@@ -46,8 +50,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
 | M6 | PARTIAL | input: harden and trace Slot-2 analog lifecycle | docs/evidence/m6/ | deterministic post-Android sweep, gameplay response, ownership, lifecycle neutralization, pipeline recreation and Original/Enhanced relaunch pass; swim/fly/slide and usable physical play remain |
 | M7 | PASS | 84ae990d + current G2 closeout | docs/evidence/m7/ | W-01, W-02, W-03, W-04, W-05, W-06 and W-20 pass with deterministic Castle Garden geometry, physical lower-display and continuous transition evidence |
-| M8 | PASS | uncommitted M8 productization | docs/evidence/m8/ | exact-profile True Widescreen product path, layer-aware fallback, safe-mode/relaunch behavior, build and Thor smoke validated; no per-frame 16:9/4:3 flicker observed after the session-lock correction |
-| M9 | PARTIAL | policy-foundation + M9.2 launch-policy wiring | docs/evidence/m9/ | Android-free policy foundation, unsupported-mode fail-closed handling and pre-bootstrap launch gate verified; native/network/offline validation and full M9 acceptance remain open; publication history has documented legacy bounds |
+| M8 | PASS | 30fdad53 | docs/evidence/m8/ | exact-profile True Widescreen product path, layer-aware fallback, safe-mode/relaunch behavior, build and Thor smoke validated; no per-frame 16:9/4:3 flicker observed after the session-lock correction |
+| M9 | PASS | pending closeout commit | docs/evidence/m9/ | policy foundation, fail-closed launch gate and real Thor RetroAchievements unlock validated; inherited legacy-history bounds remain documented |
 | M10 | PARTIAL | | docs/evidence/m10/ | ARM9 overclock policy foundation only; current plumbing resolves effective 100; no native/JNI/UI/runtime over-100 behavior |
 | M11 | PARTIAL | feat: expose latched session status in pause menu | docs/evidence/m11/ | bounded read-only pause/session snapshot is tested and visible on Thor; firmware physical branch and full M11 acceptance remain open |
 | M12 | BLOCKED | docs: record M12 release preflight matrix | docs/evidence/m12/ | inventory only; release remains blocked by incomplete product and device gates |
@@ -57,7 +61,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 - Analog: PARTIAL
 - True Widescreen: PARTIAL
-- RA Casual: PARTIAL
+- RA Casual: PASS
 - RA Hardcore gate: PARTIAL
 - ARM9 OC: PARTIAL
 - 60fps: NOT_STARTED
@@ -66,7 +70,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Continue with M9 RetroAchievements policy closeout. M8 is complete for the
-current product gate; do not restart the M7 developer-probe workstream.
+Continue with M10 ARM9 overclock foundation. M8 and M9 are complete for the
+current product gate; do not restart either validation workstream. Over-100%
+ARM9 behavior remains disabled until timing evidence proves it safe.
 Remaining independent gaps, including M6 physical movement coverage and the
-later M10-M12 release gates, remain explicitly tracked above.
+later M11-M12 release gates, remain explicitly tracked above.

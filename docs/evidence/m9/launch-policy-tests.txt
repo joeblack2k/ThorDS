@@ -50,3 +50,11 @@ but remain reachable in inherited Git history. This bounded M9.2 diff does not
 add, restore or modify them and adds no ROM or save files, private captures or
 evidence, or credential values. Status is PASS_WITH_KNOWN_LEGACY_HISTORY;
 no history rewrite or force-push was attempted or authorized.
+
+Physical product acceptance:
+- The owner verified a real RetroAchievements achievement unlock during
+  normal gameplay on the connected AYN Thor with the enhanced product active.
+- This closes the physical Casual unlock gate for M9; Hardcore account
+  submission was not separately exercised.
+
+Final status: PASS_WITH_KNOWN_LEGACY_HISTORY

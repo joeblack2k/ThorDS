@@ -1,5 +1,23 @@
 # Worklog
 
+## 2026-08-01 - M9 RetroAchievements closeout
+
+### Result
+
+- M9 is `PASS` for the ThorDS product gate.
+- The owner verified a real RetroAchievements achievement unlock during
+  normal gameplay on the connected Thor with the enhanced product active.
+- This closes the physical Casual unlock requirement in addition to the
+  policy resolver, launch gate and fail-closed conflict tests.
+- Hardcore eligibility remains policy-gated to the Original profile and is
+  not claimed as a separate account-unlock test.
+
+### Decision
+
+- Do not reopen M9 for another Casual unlock.
+- Next milestone: M10 ARM9 overclock foundation, measurement-first with
+  over-100% behavior disabled until timing evidence proves it safe.
+
 ## 2026-08-01 - M8 productization closeout
 
 ### Result
