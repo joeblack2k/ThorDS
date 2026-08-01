@@ -10,6 +10,16 @@
 - F2 remains open for semantic/manual review; classification output alone does
   not authorize a cadence patch.
 
+## 2026-08-01 - M13 F2 cadence write disposition
+
+- Reviewed all 18 source-level writes to `data_0208ee44`.
+- The writes are boot/init, scene or overlay transition assignments, including
+  minigame and audio transitions; none is a standalone fixed-step gameplay
+  consumer.
+- All 18 are retained for binary/runtime verification and none is promoted to
+  an F4 patch manifest.
+- Evidence: `docs/evidence/m13/cadence-write-review.md`.
+
 ## 2026-08-01 - M13 F5 60fps stability window with camera hook
 
 ### Result

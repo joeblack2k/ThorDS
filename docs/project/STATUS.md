@@ -86,6 +86,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   boot/init, timer, message/HUD and scene-specific consumers with no generic
   `unresolved-function` findings. F2 remains open for semantic/manual review
   of those classified consumers; it is not claimed PASS.
+- The 18 source-level cadence writes were reviewed as initialization or
+  scene/overlay-transition assignments and none was promoted to an F4 patch
+  manifest. Binary/runtime consumer matching remains required.
 - F3 now has a hidden exact-profile `60fps-dev-cadence` Action Replay definition
   with default-off and relaunch-required semantics. It is experimental only;
   no product or 60fps validation claim is made.
