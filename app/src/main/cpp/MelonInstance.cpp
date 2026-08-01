@@ -1143,13 +1143,15 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"uniqueUpdates\":" + std::to_string(sm64dsGameLoopLatestUpdates)
         + ",\"emulatorFrames\":" + std::to_string(sm64dsGameLoopLatestFrames)
         + ",\"counter\":" + std::to_string(sm64dsGameLoopLatestCounter)
-        + ",\"lastDelta\":" + std::to_string(sm64dsGameLoopLatestDelta) + "}";
+        + ",\"lastDelta\":" + std::to_string(sm64dsGameLoopLatestDelta)
+        + ",\"cadenceValue\":" + std::to_string(sm64dsGameLoopLatestCadence) + "}";
 }
 
 void MelonInstance::sampleSm64dsGameLoopCounter()
 {
     constexpr u32 kMainRamBase = 0x02000000;
     constexpr u32 kGameLoopCounterAddress = 0x020A0DB0;
+    constexpr u32 kCadenceAddress = 0x0208EE44;
     if (nds == nullptr || nds->MainRAM == nullptr)
         return;
 
@@ -1162,6 +1164,14 @@ void MelonInstance::sampleSm64dsGameLoopCounter()
         | (static_cast<u32>(bytes[1]) << 8)
         | (static_cast<u32>(bytes[2]) << 16)
         | (static_cast<u32>(bytes[3]) << 24);
+    const u32 cadenceOffset = (kCadenceAddress - kMainRamBase) & nds->MainRAMMask;
+    if (cadenceOffset > nds->MainRAMMask - 3)
+        return;
+    const u8* cadenceBytes = nds->MainRAM + cadenceOffset;
+    const u32 cadence = static_cast<u32>(cadenceBytes[0])
+        | (static_cast<u32>(cadenceBytes[1]) << 8)
+        | (static_cast<u32>(cadenceBytes[2]) << 16)
+        | (static_cast<u32>(cadenceBytes[3]) << 24);
     const u64 nowNs = PerfNowNs();
 
     std::lock_guard lock(sm64dsGameLoopTelemetryMutex);
@@ -1193,6 +1203,16 @@ void MelonInstance::sampleSm64dsGameLoopCounter()
         sm64dsGameLoopLatestUpdates = sm64dsGameLoopWindowUpdates;
         sm64dsGameLoopLatestCounter = counter;
         sm64dsGameLoopLatestDelta = delta;
+        sm64dsGameLoopLatestCadence = cadence;
+        Platform::Log(
+            Platform::LogLevel::Debug,
+            "SM64DS game-loop window wallNs=%llu uniqueUpdates=%u emulatorFrames=%llu counter=%u lastDelta=%u cadence=%u",
+            static_cast<unsigned long long>(sm64dsGameLoopLatestWallNs),
+            sm64dsGameLoopLatestUpdates,
+            static_cast<unsigned long long>(sm64dsGameLoopLatestFrames),
+            sm64dsGameLoopLatestCounter,
+            sm64dsGameLoopLatestDelta,
+            sm64dsGameLoopLatestCadence);
         sm64dsGameLoopWindowStartNs = nowNs;
         sm64dsGameLoopWindowFrames = 0;
         sm64dsGameLoopWindowUpdates = 0;

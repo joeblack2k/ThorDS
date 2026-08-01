@@ -16,7 +16,12 @@ Implementation:
 - samples the counter after each `MelonInstance::runFrame()` call;
 - reports one-second windows containing `windowWallNs`, `uniqueUpdates` and
   `emulatorFrames`, plus the latest raw `counter` and `lastDelta` for
-  diagnosing address/lifecycle mismatches.
+  diagnosing address/lifecycle mismatches;
+- also reports `cadenceValue`, the mapped `data_0208ee44` game-side cadence
+  value, which distinguishes a 60 Hz loop from a two-tick gameplay schedule.
+- emits the same aggregate window at native debug level with the stable
+  `SM64DS game-loop window` marker, so a running Thor session can be sampled
+  without changing pause/resume behavior.
 
 Build evidence:
 - `:app:compileGitHubProdDebugKotlin`
@@ -37,6 +42,11 @@ Boundary:
 - The corrected probe is not promoted to a 60fps result yet: the observed
   window was interrupted by launch/pause lifecycle state and did not provide
   a stable gameplay interval.
+- A later stable Castle Garden session produced windows of
+  `uniqueUpdates=60/61`, `emulatorFrames=60/61` and `cadenceValue=1`.
+  This confirms the native sampler is live, but it is not sufficient to claim
+  60fps gameplay because timer/physics/audio semantics and the exact scene
+  schedule still need comparison against a known baseline.
 - It does not prove that the counter remains semantic through all scene,
   overlay, pause, transition and save/relaunch paths.
 - The 60fps mode remains unimplemented and unvalidated.

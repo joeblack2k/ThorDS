@@ -103,6 +103,10 @@
 - A live Thor probe exposed a counter reset during launch/scene initialization;
   the sampler now discards descending-counter deltas instead of interpreting
   them as unsigned wraparound.
+- A stable Castle Garden session then produced native windows around
+  `60/61` loop updates per real second with `cadence=1`. This validates the
+  measurement path, not the 60fps product gate; semantic timer/physics/audio
+  and baseline comparison remain open.
 
 ### Boundary
 

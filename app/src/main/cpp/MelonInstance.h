@@ -251,6 +251,7 @@ private:
     u32 sm64dsGameLoopLatestUpdates = 0;
     u32 sm64dsGameLoopLatestCounter = 0;
     u32 sm64dsGameLoopLatestDelta = 0;
+    u32 sm64dsGameLoopLatestCadence = 0;
 
     std::shared_ptr<EmulatorConfiguration> currentConfiguration;
     FrameQueue frameQueue;
