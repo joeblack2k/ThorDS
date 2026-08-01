@@ -1137,7 +1137,8 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
 {
     std::lock_guard lock(sm64dsGameLoopTelemetryMutex);
     if (!sm64dsGameLoopCounterInitialized)
-        return "{\"valid\":false,\"source\":\"sm64ds-eu-decomp-main-loop\"}";
+        return "{\"valid\":false,\"source\":\"sm64ds-eu-decomp-main-loop\",\"cameraBehaviorCalls\":"
+            + std::to_string(nds == nullptr ? 0u : nds->GetSm64dsCameraBehaviorCalls()) + "}";
     return "{\"valid\":true,\"source\":\"sm64ds-eu-decomp-main-loop\",\"address\":\"0x020A0DB0\",\"windowWallNs\":"
         + std::to_string(sm64dsGameLoopLatestWallNs)
         + ",\"uniqueUpdates\":" + std::to_string(sm64dsGameLoopLatestUpdates)
@@ -1145,7 +1146,8 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"counter\":" + std::to_string(sm64dsGameLoopLatestCounter)
         + ",\"lastDelta\":" + std::to_string(sm64dsGameLoopLatestDelta)
         + ",\"cadenceValue\":" + std::to_string(sm64dsGameLoopLatestCadence)
-        + ",\"stageTimer\":" + std::to_string(sm64dsGameLoopLatestStageTimer) + "}";
+        + ",\"stageTimer\":" + std::to_string(sm64dsGameLoopLatestStageTimer)
+        + ",\"cameraBehaviorCalls\":" + std::to_string(nds->GetSm64dsCameraBehaviorCalls()) + "}";
 }
 
 void MelonInstance::sampleSm64dsGameLoopCounter()
