@@ -1,34 +1,46 @@
 M7 W-01 Castle Garden object-aspect probe
 Date: 2026-08-01
-Scope: native/probe paired renderer capture only
+Scope: native/probe paired final-primary capture
 
-Result: BLOCKED
+Result: PARTIAL
 
 Route:
-- Native launch reached ROM ready with widescreenProbe=0.
-- Probe launch reached ROM ready with widescreenProbe=1.
-- The requested Castle Garden slot-2 state load returned success=0 in both
-  launches. The visible scene was Castle Garden, but checkpoint restoration was
-  not proven.
+- Castle Garden remains the sole owner-selected M7 representative scene.
+- Both launches used the existing app-private Castle Garden checkpoint through
+  the debug direct-path loader; both state loads returned `success=1`.
+- A paused state load leaves the previous presented framebuffer visible until
+  at least one emulator frame is rendered. The bounded renderer capture route
+  supplied that one-frame warmup before the final-primary screenshot.
 
-Renderer captures:
-- Native capture success=1/1 at frame 55265.
-- Probe capture success=1/1 at frame 55329.
-- Both renderer PNGs were valid 256x192 RGBA images.
-- Both images were fully opaque black: 49,152/49,152 pixels, nonBlack=0.
-- Both renderer bounding boxes were none; width=0, height=0, ratio=undefined.
-- No identifiable round or square 3D object was present for measurement.
-- Companion screen frames showed Castle Garden but are composite frames and
-  cannot prove renderer-object aspect.
+Final-primary captures:
+- Native launch (`widescreenProbe=0`) rendered the checkpoint in the centered
+  1440x1080 4:3 rectangle with 240-pixel sidebars and reported `FPS: 60`.
+- Developer probe launch (`widescreenProbe=1`) rendered the world across the
+  1920x1080 primary surface, reported `FPS: 60`, and exposed additional
+  Castle Garden terrain and foliage at both horizontal edges.
+- The player/world geometry, castle wall, sign and terrain were upright in
+  both clean captures. No rotation claim is made for the uncaptured external
+  presentation.
 
-Stability and cleanup:
-- No capture timeout, FATAL EXCEPTION or ANR in the bounded attempt.
-- Device capture files and local temporary captures were deleted.
-- No ROM bytes, save files, private screenshots or device identifiers are
-  retained in this evidence.
+Diagnostic object measurement:
+- The same center-region green-object mask was applied to both final-primary
+  images over ROI `x=700..1249`, `y=500..949`.
+- Native mask bounds: `191x241`, ratio `0.7925`.
+- Probe mask bounds: `195x247`, ratio `0.7895`.
+- Absolute ratio delta: `0.39%`.
+- This is useful bounded evidence that the Castle Garden player/world object
+  is not being stretched by the 16:9 presenter path. It is not yet the
+  formal known round/square reference-object measurement required by W-01.
 
 Decision:
-- W-01 remains BLOCKED because the renderer source was black and the
-  checkpoint load was not proven.
-- No object-aspect ratio or M7 geometry claim is made.
-- W-03 side-region culling and exact HUD/glyph/bottom geometry remain open.
+- W-01 advances from `BLOCKED` to `PARTIAL`; the checkpoint and paired
+  non-black final surfaces are now proven.
+- W-01 is not a formal pass yet: repeat with an explicit round or square
+  reference object and confirm the result across a controlled camera move.
+- W-03 side-region culling, W-04 HUD, W-05 glyph, W-06 bottom geometry and
+  W-20 world-to-pause-to-world transition proof remain open.
+
+Safety:
+- No ROM bytes, save-state bytes, private screenshots, device identifiers or
+  credentials are retained in this evidence file.
+- Bob-omb Battlefield is not part of this gate.

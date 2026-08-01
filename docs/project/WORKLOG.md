@@ -786,6 +786,30 @@ W-03, W-04, W-05, W-06 and W-20 remain open, so M8 remains blocked.
 - The next M7 action is a valid Castle Garden renderer checkpoint, followed by
   a retry of W-01; no object-aspect claim is made.
 
+## M7 W-01 Castle Garden checkpoint retry - 2026-08-01
+
+- Kept Castle Garden/castle grounds as the only M7 representative scene.
+- Reused the existing app-private checkpoint through the debug direct-path
+  loader; native and developer-probe loads both returned `success=1`.
+- Confirmed the harness detail that a paused state load leaves the previous
+  presented framebuffer visible until a frame is rendered. The existing
+  bounded capture route supplied a one-frame warmup before the final-primary
+  screenshots.
+- Native final-primary output was centered 4:3 at `1440x1080` with
+  `FPS: 60`; the probe filled `1920x1080` with `FPS: 60` and exposed extra
+  side terrain and foliage. Both outputs were upright.
+- A center-region green-object mask measured `191x241` (ratio `0.7925`) in
+  native and `195x247` (ratio `0.7895`) in the probe, an absolute ratio delta
+  of `0.39%`.
+- Decision: W-01 advances from `BLOCKED` to `PARTIAL`. This diagnostic mask
+  is not yet the formal round/square reference-object proof, and a controlled
+  camera repeat remains required. W-03 side culling, W-04 HUD, W-05 glyph,
+  W-06 bottom geometry and W-20 transition proof remain open.
+- Unrelated overlay output from one early capture was discarded; it is not
+  evidence. No ROM, save, private screenshot, device identifier or credential
+  material was retained.
+- Evidence: `docs/evidence/m7/castle-garden-w01-object-aspect.txt`.
+
 ## M10 ARM9 overclock policy foundation - 2026-08-01
 
 - Added the Android-free ARM9 policy with explicit `UNSUPPORTED`,

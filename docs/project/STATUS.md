@@ -44,8 +44,9 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   projection matrix changes from `x=0x20F8` to `x=0x18BA` with the y-scale
   unchanged when the live camera aspect changes from `0x1555` to `0x1C72`.
   This is a strong projection, presentation and scene-level performance
-  result, not yet object-aspect, side-region culling, exact HUD/glyph/bottom
-  metrics or sustained transition proof. A fresh 180-sample Castle Garden
+  result, not yet formal round/square object-aspect, side-region culling,
+  exact HUD/glyph/bottom metrics or sustained transition proof. A fresh
+  180-sample Castle Garden
   live metadata burst kept the world-safe classifier stable for all populated
   samples. The bounded debug-capture warmup fix was then rebuilt, installed and
   rerun: 180 unique contiguous frame ids (`20..199`) were captured without a
@@ -73,7 +74,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M4 | PASS | 04ed45bd | docs/evidence/m4/ | catalog v1, exact resolver, safe Original fallback, curated/user separation and synthetic delta patches |
 | M5 | PASS | profile: add exact Super Mario 64 DS Europe profile | docs/evidence/m5/ | exact ASMP/revision/hash profiles; runtime code deferred to M6 |
 | M6 | IN_PROGRESS | 883d00cf | docs/evidence/m6/ | exact profile, runtime payload, Slot-2 activation and safe-mode fallback verified; physical gameplay scenarios remain |
-| M7 | IN_PROGRESS | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, newline-safe parser, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and Castle Garden classifier matrices verified; save-state-assisted Castle Garden route, native-versus-probe world/FOV comparison, measured game projection response, Thor-default world plus packed-UI rotation, readable pause overlay, 10-second `FPS: 60` movement smoke and corrected 180-sample live bursts recorded; W-20 is PARTIAL with no observed pause transition and repeated adjacent frames; W-01 is BLOCKED by black renderer layers and unproven checkpoint restore; side-region culling and exact HUD/glyph/bottom geometry remain open |
+| M7 | IN_PROGRESS | 54410dc0 | docs/evidence/m7/ | EU aspect literals semantically mapped; guarded developer AR code, newline-safe parser, capture-safe primary-only probe, final-primary fallback and dual-UV presentation, title fallback plus intro and Castle Garden classifier matrices verified; save-state-assisted Castle Garden route, direct-path checkpoint restore, native-versus-probe world/FOV comparison, measured game projection response, Thor-default world plus packed-UI rotation, readable pause overlay, 10-second `FPS: 60` movement smoke and corrected 180-sample live bursts recorded; W-20 is PARTIAL with no observed pause transition and repeated adjacent frames; W-01 is PARTIAL after paired non-black final-primary captures and a 0.39% diagnostic object-mask ratio delta, while formal round/square and controlled-camera evidence remain open; side-region culling and exact HUD/glyph/bottom geometry remain open |
 | M8 | NOT_STARTED | | | |
 | M9 | IN_PROGRESS | policy-foundation + M9.2 launch-policy wiring | docs/evidence/m9/ | Android-free policy foundation, unsupported-mode fail-closed handling and pre-bootstrap launch gate verified; native/network/offline validation and full M9 acceptance remain open; publication is PASS_WITH_KNOWN_LEGACY_HISTORY |
 | M10 | IN_PROGRESS | | docs/evidence/m10/ | ARM9 overclock policy foundation only; current plumbing resolves effective 100; no native/JNI/UI/runtime over-100 behavior |
@@ -104,11 +105,12 @@ acceptance separate from this bounded evidence. The live classifier now has
 unique contiguous frames, but that is not itself a game transition proof.
 W-20 Castle Garden world-to-pause-to-world is PARTIAL: the live cadence is
 stable, but no pause transition was observed and repeated adjacent frames
-remain. W-01 object aspect is BLOCKED for this checkpoint because both
-renderer layers were black and the state restore was not proven. The next
-useful M7 action is to obtain a valid Castle Garden renderer checkpoint before
-retrying W-01; keep M8 and full M9 acceptance blocked until remaining evidence
-is green.
+remain. W-01 is now PARTIAL: the direct checkpoint restore and paired
+non-black final-primary captures are proven, with a 0.39% diagnostic
+object-mask ratio delta. The next useful M7 action is a formal round/square
+reference-object repeat with a controlled camera move, followed by culling,
+HUD/glyph/bottom and transition measurements; keep M8 and full M9 acceptance
+blocked until the remaining evidence is green.
 The M6 gameplay checklist also remains pending. M12 has an explicit
 release-preflight inventory at `docs/evidence/m12/release-preflight.txt`;
 its result is `BLOCKED`, not a release candidate. The next runnable
