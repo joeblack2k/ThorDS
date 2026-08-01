@@ -1,0 +1,40 @@
+M10 next gate: independent ARM9 execution budget
+Date: 2026-08-01
+Status: NOT_STARTED
+
+The next implementation milestone is a native 125% execution-budget proof.
+It must grant additional ARM9 execution capacity inside normal Nintendo DS
+scheduler time. ARM7, GPU, SPU, RTC, VBlank, DMA, IPC and event timestamps
+must remain authoritative and unchanged.
+
+The current experimental path scales ARM9Timestamp. That is useful plumbing
+and telemetry, but it is not the M10 contract because ARM9Timestamp feeds
+scheduler ordering and ARM7 catch-up. It must not be promoted to an effective
+over-100 product capability.
+
+Bounded implementation scope:
+
+- 125% only; do not expose 150%, 175% or 200%.
+- Reset-time selection only; no live ratio mutation.
+- Preserve JIT and interpreter stop boundaries before architectural side
+  effects cross the next scheduler event.
+- Track rational execution budget and fractional debt independently from DS
+  timestamps.
+- Keep the existing ratio-mismatch savestate rejection and add compatible
+  same-ratio save/load evidence.
+
+Exit evidence required before changing capability from PLUMBING_ONLY:
+
+- 100% equivalence against the existing scheduler baseline.
+- More measured ARM9 work at 125% during the same DS wall time.
+- No more than 0.1% ten-minute DS-time drift.
+- ARM7/GPU/SPU/RTC/VBlank/DMA/IPC/event-ordering and audio checks pass.
+- JIT and interpreter semantics agree for the bounded smoke workload.
+- Thor SM64DS stress and a generic DS smoke workload remain stable.
+
+Current conclusion:
+
+- Configuration, policy, reset-time apply, JNI telemetry and mismatch guard
+  are proven.
+- The current 125% timestamp-scaling probe remains exploratory only.
+- No over-100 runtime capability is published.
