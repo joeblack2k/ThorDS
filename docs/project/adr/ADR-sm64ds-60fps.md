@@ -18,14 +18,14 @@ or VBlank count alone is not gameplay proof.
 
 ## Evidence boundary
 
-The repository now contains the reviewed v6 exact-original guarded European
+The repository now contains the reviewed v7 exact-original guarded European
 `ASMP` runtime patch for the game cadence plus player movement, player timers
 and the Player-specific animation driver at `0x020BEDD4`, with continuation
 `0x020BEDD8`. Its 248-byte player payload and 48-byte animation payload share
-one fail-closed region with six guards (four player timestep hooks, the Player
-animation driver and cadence original 2). The v6 Action Replay and profile
+an install region with six fail-closed guards (four player timestep hooks, the
+Player animation driver and cadence original 2). The v7 Action Replay and profile
 code SHA-256 are both
-`4155b9ef2c9de2688f05ab06a9845cd69a20a49f1c919db8b9ae9c113426deea`.
+`991e679818b9ea2f2a766559e9fd541b818385b1f5ffc0f5e42c8e37583c99fd`.
 Global `Animation::Advance` is not patched. Its public tooling emits only
 Action Replay words and hashes; the local reference image remains ignored and
 unpublished. The profile entry is still experimental and default-off until the
@@ -38,6 +38,12 @@ vertical step exactly while rising and within 0.000977 world units while
 falling. The final hardware animation window records four enhanced updates
 and frame delta 8192, equal to two original updates at 4096 each. The unsafe
 disable-without-relaunch path was deleted; cadence preference changes relaunch.
+Because scene and overlay initialization can later restore cadence 2, v7 adds a
+separate maintenance-only region. It requires all five exact patched hook words,
+all 62 player payload words, all 12 animation payload words and cadence 2, then
+writes only cadence 1. It does not repair hooks or payload and does nothing for
+cadence 1 or an unknown state. A private fault-state fixture recovered three
+times at 60/60, 60/61 and 60/60 updates/frames.
 This does not establish correct timing for particles, non-player actors,
 cutscenes, audio continuity, broad gameplay behavior, RA Casual or 60-minute
 stability.

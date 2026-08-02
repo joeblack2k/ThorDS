@@ -1,0 +1,87 @@
+{
+  "milestone": "M13",
+  "gate": "F4 cadence reset recovery",
+  "date": "2026-08-02",
+  "status": "PASS_FOR_BOUNDED_GATE",
+  "renderer": "Vulkan",
+  "identity": "ASMP revision 0 exact profile",
+  "fault": {
+    "rootCause": "A scene or overlay initializer can restore cadence 2 after the player timestep hooks and payload are already installed. The v6 install-only guard then fails closed, leaving approximately 30 semantic updates across approximately 60 emulated frames.",
+    "preInstallObservedSample": {
+      "uniqueUpdates": 30,
+      "emulatorFrames": 61,
+      "cadenceValue": 2,
+      "allFivePlayerHooksActive": true
+    },
+    "privateRecoveryFixture": "Slot 8 was saved before reinstall with the patched hooks active and cadence reset to 2. No save-state bytes or path are published."
+  },
+  "runtimePatch": {
+    "id": "sm64ds.eu.60fps-dev-cadence.v7",
+    "actionReplaySha256": "991e679818b9ea2f2a766559e9fd541b818385b1f5ffc0f5e42c8e37583c99fd",
+    "profileCodeSha256": "991e679818b9ea2f2a766559e9fd541b818385b1f5ffc0f5e42c8e37583c99fd",
+    "codeWords": 171,
+    "installRegion": "The existing exact-original guards install the v6 player movement, speed, timer, control-timer and Player-animation hooks plus cadence 1.",
+    "maintenanceRegion": {
+      "guardCount": 80,
+      "guards": "All five exact patched hook words, all 62 player payload words, all 12 animation payload words, and cadence exact value 2.",
+      "onlyWrite": "0x0208EE44 = 1",
+      "failClosed": "Any incomplete hook or payload state, cadence 1, or any unexpected cadence value produces no maintenance write."
+    }
+  },
+  "cleanBuild": {
+    "baseCommit": "761f97415b59de16f7794a8a913977146a3ca687",
+    "changedSourceFiles": 4,
+    "patchBuilderTest": "PASS",
+    "patchVerifier": "PASS",
+    "profileCodewordEquality": "PASS",
+    "profileCanonicalSha256": "PASS",
+    "githubProdReleaseUnitTest": "PASS",
+    "githubProdDebugBuild": "PASS",
+    "executedGradleTasks": 144,
+    "apkSha256": "0f3ceeab5be2c7b658a77e29ec5a97700c49d0a9a4b66969317d51f66be622c8",
+    "package": "io.github.joeblack2k.thords.dev",
+    "install": "PASS"
+  },
+  "thorRecovery": {
+    "immediatePostLoad": "The private v6 fault fixture loaded successfully while paused. All five patched hook words were present; the timing sampler had not yet accumulated a valid wall-clock window.",
+    "repeatedSamples": [
+      {
+        "windowWallNs": 1002187500,
+        "uniqueUpdates": 60,
+        "emulatorFrames": 60,
+        "cadenceValue": 1
+      },
+      {
+        "windowWallNs": 1009108437,
+        "uniqueUpdates": 60,
+        "emulatorFrames": 61,
+        "cadenceValue": 1
+      },
+      {
+        "windowWallNs": 1000129635,
+        "uniqueUpdates": 60,
+        "emulatorFrames": 60,
+        "cadenceValue": 1
+      }
+    ],
+    "laterLiveSample": {
+      "windowWallNs": 1015322552,
+      "uniqueUpdates": 61,
+      "emulatorFrames": 61,
+      "cadenceValue": 1,
+      "allFivePlayerHooksActive": true
+    },
+    "fastForwardEnabled": false,
+    "semanticMonitorEnabled": false,
+    "profileEnabled": true,
+    "processAlive": true,
+    "crashAnrFatalScan": "PASS"
+  },
+  "limitations": [
+    "This closes the observed cadence 2 reset after scene, overlay or save-state restoration only when the complete expected v7 hook and payload state is present.",
+    "The maintenance region deliberately does not repair hooks or payload. Every emitted payload word is guarded; an incomplete or unknown state remains unchanged and therefore fail-closed.",
+    "The v7 maintenance addition does not change the v6 player timestep payload or its same-state movement, vertical, timer and animation evidence.",
+    "Particles, non-player actors, cutscenes, audio continuity, broad gameplay behavior, RetroAchievements Casual interaction and the 60-minute stability gate remain open.",
+    "No ROM, save-state bytes, device serial, private capture or private path is included."
+  ]
+}

@@ -2,6 +2,7 @@
 """Small direct smoke test for F4.2 patch invariants."""
 from __future__ import annotations
 import hashlib
+import json
 import subprocess
 import tempfile
 from pathlib import Path
@@ -21,20 +22,20 @@ HOOK_GUARDS = [
 ]
 
 def apply_model(lines, memory):
-    active, writes = True, []
+    regions, region, active = [], [], True
     for line in lines:
         left, right = line.split()
         address, value = int(left, 16), int(right, 16)
         if left == "D0000000":
-            pass
+            regions.append(region)
+            region, active = [], True
         elif left == "D2000000":
-            active = True
+            continue
         elif left[0] == "5":
-            if active:
-                active = memory.get(address & 0x0FFFFFFF, 0) == value
+            active &= memory.get(address & 0x0FFFFFFF, 0) == value
         elif active:
-            writes.append((address, value))
-    return writes
+            region.append((address, value))
+    return regions
 
 def main():
     mc = Path("/opt/homebrew/Cellar/llvm/22.1.8/bin/llvm-mc")
@@ -67,22 +68,80 @@ def main():
         assert int(lines[4][1:8], 16) == 0x020BEDD4 & 0x0FFFFFFF
         assert int(lines[6].split()[0], 16) == 0x020BF3F4
         assert lines[5] == "5208EE44 00000002"
+        profiles = json.loads((ROOT / "app/src/main/assets/enhancement-profiles.json").read_text())
+        def find_runtime(value):
+            if isinstance(value, dict):
+                runtime = value.get("runtimeCode")
+                if runtime and runtime.get("id") == "sm64ds.eu.60fps-dev-cadence.v7":
+                    return runtime
+                for child in value.values():
+                    found = find_runtime(child)
+                    if found:
+                        return found
+            elif isinstance(value, list):
+                for child in value:
+                    found = find_runtime(child)
+                    if found:
+                        return found
+            return None
+        runtime = find_runtime(profiles)
+        assert runtime is not None
+        assert runtime["id"] == "sm64ds.eu.60fps-dev-cadence.v7"
+        generated_words = out.read_text(encoding="ascii").splitlines()
+        assert runtime["codeWords"] == generated_words
+        canonical = ("\n".join(runtime["codeWords"]) + "\n").encode("ascii")
+        assert runtime["codeSha256"] == hashlib.sha256(canonical).hexdigest()
         valid_memory = {address & 0x0FFFFFFF: value for address, value in HOOK_GUARDS}
+        first_end = lines.index("D0000000 00000000")
         expected_writes = [(int(a, 16), int(v, 16)) for a, v in
-                           (line.split() for line in lines[6:-2])]
-        assert apply_model(lines, valid_memory) == expected_writes
+                           (line.split() for line in lines[6:first_end])]
+        applied = apply_model(lines, valid_memory)
+        assert applied[0] == expected_writes
+        assert applied[1] == []
         for index, (address, value) in enumerate(HOOK_GUARDS):
             tampered_memory = dict(valid_memory)
             tampered_memory[address & 0x0FFFFFFF] = value ^ 1
-            assert apply_model(lines, tampered_memory) == [], index
+            assert apply_model(lines, tampered_memory)[0] == [], index
+        patched = dict(valid_memory)
+        patched.update({address & 0x0FFFFFFF: value for address, value in expected_writes})
+        patched[0x0208EE44 & 0x0FFFFFFF] = 2
+        assert apply_model(lines, patched)[1] == [(0x0208EE44, 1)]
+        maintenance_guards = [
+            (0x020BF3F4, patched[0x020BF3F4]),
+            (0x020D4D88, patched[0x020D4D88]),
+            (0x020E4F10, patched[0x020E4F10]),
+            (0x020E4FDC, patched[0x020E4FDC]),
+            (0x020BEDD4, patched[0x020BEDD4]),
+            *((address, patched[address]) for address in
+              range(0x02075C1C, 0x02075C1C + 248, 4)),
+            *((address, patched[address]) for address in
+              range(0x02004B00, 0x02004B00 + 48, 4)),
+            (0x0208EE44, 2),
+        ]
+        for address, value in maintenance_guards:
+            tampered_memory = dict(patched)
+            tampered_memory[address & 0x0FFFFFFF] = value ^ 1
+            assert apply_model(lines, tampered_memory)[1] == [], address
+        assert apply_model(lines, {**patched, 0x0208EE44: 1})[1] == []
+        assert apply_model(lines, {**patched, 0x0208EE44: 3})[1] == []
         subprocess.run(["python3", str(VERIFY), str(out), "--arm9-image", str(arm9), "--overlay2-image", str(ov2)], check=True)
+        verify = ["python3", str(VERIFY), "--arm9-image", str(arm9), "--overlay2-image", str(ov2)]
+        def rejected(path):
+            return subprocess.run(
+                verify[:2] + [str(path)] + verify[2:],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            ).returncode != 0
         tampered = Path(d) / "tampered.txt"
         bad = out.read_text().replace("EBFD460D", "00000000", 1)
         tampered.write_text(bad)
-        assert subprocess.run(["python3", str(VERIFY), str(tampered), "--arm9-image", str(arm9), "--overlay2-image", str(ov2)]).returncode != 0
+        assert rejected(tampered)
         malformed = Path(d) / "malformed.txt"
         malformed.write_text(out.read_text().replace("D0000000 00000000", "D0000000 00000000\n0208EE44 00000001", 1))
-        assert subprocess.run(["python3", str(VERIFY), str(malformed), "--arm9-image", str(arm9), "--overlay2-image", str(ov2)]).returncode != 0
+        assert rejected(malformed)
+        missing_reset = Path(d) / "missing-reset.txt"
+        missing_reset.write_text("\n".join(lines[:-1]) + "\n")
+        assert rejected(missing_reset)
         overlay = ov2.read_bytes()
         correct = 0x020BF3F4 - 0x020AD660
         wrong = 0x020BF3F4 - 0x020C0000

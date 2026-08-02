@@ -141,6 +141,28 @@ def main():
     lines += [f"{addr:08X} {value:08X}" for addr, value in writes]
     lines.append("D0000000 00000000")
     lines.append("D2000000 00000000")
+    # Region B is deliberately maintenance-only: it can repair cadence, never
+    # hooks or payload, and is fail-closed on any incomplete patched state.
+    patched = dict(writes)
+    maintenance_addresses = (
+        PLAYER_HOOK,
+        SPEED_HOOK,
+        TIMER_HOOK,
+        CONTROL_TIMER_HOOK,
+        ANIMATION_HOOK,
+        *range(PAYLOAD, PAYLOAD + len(text), 4),
+        *range(ANIMATION_PAYLOAD, ANIMATION_PAYLOAD + len(animation_text), 4),
+    )
+    lines += [
+        f"5{addr & 0x0FFFFFFF:07X} {patched[addr]:08X}"
+        for addr in maintenance_addresses
+    ]
+    lines += [
+        f"5208EE44 00000002",
+        "0208EE44 00000001",
+    ]
+    lines.append("D0000000 00000000")
+    lines.append("D2000000 00000000")
     a.output.write_text("\n".join(lines) + "\n", encoding="ascii")
     print(f"payload_bytes={len(text)}")
     print(f"second_entry=0x{second:08X}")

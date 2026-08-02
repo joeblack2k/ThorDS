@@ -2143,3 +2143,36 @@ Evidence:
   remain open. This v6 entry supersedes v5 hashes and hook claims for the
   final build; the preceding v5 entries remain historical attempts.
 - Evidence: `docs/evidence/m13/f4-fixed-timestep-player.json`.
+
+## 2026-08-02 - M13 F4 cadence-reset recovery
+
+- Reproduced the owner's later 2x-speed report after a scene or player reset:
+  all five v6 player hooks remained active, but cadence had returned to 2 and
+  the sampler measured 30 unique updates across 61 emulator frames.
+- Root cause: v6 correctly failed closed after installation because its guard
+  expected the original hook words. Once the hooks were already patched, a
+  later scene/overlay cadence reset could not re-enter the install region.
+- Added runtime id `sm64ds.eu.60fps-dev-cadence.v7`. Region A remains the
+  exact-original fail-closed installer. Region B is maintenance-only: it
+  requires all five exact patched hook words, all 62 player payload words, all
+  12 animation payload words and cadence 2, then writes only cadence 1. It
+  never repairs hooks or payload and does nothing for cadence 1, cadence 3 or
+  any incomplete state.
+- The generated Action Replay words and profile code are byte-for-byte equal.
+  Both canonical SHA-256 values are
+  `991e679818b9ea2f2a766559e9fd541b818385b1f5ffc0f5e42c8e37583c99fd`.
+  A regression test now prevents profile/builder drift.
+- Saved the live fault state before reinstall. The clean build ran 144/144
+  Gradle tasks, the focused GitHubProdRelease unit test and patch verifier
+  passed, and GitHubProdDebug installed successfully. APK SHA-256:
+  `0f3ceeab5be2c7b658a77e29ec5a97700c49d0a9a4b66969317d51f66be622c8`.
+- Re-loaded the private fault fixture three times. v7 recovered to cadence 1
+  with `60/60`, `60/61` and `60/60` updates/frames; a later live sample remained
+  `61/61`. Fast-forward and semantic monitoring were off, the process remained
+  alive and the crash/ANR/fatal scan passed.
+- This closes the observed scene/save-state cadence reset, not full M13.
+  Particles, non-player actors, cutscenes, audio continuity, broad gameplay,
+  RetroAchievements Casual interaction and the 60-minute stability gate remain
+  open. No ROM, save-state bytes, private path, device serial or private capture
+  is published.
+- Evidence: `docs/evidence/m13/f4-cadence-reset-recovery.json`.

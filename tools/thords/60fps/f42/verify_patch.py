@@ -11,6 +11,7 @@ PAYLOAD = 0x02075C1C
 LIMIT = 0xF8
 ANIMATION_PAYLOAD = 0x02004B00
 ANIMATION_LIMIT = 0x40
+CADENCE = 0x0208EE44
 CAMERA_START, CAMERA_END = 0x02075BB4, 0x02075C18
 ANIMATION_HOOK = 0x020BEDD4
 PLAYER_HOOK, SPEED_HOOK = 0x020BF3F4, 0x020D4D88
@@ -29,26 +30,31 @@ ANIMATION_CONTINUATION = 0x020BEDD8
 ANIMATION_SKIP_RETURN = 0x012FFF1E
 
 def parse(path):
-    guards, writes, terminated, reset, writing = [], [], False, False, False
+    regions, resets, terminated, writing = [], 0, False, False
+    current_guards, current_writes = [], []
     for line in path.read_text(encoding="ascii").splitlines():
         if not line.strip(): continue
-        if reset: raise ValueError("code after reset")
         left, right = line.split()
         if left == "D0000000":
             if right != "00000000" or terminated or not writing: raise ValueError("bad terminator")
+            regions.append((current_guards, current_writes))
+            current_guards, current_writes, writing = [], [], False
             terminated = True
         elif left == "D2000000":
             if right != "00000000" or not terminated: raise ValueError("bad reset")
-            reset = True
+            terminated, resets = False, resets + 1
+        elif terminated:
+            raise ValueError("code before reset")
         elif left[0] == "5":
-            if writing or terminated: raise ValueError("guard outside region")
-            guards.append((int(left[1:], 16), int(right, 16)))
+            if writing: raise ValueError("guard outside region")
+            current_guards.append((int(left[1:], 16), int(right, 16)))
         else:
             if len(left) != 8 or len(right) != 8: raise ValueError("bad AR word")
             writing = True
-            writes.append((int(left, 16), int(right, 16)))
-    if not reset: raise ValueError("missing reset")
-    return guards, writes
+            current_writes.append((int(left, 16), int(right, 16)))
+    if terminated or current_guards or current_writes or len(regions) != 2 or resets != 2:
+        raise ValueError("expected exactly two regions")
+    return regions
 
 def target(address, value):
     if value >> 24 not in (0xEA, 0xEB): raise ValueError("not ARM B/BL")
@@ -67,7 +73,8 @@ def main():
     p.add_argument("--arm9-image", type=Path, required=True)
     p.add_argument("--overlay2-image", type=Path, required=True)
     a = p.parse_args()
-    guards, writes = parse(a.patch)
+    regions = parse(a.patch)
+    guards, writes = regions[0]
     if guards != [(PLAYER_HOOK & 0x0FFFFFFF, EXPECTED[PLAYER_HOOK]),
                   (SPEED_HOOK & 0x0FFFFFFF, EXPECTED[SPEED_HOOK]),
                   (TIMER_HOOK & 0x0FFFFFFF, EXPECTED[TIMER_HOOK]),
@@ -169,6 +176,21 @@ def main():
         raise SystemExit("animation continuation branch missing")
     if any(by[x] == 0 for x in animation_addrs):
         raise SystemExit("animation zero placeholder")
+    maintenance_guards, maintenance_writes = regions[1]
+    expected_maintenance = [
+        (PLAYER_HOOK & 0x0FFFFFFF, by[PLAYER_HOOK]),
+        (SPEED_HOOK & 0x0FFFFFFF, by[SPEED_HOOK]),
+        (TIMER_HOOK & 0x0FFFFFFF, by[TIMER_HOOK]),
+        (CONTROL_TIMER_HOOK & 0x0FFFFFFF, by[CONTROL_TIMER_HOOK]),
+        (ANIMATION_HOOK & 0x0FFFFFFF, by[ANIMATION_HOOK]),
+        *((address & 0x0FFFFFFF, by[address]) for address in payload_addrs),
+        *((address & 0x0FFFFFFF, by[address]) for address in animation_addrs),
+        (CADENCE & 0x0FFFFFFF, 2),
+    ]
+    if maintenance_guards != expected_maintenance:
+        raise SystemExit("maintenance guards mismatch")
+    if maintenance_writes != [(CADENCE, 1)]:
+        raise SystemExit("maintenance writes must contain cadence only")
     arm9, ov2 = a.arm9_image.read_bytes(), a.overlay2_image.read_bytes()
     for addr, expected in EXPECTED.items():
         if word(ov2, addr, OVERLAY_BASE) != expected: raise SystemExit("overlay proof failed")

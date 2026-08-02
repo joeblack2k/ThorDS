@@ -1,7 +1,7 @@
 # Project status
 
 Project: ThorDS Enhanced
-Date: 2026-08-01
+Date: 2026-08-02
 Agent: Sol xHigh
 Branch: thords/enhancement-platform-v1
 Origin: https://github.com/joeblack2k/ThorDS
@@ -13,8 +13,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 ## Summary
 
 - Current workstream: M13 timing validation and SM64DS Smooth Orbit Camera v1
-- Current gate: F4 player movement, vertical physics, timers and animation are
-  corrected; broader scene timing remains open
+- Current gate: F4 player movement, vertical physics, timers, animation and
+  cadence-reset recovery are corrected; broader scene timing remains open
 - ~~Original/safe-mode software rendering as a play path~~ — explicitly out
   of scope for ThorDS Enhanced product validation. The product path is Vulkan.
 - Overall status: PARTIAL
@@ -58,7 +58,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M10 | PARTIAL | ad3a5179 | docs/evidence/m10/ | guarded native/JNI config, scheduler snapshots, persisted preference fail-closed check, incompatible-ratio savestate guard, 100% telemetry and stability are green; 64-bit scaled-cycle truncation fixed; equivalence, drift and formal over-100 runtime gates remain open |
 | M11 | PARTIAL | 760f3c2b | docs/evidence/m11/ | ROM-details resolved ThorDS profile status, per-ROM Original/Enhanced and RA controls, physical Hardcore recovery branches and staged-edit process recreation pass; ~~safe-mode acceptance~~ is out of scope; full physical details-flow acceptance remains open |
 | M12 | BLOCKED | docs: record M12 release preflight matrix | docs/evidence/m12/ | inventory only; release remains blocked by incomplete product and device gates |
-| M13 | PARTIAL | guarded player fixed-timestep pass | docs/evidence/m13/ | F3 changes Stage/Scene behavior and render from about 30/s to 60/s; F4 corrects bounded player movement, vertical physics, timers and animation, while non-player and scene-wide timing remains open |
+| M13 | PARTIAL | guarded player fixed-timestep and cadence-recovery pass | docs/evidence/m13/ | F3 changes Stage/Scene behavior and render from about 30/s to 60/s; F4 corrects bounded player movement, vertical physics, timers, animation and the observed scene-reset fallback to cadence 2, while non-player and broader scene timing remains open |
 
 ## Feature status
 
@@ -68,7 +68,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - RA Hardcore gate: PARTIAL
 - ARM9 OC: EXPERIMENTAL / 125% relaunch and compatible state load pass; timing validation remains open
 - 60fps: REQUIRED / F3 SEMANTIC CADENCE PASS / F4 PLAYER
-  HORIZONTAL-VERTICAL-TIMER-ANIMATION PASS / BROADER TIMING PARTIAL
+  HORIZONTAL-VERTICAL-TIMER-ANIMATION AND CADENCE-RESET RECOVERY PASS /
+  BROADER TIMING PARTIAL
 - ~~Safe mode / software renderer gameplay~~: OUT OF SCOPE / Vulkan is the
   supported ThorDS Enhanced product renderer
 - SM64DS Smooth Orbit Camera v1: PARTIAL / frontend mapping, R3 sequence,
@@ -92,8 +93,11 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   `unresolved-function` findings. F2 remains open for semantic/manual review
   of those classified consumers; it is not claimed PASS.
 - The 18 source-level cadence writes were reviewed as initialization or
-  scene/overlay-transition assignments and none was promoted to an F4 patch
-  manifest. Binary/runtime consumer matching remains required.
+  scene/overlay-transition assignments. Rather than patching every initializer,
+  v7 uses a maintenance-only region that restores cadence 1 only when all five
+  expected hooks, every emitted payload word and reset cadence 2 match exactly.
+  Binary/runtime consumer matching remains required for the broader timing
+  audit.
 - F2 source review rejects `func_020199A4` as the ordinary gameplay scheduler:
   it is a conditional special-state loop and its zero Castle Garden count is
   expected. Scene BeforeBehavior/BeforeRender are the replacement markers.
@@ -102,9 +106,10 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   checkpoint. `MainLoopSlot1` was zero in this state and is not used as sole
   proof. Evidence:
   `docs/evidence/m13/f2-semantic-runtime-route.json`.
-- F3 now has a hidden exact-profile `60fps-dev-cadence` Action Replay definition
-  with default-off and relaunch-required semantics. It is experimental only;
-  no product or 60fps validation claim is made.
+- F3 introduced the hidden exact-profile `60fps-dev-cadence` Action Replay
+  definition with default-off and relaunch-required semantics. It has evolved
+  through the bounded F4 v7 player and cadence-recovery pass, but remains
+  experimental and is not yet a complete product or release claim.
 - The paired F3 Castle Garden run measured Stage/Scene behavior and render at
   one pass per two VBlanks with cadence 2 and one pass per VBlank with cadence
   1 (`306/612` versus `615/615`). The owner simultaneously observed
@@ -122,25 +127,29 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   was disabled again after measurement. This does not close the semantic
   60fps product gate. Evidence:
   `docs/evidence/m13/f5-60fps-stability-window-camera-green.json`.
-- F4 now has the reviewed v6 guarded exact-EU timestep patch
-  `sm64ds.eu.60fps-dev-cadence.v6` for player movement, player timers and the
+- F4 now has the reviewed v7 guarded exact-EU timestep patch
+  `sm64ds.eu.60fps-dev-cadence.v7` for player movement, player timers and the
   Player-specific animation driver at `0x020BEDD4` (continuation
-  `0x020BEDD8`). Six guards share one fail-closed region; independently
-  tampering any guard produced zero writes, malformed structures are rejected,
-  and valid writes include cadence 1. Same-checkpoint Thor comparisons measured
-  movement at 435.0 normal versus 457.5 enhanced units (5.17% difference),
-  timer drops of 61 versus 60, and identical 4096 animation advances where the
-  uncorrected path advanced 8192. Twin-state vertical checks matched the normal
-  rising endpoint exactly and the falling endpoint within 0.000977 world units
-  (0.0136% displacement difference). The final Vulkan sample recorded 60
-  unique updates and 60 emulator frames in 1.001396458s, with all five v6 hook
-  words active; the clean build executed 144/144 Gradle tasks and installed APK
-  SHA-256 is `9dccbdef33f6deac505fa1dfcd4f54e620adefe40f26255dabed90e4f448fde7`.
+  `0x020BEDD8`). Its install region retains the six v6 fail-closed guards;
+  independently tampering any guard produced zero writes, malformed structures
+  are rejected, and valid install writes include cadence 1. A second
+  maintenance-only region repairs cadence 2 to 1 only when all five patched
+  hooks and all 74 payload words match exactly. Same-checkpoint Thor
+  comparisons measured movement at 435.0 normal versus 457.5 enhanced units
+  (5.17% difference), timer drops of 61 versus 60, and identical 4096 animation
+  advances where the uncorrected path advanced 8192. Twin-state vertical checks
+  matched the normal rising endpoint exactly and the falling endpoint within
+  0.000977 world units (0.0136% displacement difference). The observed later
+  scene reset to cadence 2 was reproduced in a private save state; v7 recovered
+  that state three times at `60/60`, `60/61` and `60/60` updates/frames with
+  cadence 1. The clean v7 build executed 144/144 Gradle tasks and installed APK
+  SHA-256 is `0f3ceeab5be2c7b658a77e29ec5a97700c49d0a9a4b66969317d51f66be622c8`.
   The installed Vulkan build is playable with fast-forward disabled. This is a
-  bounded player-timing pass, not full M13: particles, non-player actors,
-  cutscenes, audio continuity, RA Casual, broad gameplay behavior and 60-minute
-  stability remain open. Evidence:
-  `docs/evidence/m13/f4-fixed-timestep-player.json`.
+  bounded player-timing and cadence-recovery pass, not full M13: particles,
+  non-player actors, cutscenes, audio continuity, RA Casual, broad gameplay
+  behavior and 60-minute stability remain open. Evidence:
+  `docs/evidence/m13/f4-fixed-timestep-player.json`,
+  `docs/evidence/m13/f4-cadence-reset-recovery.json`.
 - The existing native one-second game-loop sampler is now exposed through the
   debug-only `DUMP_SM64DS_GAME_LOOP` action. Title-screen validation returned
   `valid=false`, correctly preventing a menu from becoming gameplay evidence.
