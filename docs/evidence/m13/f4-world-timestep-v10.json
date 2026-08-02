@@ -1,0 +1,82 @@
+{
+  "milestone": "M13",
+  "gate": "F4 coin rotation and fixed-step inventory v10",
+  "date": "2026-08-02",
+  "status": "STATIC_BUILD_INSTALL_PASS_CORRECTED_OPCODE_PHYSICAL_RECHECK_PENDING",
+  "renderer": "Vulkan",
+  "identity": "ASMP revision 0 exact profile",
+  "runtimePatch": {
+    "id": "sm64ds.eu.60fps-dev-cadence.v10",
+    "actionReplaySha256": "67ddfeb4d2e0d7d891258f92773092384b10778360bc98d8ecef62107047e158",
+    "profileCodeSha256": "67ddfeb4d2e0d7d891258f92773092384b10778360bc98d8ecef62107047e158",
+    "playerPayloadBytes": 248,
+    "worldPayloadBytes": 396,
+    "worldPayloadSha256": "3ae27200bfe40d1a8fb54b708afd8c07cd116be49dd4d5960bba52561ca0d7d2",
+    "coinCorrection": {
+      "function": "Coin::Behavior",
+      "module": "ov002",
+      "functionAddress": "0x020b2324",
+      "instructionAddress": "0x020b23b0",
+      "originalStep": "0x0c00",
+      "cadence1Step": "0x0600",
+      "cadence1Instruction": "E2811C06",
+      "rejectedInstruction": "E2811B06",
+      "controlFlowChanged": false,
+      "registerContractChanged": false
+    },
+    "failClosed": {
+      "regions": 5,
+      "paths": [
+        "fresh exact-original install",
+        "v7 cadence-1 migration",
+        "v7 cadence-2 migration",
+        "v9-to-v10 exact-payload migration",
+        "complete-v10 cadence-reset maintenance"
+      ],
+      "tamperCoverage": "Every guard and payload word is independently tampered in the AREngine-semantic model. The coin instruction has an exact original-word guard."
+    }
+  },
+  "deepDive": {
+    "sourceFilesScanned": 11575,
+    "sourceTreeSha256": "1a9a06cd51443f7f28fda8c35edbc276fc8a6074aaf2e9b49c4340e14d490499",
+    "candidateFindings": 1945,
+    "candidateSourceFiles": 327,
+    "mappedSourceFiles": 327,
+    "unresolvedSourceFiles": 0,
+    "cadenceRelocations": 57,
+    "unresolvedCadenceRelocations": 0,
+    "claim": "Candidate and binary function-range inventory only; semantic disposition remains open."
+  },
+  "verification": {
+    "fixedStepScannerSelfTest": "PASS",
+    "binaryMapperSelfTest": "PASS",
+    "patchBuilderAndVerifier": "PASS",
+    "failClosedModel": "PASS",
+    "githubProdReleaseUnitTests": "PASS",
+    "githubProdDebugBuild": "PASS: 144 tasks",
+    "apkAssetProfileAndHash": "PASS",
+    "install": "PASS",
+    "apkSha256": "75332db4843c316c046128280546b266cf81013936bc1a89afdad06ad2bf3870",
+    "crashAnrFatalScan": "PENDING_FINAL_WINDOW"
+  },
+  "thorAcceptance": {
+    "profilePlan": {
+      "curatedCodes": 4,
+      "effectiveArm9Percent": 125,
+      "effectiveRetroAchievements": "CASUAL",
+      "effectiveWidescreen": "TRUE_WIDESCREEN"
+    },
+    "privateCheckpointLoaded": true,
+    "cadenceWindows": "Stable 60/61 unique updates across 60/61 emulator frames with cadence 1 after the load boundary.",
+    "playerAnimationAndControls": "Previously passed on v9; unchanged in v10 and awaiting combined owner recheck.",
+    "coinRotation": "CORRECTED_BUILD_INSTALLED_OWNER_PHYSICAL_RECHECK_PENDING",
+    "audio": "OPEN_NOT_MEASURED_FOR_V10"
+  },
+  "limitations": [
+    "V10 corrects one proven direct fixed-step consumer; it does not close the remaining 1,944 candidates.",
+    "Enemy and moving-platform periods still require equal-state physical timing comparisons.",
+    "Cutscenes, messages, countdowns, audio parity and scene-specific timers remain open.",
+    "The 60-minute stability soak remains open.",
+    "No ROM bytes, save-state bytes, private path, device serial or private capture is published."
+  ]
+}

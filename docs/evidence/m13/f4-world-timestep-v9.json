@@ -1,0 +1,65 @@
+{
+  "milestone": "M13",
+  "gate": "F4 register-safe world timestep v9",
+  "date": "2026-08-02",
+  "status": "PASS_FOR_BOUNDED_REGRESSION_GATE",
+  "renderer": "Vulkan",
+  "identity": "ASMP revision 0 exact profile",
+  "runtimePatch": {
+    "id": "sm64ds.eu.60fps-dev-cadence.v9",
+    "actionReplaySha256": "87160c121ab5565eb517321d6f71ca64b99ba19623d17625e25aa4c0099e6aab",
+    "profileCodeSha256": "87160c121ab5565eb517321d6f71ca64b99ba19623d17625e25aa4c0099e6aab",
+    "playerPayloadBytes": 248,
+    "worldPayloadBytes": 396,
+    "worldPayloadSha256": "3ae27200bfe40d1a8fb54b708afd8c07cd116be49dd4d5960bba52561ca0d7d2",
+    "correction": {
+      "rejectedSymptom": "V8 moved intro characters through the world while their model poses remained static.",
+      "rootCause": "The Animation::Advance helper clobbered r1, which carries the animation length across both patched load sites.",
+      "machineInvariant": "The helper now enters with push {r1, lr} and returns with pop {r1, pc}; r0 remains the adjusted speed result.",
+      "scope": "No player, acceleration, AddVec, particle or cadence-recovery behavior changed from v8."
+    },
+    "failClosed": {
+      "regions": 4,
+      "paths": [
+        "fresh exact-original install",
+        "v7 cadence-1 migration",
+        "v7 cadence-2 migration",
+        "complete-v9 cadence-reset maintenance"
+      ],
+      "tamperCoverage": "Every guard and payload word is independently tampered in the AREngine-semantic model; the verifier also requires exactly one r1/lr preserve and r1/pc restore pair in the animation helper."
+    }
+  },
+  "verification": {
+    "patchBuilderAndVerifier": "PASS",
+    "failClosedModel": "PASS",
+    "animationRegisterPreservation": "PASS",
+    "smallSignedSpeedRegression": "PASS",
+    "githubProdReleaseUnitTests": "PASS",
+    "githubProdDebugBuild": "PASS: 144 tasks",
+    "install": "PASS",
+    "packageIdentity": "PASS",
+    "apkSha256": "2bf1ebc41daa27f997a52a584cd918cbf4ea3c351ee881982043c9a7eaad8450",
+    "crashAnrFatalScan": "PASS"
+  },
+  "thorAcceptance": {
+    "profilePlan": {
+      "curatedCodes": 4,
+      "effectiveArm9Percent": 125,
+      "effectiveRetroAchievements": "CASUAL",
+      "effectiveWidescreen": "TRUE_WIDESCREEN"
+    },
+    "cadenceWindows": "Stable 60/61 unique updates across 60/61 emulator frames with cadence 1.",
+    "ownerObservation": "Yoshi movement and controls are correct after the v9 install.",
+    "workingPrivateCheckpointCreated": true,
+    "existingPrivateCheckpointsOverwritten": false,
+    "processAlive": true,
+    "audio": "OPEN_NOT_MEASURED_FOR_V9"
+  },
+  "limitations": [
+    "This closes the rigid-pose regression only; it is not complete M13 product validation.",
+    "Enemy and moving-platform periods still require equal-state physical timing comparisons.",
+    "Cutscenes, messages, countdowns, audio parity and broad scene-specific timers remain open.",
+    "A longer gameplay matrix and 60-minute stability soak remain open.",
+    "No ROM bytes, save-state bytes, private path, device serial or private capture is published."
+  ]
+}

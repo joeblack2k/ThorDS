@@ -1,0 +1,126 @@
+{
+  "milestone": "M13",
+  "gate": "F4 non-player world timestep v8 rejected build",
+  "date": "2026-08-02",
+  "status": "FAIL_PHYSICAL_ANIMATION_REGRESSION",
+  "renderer": "Vulkan",
+  "identity": "ASMP revision 0 exact profile",
+  "runtimePatch": {
+    "id": "sm64ds.eu.60fps-dev-cadence.v8",
+    "actionReplaySha256": "aad0fb5c9e9553c4f442d3362407bf6341b7a43fd08c666fc27b3192043fb0d2",
+    "profileCodeSha256": "aad0fb5c9e9553c4f442d3362407bf6341b7a43fd08c666fc27b3192043fb0d2",
+    "playerPayloadBytes": 248,
+    "worldPayloadBytes": 392,
+    "worldPayloadSha256": "c9f744e985e229b2f327763ee5789d103ba628fc699bbd540a01616569a5ef4c",
+    "corrections": [
+      "Non-player acceleration is split across consecutive cadence-1 updates.",
+      "Non-player position vectors are split across consecutive cadence-1 updates.",
+      "Odd signed fixed-point values use arithmetic half plus exact remainder.",
+      "Global animation speed uses arithmetic half plus exact remainder.",
+      "The particle update body runs on one game-loop parity.",
+      "Player uses the previously validated dedicated timestep payload.",
+      "The retired Player animation parity hook is restored to its original word."
+    ],
+    "failClosed": {
+      "regions": 4,
+      "paths": [
+        "fresh exact-original install",
+        "v7 cadence-1 migration",
+        "v7 cadence-2 migration",
+        "complete-v8 cadence-reset maintenance"
+      ],
+      "tamperCoverage": "Every guard and payload word is independently tampered in the AREngine-semantic model; malformed terminators and the prior destination-derived AddVec words are rejected."
+    }
+  },
+  "deterministicParity": {
+    "animation": {
+      "checkpointStartFrame": 135168,
+      "originalEndAfter60EmulatorFrames": 12288,
+      "v8EndAfter60EmulatorFrames": 12288,
+      "result": "PASS"
+    },
+    "particleExecution": {
+      "firstWindow": {
+        "emulatorFrames": 60,
+        "particleBodyExecutions": 30
+      },
+      "finalApkWindow": {
+        "semanticUpdates": 59,
+        "particleBodyExecutions": 29
+      },
+      "result": "PASS"
+    },
+    "signedHalfStep": {
+      "values": [-3, -1, 0, 1, 3],
+      "paths": ["acceleration", "AddVec", "animation"],
+      "pairSum": "exact original signed value",
+      "sourceVsDestinationRegression": "PASS"
+    }
+  },
+  "thorAcceptance": {
+    "package": "io.github.joeblack2k.thords.dev",
+    "apkSha256": "9d4ef535a49ba379345b3c0c6f292292536fd1e9ba47f3e7a78e07b23f863232",
+    "profilePlan": {
+      "curatedCodes": 4,
+      "effectiveArm9Percent": 125,
+      "effectiveRetroAchievements": "CASUAL",
+      "effectiveWidescreen": "TRUE_WIDESCREEN"
+    },
+    "v7Cadence1Migration": {
+      "uniqueUpdates": 60,
+      "emulatorFrames": 60,
+      "cadenceValue": 1,
+      "result": "PASS"
+    },
+    "v7Cadence2Migration": {
+      "uniqueUpdates": 60,
+      "emulatorFrames": 61,
+      "cadenceValue": 1,
+      "result": "PASS"
+    },
+    "audioWindow": {
+      "durationSeconds": 60,
+      "activeTrackUnderrunsStart": 7168,
+      "activeTrackUnderrunsEnd": 10048,
+      "additionalUnderruns": 2880,
+      "baselineComparison": "Interrupted before a comparable Original window completed.",
+      "result": "OPEN_NEEDS_BASELINE"
+    },
+    "physicalAnimation": {
+      "observation": "Mario, Luigi and Wario translated out of the intro pipe while remaining in rigid static poses.",
+      "rootCause": "The global Animation::Advance speed helper used r1 as a temporary even though both patched call sites require r1 to retain the animation length.",
+      "result": "FAIL"
+    },
+    "saveState": {
+      "newPrivateCheckpoints": 2,
+      "existingPrivateCheckpointsOverwritten": false,
+      "newCheckpointsRefreshedAfterFinalInstall": true
+    },
+    "semanticMonitorEnabledAfterTest": false,
+    "processAlive": true,
+    "crashAnrFatalScan": "PASS",
+    "overall": "FAIL"
+  },
+  "verification": {
+    "patchBuilderAndVerifier": "PASS",
+    "failClosedModel": "PASS",
+    "signedParityRegression": "PASS",
+    "coreSemanticMonitorTests": "PASS",
+    "githubProdReleaseUnitTests": "PASS",
+    "githubProdDebugBuild": "PASS: 144 tasks",
+    "install": "PASS",
+    "packageIdentity": "PASS",
+    "releaseUpdaterIsolation": "PASS",
+    "solCoreReview": "SHIP",
+    "physicalRegressionGate": "FAIL"
+  },
+  "limitations": [
+    "This is a bounded F4 correction, not complete M13 product validation.",
+    "Enemy and moving-platform periods still require equal-state physical timing comparisons.",
+    "Cutscenes, messages, countdowns and broad scene-specific timers remain open.",
+    "The final enhanced audio window added 2,880 underruns; the comparable Original measurement was interrupted, so audio remains open.",
+    "The deterministic animation-frame replay did not detect the r1 ABI corruption and is insufficient as a physical animation gate.",
+    "V8 is rejected and must not be committed or published as the active runtime.",
+    "No ROM bytes, save-state bytes, private path, device serial or private capture is published."
+  ]
+}

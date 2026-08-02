@@ -1,5 +1,100 @@
 # Worklog
 
+## 2026-08-02 - M13 F4 corrected coin immediate encoding
+
+- The first v10 coin word was rejected after the owner observed even faster
+  rotation. ARM assembly confirmed that `E2811B06` encodes `0x1800`, not
+  `0x0600`; the correct `0x0600` word is `E2811C06`.
+- Updated the generator, independent verifier, fail-closed test and embedded
+  profile code/hash. The focused patch test passes.
+- Built and installed the corrected APK. Build SHA-256:
+  `75332db4843c316c046128280546b266cf81013936bc1a89afdad06ad2bf3870`.
+  The pulled installed APK has the identical SHA and embeds `E2811C06`.
+- The saved castle checkpoint was loaded after installation. The corrected
+  physical coin result is awaiting the owner's observation; broader M13 timing
+  and audio acceptance remain open.
+
+## 2026-08-02 - M13 F4 v10 fixed-step deep dive and coin rotation
+
+- Replaced the cadence-symbol-only view with a two-layer fixed-step audit.
+  The source pass scanned 11,575 files and retained 1,945 candidates across
+  327 source files while excluding 124,107 numeric-only noise lines.
+- Mapped all 327 candidate files to exact ARM9/overlay function ranges and all
+  57 binary cadence relocations to one containing function. Both unresolved
+  counts are zero. The inventory remains candidate evidence, not gameplay
+  correctness proof.
+- Confirmed the owner's fast-coin observation in `Coin::Behavior`: the shared
+  coin Y rotation advances by fixed `0xC00` on every behavior call. V10 changes
+  only that guarded immediate to `0x600`, preserving the original total over
+  two cadence-1 updates with no hook, code cave, register or control-flow
+  change.
+- Added an exact v9-to-v10 migration region so the working private checkpoint
+  can be loaded without replaying the intro. The existing v9 player, world,
+  animation and particle payload SHA-256 remains unchanged.
+- Scanner/mapper self-tests, deterministic patch verification, fail-closed
+  model, release unit tests and the clean 144-task GitHubProdDebug build pass.
+  APK SHA-256:
+  `d741498b6548839de8124f2027f3f9535ce492e2d2471cce17ebe866a5e3cc12`.
+- The APK is installed and the private gameplay checkpoint is loaded. Cadence
+  is stable at 60/61 updates after the load boundary. Owner coin, animation
+  and control validation remains pending; audio remains open.
+- Evidence:
+  `docs/evidence/m13/f4-fixed-step-deep-dive.md`,
+  `docs/evidence/m13/f4-world-timestep-v10.json`.
+
+## 2026-08-02 - M13 F4 v9 animation-register correction
+
+- Rejected v8 after the owner observed Mario, Luigi and Wario translating out
+  of the intro pipe while remaining in rigid static poses.
+- Traced the regression to the two inline `Animation::Advance` speed hooks. The
+  helper used `r1` as a half-step temporary even though the original function
+  retains the animation length in `r1` at both sites, forcing animation frames
+  back to a fixed remainder.
+- V9 preserves `r1` and `lr` around the helper. The independent verifier now
+  requires the exact preserve/restore machine words, and the small signed-speed
+  model covers 60 consecutive updates.
+- `test_patch.py`, the release unit tests, the clean 144-task
+  GitHubProdDebug build, install, package identity and crash/ANR scan passed.
+  The installed APK SHA-256 is
+  `2bf1ebc41daa27f997a52a584cd918cbf4ea3c351ee881982043c9a7eaad8450`.
+- V9 held 60/61 updates per 60/61 emulator frames at cadence 1. The owner then
+  confirmed correct Yoshi movement and controls, and a new private working
+  checkpoint was created without overwriting pre-existing checkpoints.
+- Audio remains open and is not claimed by this gate.
+- Evidence: `docs/evidence/m13/f4-world-timestep-v9.json`.
+
+## 2026-08-02 - M13 F4 v8 rejected after physical animation regression
+
+- Reproduced the owner's 2x-speed report as a fixed-step consumer problem after
+  Stage and Scene behavior were moved from about 30 to about 60 updates/s.
+- Preserved the validated v7 Player payload and replaced its Player-only
+  animation parity hook with the original instruction. Added guarded
+  non-player acceleration and position-vector half steps, global fractional
+  animation speed and a one-parity particle update.
+- Signed odd fixed-point values use arithmetic half plus the exact remainder.
+  Independent inspection caught and rejected an intermediate AddVec build that
+  derived the split from destination position instead of source velocity. The
+  verifier now forbids those machine words and the test uses unequal
+  destination/source values to prevent recurrence.
+- The deterministic Original and v8 animation replay both moved from `135168`
+  to `12288` across 60 emulator frames. Final-APK ARM64 telemetry counted 29
+  particle body executions across 59 semantic updates; an earlier exact
+  60-frame window counted 30.
+- Both private v7 cadence fixtures migrated to v8 cadence 1 at `60/60` and
+  `60/61`. Two newly created private checkpoints were refreshed after the final
+  install; no pre-existing checkpoint was overwritten.
+- Physical validation rejected the build: intro characters translated while
+  their poses remained static. The deterministic animation replay was therefore
+  a false-negative gate and is not reused as sole animation proof.
+- The final enhanced audio window added 2,880 underruns. The comparable
+  Original run was interrupted, so audio remains open.
+- `test_patch.py`, both core monitor tests, release unit tests, the 144-task
+  GitHubProdDebug build, install, package/updater checks and crash scan passed.
+  Final APK SHA-256:
+  `9d4ef535a49ba379345b3c0c6f292292536fd1e9ba47f3e7a78e07b23f863232`.
+- V8 is retained only as rejected evidence and must not be published as the
+  active runtime. Evidence: `docs/evidence/m13/f4-world-timestep-v8.json`.
+
 ## 2026-08-01 - Vulkan product scope confirmed
 
 - The ThorDS Enhanced product path is Vulkan on the AYN Thor.

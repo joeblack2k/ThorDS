@@ -1,153 +1,263 @@
 #!/usr/bin/env python3
-"""Small direct smoke test for F4.2 patch invariants."""
+"""Deterministic builder, verifier, and fail-closed model test for F4 v10."""
 from __future__ import annotations
+
 import hashlib
+import importlib.util
 import json
 import subprocess
 import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
-BUILD = Path(__file__).with_name("build_patch.py")
-VERIFY = Path(__file__).with_name("verify_patch.py")
-SRC = Path(__file__).with_name("sm64ds_eu_player_timestep.s")
-ANIMATION_SRC = Path(__file__).with_name("sm64ds_eu_animation_timestep.s")
-HOOK_GUARDS = [
-    (0x020BF3F4, 0xEBFD460D),
-    (0x020D4D88, 0xE92D4030),
-    (0x020E4F10, 0xE0850000),
-    (0x020E4FDC, 0xE2850D1B),
-    (0x020BEDD4, 0xE92D4010),
-    (0x0208EE44, 2),
-]
+HERE = Path(__file__).parent
+BUILD = HERE / "build_patch.py"
+VERIFY = HERE / "verify_patch.py"
+MC = Path("/opt/homebrew/Cellar/llvm/22.1.8/bin/llvm-mc")
+ARM9 = ROOT / "tools/research/sm64ds-decomp/extracted/arm9_dec.bin"
+OVERLAY = ROOT / "tools/research/sm64ds-decomp/extracted/overlays/overlay_0002.bin"
 
-def apply_model(lines, memory):
-    regions, region, active = [], [], True
+
+def load_verifier():
+    spec = importlib.util.spec_from_file_location("f42_verify_patch", VERIFY)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+def apply_model(lines: list[str], initial_memory: dict[int, int]):
+    memory = dict(initial_memory)
+    applied = []
+    region_writes = []
+    cond = 1
+    condstack = 0
     for line in lines:
         left, right = line.split()
-        address, value = int(left, 16), int(right, 16)
-        if left == "D0000000":
-            regions.append(region)
-            region, active = [], True
-        elif left == "D2000000":
+        opcode = int(left[:2], 16)
+        value = int(right, 16)
+        if ((opcode < 0xD0 and opcode != 0xC5) or opcode > 0xD2) and not cond:
             continue
-        elif left[0] == "5":
-            active &= memory.get(address & 0x0FFFFFFF, 0) == value
-        elif active:
-            region.append((address, value))
-    return regions
+        if 0x50 <= opcode <= 0x5F:
+            condstack = ((condstack << 1) | cond) & 0xFFFFFFFF
+            address = int(left[1:], 16)
+            cond = int(memory.get(address) == value)
+        elif left == "D0000000":
+            applied.append(region_writes)
+            region_writes = []
+            cond = condstack & 1
+            condstack >>= 1
+        elif left == "D2000000":
+            cond = 1
+            condstack = 0
+        else:
+            address = int(left, 16)
+            region_writes.append((address, value))
+            memory[address & 0x0FFFFFFF] = value
+    return applied
+
+
+def runtime_code(catalog):
+    if isinstance(catalog, dict):
+        runtime = catalog.get("runtimeCode")
+        if runtime and runtime.get("id") == "sm64ds.eu.60fps-dev-cadence.v10":
+            return runtime
+        for value in catalog.values():
+            found = runtime_code(value)
+            if found:
+                return found
+    elif isinstance(catalog, list):
+        for value in catalog:
+            found = runtime_code(value)
+            if found:
+                return found
+    return None
+
 
 def main():
-    mc = Path("/opt/homebrew/Cellar/llvm/22.1.8/bin/llvm-mc")
-    assert mc.exists()
-    arm9 = ROOT / "tools/research/sm64ds-decomp/extracted/arm9_dec.bin"
-    ov2 = ROOT / "tools/research/sm64ds-decomp/extracted/overlays/overlay_0002.bin"
-    with tempfile.TemporaryDirectory() as d:
-        obj = Path(d) / "f42.o"
-        animation_obj = Path(d) / "f42-animation.o"
-        out = Path(d) / "patch.txt"
-        subprocess.run([str(mc), "-triple=armv5-none-eabi", "-filetype=obj", str(SRC), "-o", str(obj)], check=True)
-        subprocess.run([str(mc), "-triple=armv5-none-eabi", "-filetype=obj", str(ANIMATION_SRC), "-o", str(animation_obj)], check=True)
-        cmd = [
-            "python3", str(BUILD),
-            "--arm9-image", str(arm9),
-            "--overlay2-image", str(ov2),
-            "--object", str(obj),
-            "--animation-object", str(animation_obj),
-            "--output", str(out),
+    assert MC.exists()
+    verifier = load_verifier()
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp = Path(temp_dir)
+        objects = {}
+        for source, name in (
+            ("sm64ds_eu_player_timestep.s", "player"),
+            ("sm64ds_eu_animation_timestep.s", "animation"),
+            ("sm64ds_eu_world_timestep.s", "world"),
+        ):
+            objects[name] = temp / f"{name}.o"
+            subprocess.run(
+                [
+                    str(MC),
+                    "-triple=armv5-none-eabi",
+                    "-filetype=obj",
+                    str(HERE / source),
+                    "-o",
+                    str(objects[name]),
+                ],
+                check=True,
+            )
+
+        output = temp / "patch.txt"
+        command = [
+            "python3",
+            str(BUILD),
+            "--arm9-image",
+            str(ARM9),
+            "--overlay2-image",
+            str(OVERLAY),
+            "--object",
+            str(objects["player"]),
+            "--animation-object",
+            str(objects["animation"]),
+            "--world-object",
+            str(objects["world"]),
+            "--output",
+            str(output),
         ]
-        first = subprocess.check_output(cmd, text=True)
-        second = subprocess.check_output(cmd, text=True)
-        assert first == second and hashlib.sha256(out.read_bytes()).hexdigest() in first
-        lines = out.read_text().splitlines()
-        assert lines[-2:] == ["D0000000 00000000", "D2000000 00000000"]
-        assert int(lines[0][1:8], 16) == 0x020BF3F4 & 0x0FFFFFFF
-        assert int(lines[1][1:8], 16) == 0x020D4D88 & 0x0FFFFFFF
-        assert int(lines[2][1:8], 16) == 0x020E4F10 & 0x0FFFFFFF
-        assert int(lines[3][1:8], 16) == 0x020E4FDC & 0x0FFFFFFF
-        assert int(lines[4][1:8], 16) == 0x020BEDD4 & 0x0FFFFFFF
-        assert int(lines[6].split()[0], 16) == 0x020BF3F4
-        assert lines[5] == "5208EE44 00000002"
-        profiles = json.loads((ROOT / "app/src/main/assets/enhancement-profiles.json").read_text())
-        def find_runtime(value):
-            if isinstance(value, dict):
-                runtime = value.get("runtimeCode")
-                if runtime and runtime.get("id") == "sm64ds.eu.60fps-dev-cadence.v7":
-                    return runtime
-                for child in value.values():
-                    found = find_runtime(child)
-                    if found:
-                        return found
-            elif isinstance(value, list):
-                for child in value:
-                    found = find_runtime(child)
-                    if found:
-                        return found
-            return None
-        runtime = find_runtime(profiles)
+        first = subprocess.check_output(command, text=True)
+        first_bytes = output.read_bytes()
+        second = subprocess.check_output(command, text=True)
+        assert first == second
+        assert first_bytes == output.read_bytes()
+        assert "player_payload_bytes=248" in first
+        assert "world_payload_bytes=396" in first
+        assert hashlib.sha256(first_bytes).hexdigest() in first
+
+        verified = verifier.verify(output, ARM9, OVERLAY)
+        assert verified["player_payload_bytes"] == 248
+        assert verified["world_payload_bytes"] == 396
+        lines = output.read_text(encoding="ascii").splitlines()
+        regions = verifier.parse(output)
+        assert len(regions) == 5
+
+        catalog = json.loads(
+            (ROOT / "app/src/main/assets/enhancement-profiles.json").read_text()
+        )
+        runtime = runtime_code(catalog)
         assert runtime is not None
-        assert runtime["id"] == "sm64ds.eu.60fps-dev-cadence.v7"
-        generated_words = out.read_text(encoding="ascii").splitlines()
-        assert runtime["codeWords"] == generated_words
-        canonical = ("\n".join(runtime["codeWords"]) + "\n").encode("ascii")
+        assert runtime["codeWords"] == lines
+        canonical = ("\n".join(lines) + "\n").encode("ascii")
         assert runtime["codeSha256"] == hashlib.sha256(canonical).hexdigest()
-        valid_memory = {address & 0x0FFFFFFF: value for address, value in HOOK_GUARDS}
-        first_end = lines.index("D0000000 00000000")
-        expected_writes = [(int(a, 16), int(v, 16)) for a, v in
-                           (line.split() for line in lines[6:first_end])]
-        applied = apply_model(lines, valid_memory)
-        assert applied[0] == expected_writes
-        assert applied[1] == []
-        for index, (address, value) in enumerate(HOOK_GUARDS):
-            tampered_memory = dict(valid_memory)
-            tampered_memory[address & 0x0FFFFFFF] = value ^ 1
-            assert apply_model(lines, tampered_memory)[0] == [], index
-        patched = dict(valid_memory)
-        patched.update({address & 0x0FFFFFFF: value for address, value in expected_writes})
-        patched[0x0208EE44 & 0x0FFFFFFF] = 2
-        assert apply_model(lines, patched)[1] == [(0x0208EE44, 1)]
-        maintenance_guards = [
-            (0x020BF3F4, patched[0x020BF3F4]),
-            (0x020D4D88, patched[0x020D4D88]),
-            (0x020E4F10, patched[0x020E4F10]),
-            (0x020E4FDC, patched[0x020E4FDC]),
-            (0x020BEDD4, patched[0x020BEDD4]),
-            *((address, patched[address]) for address in
-              range(0x02075C1C, 0x02075C1C + 248, 4)),
-            *((address, patched[address]) for address in
-              range(0x02004B00, 0x02004B00 + 48, 4)),
-            (0x0208EE44, 2),
+
+        for region_index, (guards, expected_writes) in enumerate(regions):
+            memory = dict(guards)
+            applied = apply_model(lines, memory)
+            assert applied[region_index] == expected_writes
+            assert all(
+                not writes
+                for index, writes in enumerate(applied)
+                if index != region_index
+            )
+            for guard_index, (address, value) in enumerate(guards):
+                tampered_memory = dict(memory)
+                tampered_memory[address] = value ^ 1
+                assert apply_model(lines, tampered_memory)[region_index] == [], (
+                    region_index,
+                    guard_index,
+                )
+
+        def rejected(candidate_lines: list[str]):
+            candidate = temp / "tampered.txt"
+            candidate.write_text("\n".join(candidate_lines) + "\n", encoding="ascii")
+            try:
+                verifier.verify(candidate, ARM9, OVERLAY)
+            except (KeyError, ValueError):
+                return True
+            return False
+
+        first_region_end = lines.index("D0000000 00000000")
+        tamper_indexes = [
+            index
+            for index, line in enumerate(lines)
+            if line.startswith("5")
         ]
-        for address, value in maintenance_guards:
-            tampered_memory = dict(patched)
-            tampered_memory[address & 0x0FFFFFFF] = value ^ 1
-            assert apply_model(lines, tampered_memory)[1] == [], address
-        assert apply_model(lines, {**patched, 0x0208EE44: 1})[1] == []
-        assert apply_model(lines, {**patched, 0x0208EE44: 3})[1] == []
-        subprocess.run(["python3", str(VERIFY), str(out), "--arm9-image", str(arm9), "--overlay2-image", str(ov2)], check=True)
-        verify = ["python3", str(VERIFY), "--arm9-image", str(arm9), "--overlay2-image", str(ov2)]
-        def rejected(path):
-            return subprocess.run(
-                verify[:2] + [str(path)] + verify[2:],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            ).returncode != 0
-        tampered = Path(d) / "tampered.txt"
-        bad = out.read_text().replace("EBFD460D", "00000000", 1)
-        tampered.write_text(bad)
-        assert rejected(tampered)
-        malformed = Path(d) / "malformed.txt"
-        malformed.write_text(out.read_text().replace("D0000000 00000000", "D0000000 00000000\n0208EE44 00000001", 1))
+        tamper_indexes.extend(
+            index
+            for index, line in enumerate(lines[:first_region_end])
+            if not line.startswith("5")
+            and (
+                verifier.PLAYER_PAYLOAD
+                <= int(line.split()[0], 16)
+                < verifier.PLAYER_PAYLOAD + verifier.PLAYER_BYTES
+                or verifier.WORLD_PAYLOAD
+                <= int(line.split()[0], 16)
+                < verifier.WORLD_PAYLOAD + verifier.WORLD_BYTES
+            )
+        )
+        for index in tamper_indexes:
+            candidate = list(lines)
+            left, right = candidate[index].split()
+            candidate[index] = f"{left} {int(right, 16) ^ 1:08X}"
+            assert rejected(candidate), index
+
+        source_split_words = (0x01A0C0CC, 0x104CC0CC)
+        destination_split_words = (0x01A0C0C3, 0x1043C0C3)
+        source_split_indexes = [
+            index
+            for index, line in enumerate(lines[:first_region_end])
+            if int(line.split()[0], 16) >= verifier.WORLD_PAYLOAD
+            and int(line.split()[0], 16) < verifier.WORLD_PAYLOAD + verifier.WORLD_BYTES
+            and int(line.split()[1], 16) in source_split_words
+        ]
+        assert len(source_split_indexes) == 6
+        for index in source_split_indexes:
+            candidate = list(lines)
+            left, right = candidate[index].split()
+            replacement = destination_split_words[source_split_words.index(int(right, 16))]
+            candidate[index] = f"{left} {replacement:08X}"
+            assert rejected(candidate), index
+
+        malformed = list(lines)
+        malformed.insert(first_region_end + 1, f"{verifier.CADENCE:08X} 00000001")
         assert rejected(malformed)
-        missing_reset = Path(d) / "missing-reset.txt"
-        missing_reset.write_text("\n".join(lines[:-1]) + "\n")
-        assert rejected(missing_reset)
-        overlay = ov2.read_bytes()
-        correct = 0x020BF3F4 - 0x020AD660
-        wrong = 0x020BF3F4 - 0x020C0000
-        assert int.from_bytes(overlay[correct:correct + 4], "little") == 0xEBFD460D
-        assert int.from_bytes(overlay[wrong:wrong + 4], "little") != 0xEBFD460D
+        assert rejected(lines[:-1])
+
+        overlay = OVERLAY.read_bytes()
+        correct_offset = 0x020BF3F4 - verifier.OVERLAY_BASE
+        wrong_offset = 0x020BF3F4 - 0x020C0000
+        assert int.from_bytes(
+            overlay[correct_offset:correct_offset + 4],
+            "little",
+        ) == 0xEBFD460D
+        assert int.from_bytes(
+            overlay[wrong_offset:wrong_offset + 4],
+            "little",
+        ) != 0xEBFD460D
+
+    def signed32(value):
+        value &= 0xFFFFFFFF
+        return value - 0x100000000 if value & 0x80000000 else value
+
+    def split(value, parity):
+        half = signed32(value) >> 1
+        return half if parity == 0 else signed32(value - half)
+
+    for value in (-3, -1, 0, 1, 3):
+        for path in ("acceleration", "addvec", "animation"):
+            assert signed32(split(value, 0) + split(value, 1)) == value, (path, value)
+
+    for length in (0x1000, 0x9000, 0x1A000):
+        for speed in (1, 2, 3, 0x800, 0x1000):
+            original_r1 = length
+            frame = 0
+            for parity in range(60):
+                adjusted_speed = split(speed, parity & 1)
+                assert original_r1 == length
+                frame = (frame + adjusted_speed + original_r1) % original_r1
+            assert frame == (30 * speed) % length
+
+    for destination, source, expected in ((10, 3, (11, 12)), (-10, -3, (-12, -11))):
+        for parity in (0, 1):
+            result = signed32(destination + split(source, parity))
+            assert result == expected[parity]
+            assert result != signed32(destination + split(destination, parity))
+
+    assert verifier.COIN_SPIN_ORIGINAL == 0xE2811B03
+    assert verifier.COIN_SPIN_HALF == 0xE2811C06
+
     print("test_patch=PASS")
+
 
 if __name__ == "__main__":
     main()
