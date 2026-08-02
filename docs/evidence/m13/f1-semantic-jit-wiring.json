@@ -1,0 +1,26 @@
+{
+  "status": "IMPLEMENTED_HOSTTEST_PASS_DEVICE_RUNTIME_PENDING",
+  "date": "2026-08-02",
+  "scope": "Route-A ARM9 semantic cadence telemetry",
+  "submodule": {
+    "repository": "https://github.com/joeblack2k/melonDS-android-lib.git",
+    "branch": "thords/m13-scene-semantic-telemetry",
+    "commit": "c202215e"
+  },
+  "implementation": [
+    "Interpreter observation remains at the actual ARM9 instruction boundary.",
+    "JIT observation is emitted only for an existing ARM9 block immediately before ARM_Dispatch.",
+    "A64 compiled ARM and Thumb blocks call the semantic monitor at mapped target PCs.",
+    "The debug-only monitor gate is read atomically and register state is restored around the callback."
+  ],
+  "checks": [
+    "Sm64dsSemanticMonitorTest: PASS",
+    "Sm64dsSemanticMonitorJitWiringTest: PASS",
+    "git diff --check: PASS"
+  ],
+  "acceptance": {
+    "semantic_60fps": "OPEN",
+    "reason": "A live EU ASMP Castle Garden run must still show equal semantic update periods, normal animation/physics/audio behavior and no timing regression."
+  },
+  "rom_or_private_evidence_published": false
+}

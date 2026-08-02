@@ -1,5 +1,20 @@
 # Worklog
 
+## 2026-08-02 - M13 Route-A semantic JIT telemetry
+
+- Added ARM9 semantic observation at the real interpreter instruction boundary
+  and at the existing A64 JIT block dispatch boundary. Compiled ARM/Thumb
+  blocks call the mapped semantic targets only when the debug monitor is
+  enabled, with register state restored around the callback.
+- Added focused host checks for monitor behavior and source-level JIT wiring.
+  Both pass. The submodule commit is `c202215e` on
+  `thords/m13-scene-semantic-telemetry` and is pushed to the ThorDS-connected
+  public submodule remote.
+- This improves measurement fidelity but does not close the semantic 60-FPS
+  gate. A live EU ASMP Castle Garden run still needs equal semantic periods,
+  normal animation/physics/audio behavior and stress validation.
+- Evidence: `docs/evidence/m13/f1-semantic-jit-wiring.json`.
+
 ## 2026-08-02 - M13 F4 corrected coin immediate encoding
 
 - The first v10 coin word was rejected after the owner observed even faster

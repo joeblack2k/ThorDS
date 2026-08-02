@@ -13,9 +13,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 ## Summary
 
 - Current workstream: M13 timing validation and SM64DS Smooth Orbit Camera v1
-- Current gate: F4 v10 fixed-step inventory and corrected coin rotation
-  revalidation;
-  scene-specific timing remains open
+- Current gate: Route-A semantic JIT telemetry plus F4 v10 fixed-step and
+  corrected coin rotation revalidation; scene-specific timing remains open
 - ~~Original/safe-mode software rendering as a play path~~ — explicitly out
   of scope for ThorDS Enhanced product validation. The product path is Vulkan.
 - Overall status: PARTIAL
@@ -59,7 +58,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M10 | PARTIAL | ad3a5179 | docs/evidence/m10/ | guarded native/JNI config, scheduler snapshots, persisted preference fail-closed check, incompatible-ratio savestate guard, 100% telemetry and stability are green; 64-bit scaled-cycle truncation fixed; equivalence, drift and formal over-100 runtime gates remain open |
 | M11 | PARTIAL | 760f3c2b | docs/evidence/m11/ | ROM-details resolved ThorDS profile status, per-ROM Original/Enhanced and RA controls, physical Hardcore recovery branches and staged-edit process recreation pass; ~~safe-mode acceptance~~ is out of scope; full physical details-flow acceptance remains open |
 | M12 | BLOCKED | docs: record M12 release preflight matrix | docs/evidence/m12/ | inventory only; release remains blocked by incomplete product and device gates |
-| M13 | PARTIAL | F4 v10 commit pending | docs/evidence/m13/ | F4 v9 fixed the rejected animation-register regression; v10 maps all 1,945 source candidates to 327 exact function ranges and corrects the proven 2x coin spin, with physical coin validation, audio, enemy/platform periods and broader scene timing still open |
+| M13 | PARTIAL | 2e1d53f8 + c202215e | docs/evidence/m13/ | F4 v9 fixed the rejected animation-register regression; v10 maps all 1,945 source candidates to 327 exact function ranges and corrects the proven 2x coin spin; Route-A JIT semantic telemetry is now wired and host-tested, with physical coin validation, audio, enemy/platform periods and broader scene timing still open |
 
 ## Feature status
 
@@ -114,6 +113,11 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   checkpoint. `MainLoopSlot1` was zero in this state and is not used as sole
   proof. Evidence:
   `docs/evidence/m13/f2-semantic-runtime-route.json`.
+- Route-A semantic telemetry now also observes the ARM9 interpreter at the
+  instruction boundary and A64 JIT at the existing-block dispatch boundary.
+  Host source tests pass; this is instrumentation, not a semantic 60-FPS
+  product pass. Evidence:
+  `docs/evidence/m13/f1-semantic-jit-wiring.json`.
 - F3 introduced the hidden exact-profile `60fps-dev-cadence` Action Replay
   definition with default-off and relaunch-required semantics. It has evolved
   through the bounded F4 v10 fixed-step and cadence-recovery pass, but remains
