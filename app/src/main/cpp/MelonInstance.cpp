@@ -1137,8 +1137,9 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
 {
     std::lock_guard lock(sm64dsGameLoopTelemetryMutex);
     u32 cameraPointer = 0;
-    u32 cameraHookWord = 0;
-    u32 cameraLegacyHookWord = 0;
+    u32 genericCameraEntryWord = 0;
+    u32 modeSpecificOrbitEntryWord = 0;
+    u32 legacyDigitalYawWord = 0;
     u32 cameraModePointer = 0;
     u32 cameraFlags = 0;
     s16 cameraCurrentYaw = 0;
@@ -1177,8 +1178,9 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
     if (nds != nullptr && nds->MainRAM != nullptr)
     {
         constexpr u32 kMainRamBase = 0x02000000;
-        constexpr u32 kCameraHookAddress = 0x0200BB28;
-        constexpr u32 kCameraLegacyHookAddress = 0x0200BCF0;
+        constexpr u32 kGenericCameraEntryAddress = 0x02009E70;
+        constexpr u32 kModeSpecificOrbitEntryAddress = 0x0200BB28;
+        constexpr u32 kLegacyDigitalYawAddress = 0x0200BCF0;
         constexpr u32 kCameraPointerAddress = 0x0209F318;
         constexpr u32 kPlayerTimestepMovementHookAddress = 0x020BF3F4;
         constexpr u32 kPlayerTimestepSpeedHookAddress = 0x020D4D88;
@@ -1187,8 +1189,9 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         constexpr u32 kPlayerAnimationHookAddress = 0x020BEDD4;
         constexpr u32 kPlayerIndexAddress = 0x0209F250;
         constexpr u32 kPlayerPointerTableAddress = 0x0209F394;
-        cameraHookWord = nds->ARM9Read32(kCameraHookAddress);
-        cameraLegacyHookWord = nds->ARM9Read32(kCameraLegacyHookAddress);
+        genericCameraEntryWord = nds->ARM9Read32(kGenericCameraEntryAddress);
+        modeSpecificOrbitEntryWord = nds->ARM9Read32(kModeSpecificOrbitEntryAddress);
+        legacyDigitalYawWord = nds->ARM9Read32(kLegacyDigitalYawAddress);
         playerTimestepMovementHookWord = nds->ARM9Read32(kPlayerTimestepMovementHookAddress);
         playerTimestepSpeedHookWord = nds->ARM9Read32(kPlayerTimestepSpeedHookAddress);
         playerTimestepTimerHookWord = nds->ARM9Read32(kPlayerTimestepTimerHookAddress);
@@ -1324,14 +1327,31 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         return "{\"valid\":false,\"source\":\"sm64ds-eu-decomp-main-loop\",\"cameraBehaviorCalls\":"
             + std::to_string(nds == nullptr ? 0u : nds->GetSm64dsCameraBehaviorCalls())
             + ",\"cameraPointer\":" + std::to_string(cameraPointer)
-            + ",\"cameraHookWord\":" + std::to_string(cameraHookWord)
-            + ",\"cameraLegacyHookWord\":" + std::to_string(cameraLegacyHookWord)
+            + ",\"genericCameraEntryAddress\":\"0x02009E70\""
+            + ",\"genericCameraEntryWord\":" + std::to_string(genericCameraEntryWord)
+            + ",\"genericCameraEntryExpectedOriginal\":-382906384"
+            + ",\"genericCameraEntryExpectedPatched\":-368988337"
+            + ",\"genericCameraPatchPresent\":"
+            + std::string(
+                genericCameraEntryWord == 0xEA01AF4Fu ? "true" : "false")
+            + ",\"modeSpecificOrbitEntryAddress\":\"0x0200BB28\""
+            + ",\"modeSpecificOrbitEntryWord\":" + std::to_string(modeSpecificOrbitEntryWord)
+            + ",\"legacyDigitalYawAddress\":\"0x0200BCF0\""
+            + ",\"legacyDigitalYawWord\":" + std::to_string(legacyDigitalYawWord)
             + ",\"cameraModePointer\":" + std::to_string(cameraModePointer)
             + ",\"cameraFlags\":" + std::to_string(cameraFlags)
             + ",\"cameraProtocolReads\":" + std::to_string(nds == nullptr ? 0u : nds->GBACartSlot.GetCameraProtocolReadCount())
             + ",\"cameraCurrentYaw\":" + std::to_string(cameraCurrentYaw)
             + ",\"cameraBaseYaw\":" + std::to_string(cameraBaseYaw)
             + ",\"cameraYawOffset\":" + std::to_string(cameraYawOffset)
+            + ",\"slot2CameraYawInputQ12\":"
+            + std::to_string(slot2CameraYawInputQ12.load(std::memory_order_relaxed))
+            + ",\"slot2CameraYawUnitsPerTick\":"
+            + std::to_string(slot2CameraYawUnitsPerTick.load(std::memory_order_relaxed))
+            + ",\"slot2CameraFlags\":"
+            + std::to_string(slot2CameraFlags.load(std::memory_order_relaxed))
+            + ",\"slot2CameraProtocolReadCount\":"
+            + std::to_string(nds == nullptr ? 0u : nds->GBACartSlot.GetCameraProtocolReadCount())
             + ",\"playerTimestepMovementHookWord\":" + std::to_string(playerTimestepMovementHookWord)
             + ",\"playerTimestepSpeedHookWord\":" + std::to_string(playerTimestepSpeedHookWord)
             + ",\"playerTimestepTimerHookWord\":" + std::to_string(playerTimestepTimerHookWord)
@@ -1372,14 +1392,30 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"stageTimer\":" + std::to_string(sm64dsGameLoopLatestStageTimer)
         + ",\"cameraBehaviorCalls\":" + std::to_string(nds->GetSm64dsCameraBehaviorCalls())
         + ",\"cameraPointer\":" + std::to_string(cameraPointer)
-        + ",\"cameraHookWord\":" + std::to_string(cameraHookWord)
-        + ",\"cameraLegacyHookWord\":" + std::to_string(cameraLegacyHookWord)
+        + ",\"genericCameraEntryAddress\":\"0x02009E70\""
+        + ",\"genericCameraEntryWord\":" + std::to_string(genericCameraEntryWord)
+        + ",\"genericCameraEntryExpectedOriginal\":-382906384"
+        + ",\"genericCameraEntryExpectedPatched\":-368988337"
+        + ",\"genericCameraPatchPresent\":"
+        + std::string(genericCameraEntryWord == 0xEA01AF4Fu ? "true" : "false")
+        + ",\"modeSpecificOrbitEntryAddress\":\"0x0200BB28\""
+        + ",\"modeSpecificOrbitEntryWord\":" + std::to_string(modeSpecificOrbitEntryWord)
+        + ",\"legacyDigitalYawAddress\":\"0x0200BCF0\""
+        + ",\"legacyDigitalYawWord\":" + std::to_string(legacyDigitalYawWord)
         + ",\"cameraModePointer\":" + std::to_string(cameraModePointer)
         + ",\"cameraFlags\":" + std::to_string(cameraFlags)
         + ",\"cameraProtocolReads\":" + std::to_string(nds->GBACartSlot.GetCameraProtocolReadCount())
         + ",\"cameraCurrentYaw\":" + std::to_string(cameraCurrentYaw)
         + ",\"cameraBaseYaw\":" + std::to_string(cameraBaseYaw)
         + ",\"cameraYawOffset\":" + std::to_string(cameraYawOffset)
+        + ",\"slot2CameraYawInputQ12\":"
+        + std::to_string(slot2CameraYawInputQ12.load(std::memory_order_relaxed))
+        + ",\"slot2CameraYawUnitsPerTick\":"
+        + std::to_string(slot2CameraYawUnitsPerTick.load(std::memory_order_relaxed))
+        + ",\"slot2CameraFlags\":"
+        + std::to_string(slot2CameraFlags.load(std::memory_order_relaxed))
+        + ",\"slot2CameraProtocolReadCount\":"
+        + std::to_string(nds->GBACartSlot.GetCameraProtocolReadCount())
         + ",\"playerTimestepMovementHookWord\":" + std::to_string(playerTimestepMovementHookWord)
         + ",\"playerTimestepSpeedHookWord\":" + std::to_string(playerTimestepSpeedHookWord)
         + ",\"playerTimestepTimerHookWord\":" + std::to_string(playerTimestepTimerHookWord)
