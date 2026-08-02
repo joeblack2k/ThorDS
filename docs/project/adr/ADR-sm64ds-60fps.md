@@ -1,7 +1,8 @@
 # ADR: SM64DS 60fps implementation route
 
 Date: 2026-08-01
-Status: Accepted for M13 research
+Last updated: 2026-08-02
+Status: Accepted; implementation under M13 validation
 
 ## Decision
 
@@ -17,10 +18,29 @@ or VBlank count alone is not gameplay proof.
 
 ## Evidence boundary
 
-The current repository does not contain a proven European `ASMP` 60fps code,
-patched test copy, or binary diff. No code words or guessed addresses are
-added to the profile until a legal local reference is compared against the
-unchanged ROM and mapped to the decomp audit.
+The repository now contains the reviewed v6 exact-original guarded European
+`ASMP` runtime patch for the game cadence plus player movement, player timers
+and the Player-specific animation driver at `0x020BEDD4`, with continuation
+`0x020BEDD8`. Its 248-byte player payload and 48-byte animation payload share
+one fail-closed region with six guards (four player timestep hooks, the Player
+animation driver and cadence original 2). The v6 Action Replay and profile
+code SHA-256 are both
+`4155b9ef2c9de2688f05ab06a9845cd69a20a49f1c919db8b9ae9c113426deea`.
+Global `Animation::Advance` is not patched. Its public tooling emits only
+Action Replay words and hashes; the local reference image remains ignored and
+unpublished. The profile entry is still experimental and default-off until the
+complete product matrix is green.
+
+Same-checkpoint Thor evidence accepts the bounded player correction: horizontal
+movement is 435.0 versus 457.5 (5.17%), timer decay is 61 versus 60 and Player
+animation advance is identical. Two 60fps half-steps match one original
+vertical step exactly while rising and within 0.000977 world units while
+falling. The final hardware animation window records four enhanced updates
+and frame delta 8192, equal to two original updates at 4096 each. The unsafe
+disable-without-relaunch path was deleted; cadence preference changes relaunch.
+This does not establish correct timing for particles, non-player actors,
+cutscenes, audio continuity, broad gameplay behavior, RA Casual or 60-minute
+stability.
 
 ## Timing boundaries
 

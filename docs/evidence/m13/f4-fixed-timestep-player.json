@@ -1,0 +1,116 @@
+{
+  "milestone": "M13",
+  "gate": "F4 fixed-timestep player correction",
+  "date": "2026-08-02",
+  "status": "PARTIAL_PASS",
+  "renderer": "Vulkan",
+  "identity": "ASMP revision 0 exact profile",
+  "runtimePatch": {
+    "id": "sm64ds.eu.60fps-dev-cadence.v6",
+    "actionReplaySha256": "4155b9ef2c9de2688f05ab06a9845cd69a20a49f1c919db8b9ae9c113426deea",
+    "profileCodeSha256": "4155b9ef2c9de2688f05ab06a9845cd69a20a49f1c919db8b9ae9c113426deea",
+    "playerPayloadBytes": 248,
+    "animationPayloadBytes": 48,
+    "guards": {
+      "playerMovement": "0x020BF3F4",
+      "playerSpeed": "0x020D4D88",
+      "playerTimer": "0x020E4F10",
+      "playerControlTimer": "0x020E4FDC",
+      "playerAnimationDriver": "0x020BEDD4",
+      "playerAnimationContinuation": "0x020BEDD8",
+      "cadenceOriginal": 2,
+      "failClosedRegion": "Six guards: four player timestep hooks, the Player-specific animation driver, and cadence original 2"
+    }
+  },
+  "sameCheckpointComparisons": {
+    "forwardMovement": {
+      "normalCadence": {
+        "cadenceValue": 2,
+        "startZ": 6800.0,
+        "endZ": 6365.0,
+        "displacement": 435.0
+      },
+      "enhancedCadence": {
+        "cadenceValue": 1,
+        "startZ": 6800.0,
+        "endZ": 6342.5,
+        "displacement": 457.5
+      },
+      "differencePercent": 5.17,
+      "acceptancePercent": 10.0,
+      "result": "PASS"
+    },
+    "verticalRise": {
+      "normalCadence": {
+        "cadenceValue": 2,
+        "startY": 347.287842,
+        "endY": 367.683838,
+        "endSpeedY": 20.395996
+      },
+      "enhancedCadence": {
+        "cadenceValue": 1,
+        "startY": 347.287842,
+        "endY": 367.683838,
+        "endSpeedY": 20.395996
+      },
+      "positionDifference": 0.0,
+      "acceptancePercent": 10.0,
+      "result": "PASS"
+    },
+    "verticalFall": {
+      "normalCadence": {
+        "cadenceValue": 2,
+        "startY": 380.871826,
+        "endY": 373.667969,
+        "endSpeedY": -7.203857
+      },
+      "enhancedCadence": {
+        "cadenceValue": 1,
+        "startY": 380.871826,
+        "endY": 373.666992,
+        "endSpeedY": -7.20459
+      },
+      "positionDifference": 0.000977,
+      "displacementDifferencePercent": 0.0136,
+      "acceptancePercent": 10.0,
+      "result": "PASS"
+    },
+    "playerStateTimer": {
+      "normalCadenceDrop": 61,
+      "enhancedCadenceDrop": 60,
+      "result": "PASS"
+    },
+    "playerAnimation": {
+      "normalCadenceAdvance": 4096,
+      "enhancedCadenceAdvance": 4096,
+      "previousUncorrectedAdvance": 8192,
+      "result": "PASS"
+    }
+  },
+  "installedBuild": {
+    "package": "io.github.joeblack2k.thords.dev",
+    "apkSha256": "9dccbdef33f6deac505fa1dfcd4f54e620adefe40f26255dabed90e4f448fde7",
+    "cleanBuildExecutedTasks": 144,
+    "fastForwardEnabled": false,
+    "semanticMonitorEnabledAfterTest": false,
+    "installedSuccessfully": true
+  },
+  "verification": {
+    "patchBuilderTest": "PASS",
+    "patchVerifier": "PASS",
+    "githubProdReleaseUnitTests": "PASS",
+    "githubProdDebugBuild": "PASS",
+    "install": "PASS",
+    "guardRegression": "PASS: every independently tampered guard produced zero writes in the AREngine-semantic regression model; all valid writes include cadence 1; malformed structures are rejected",
+    "liveVulkanSample": "PASS: 60 unique updates and 60 emulator frames in 1.001396458s, cadence 1, all five v6 hook words active, fast-forward false, semantic monitor false, no crash/ANR/fatal signal in the five-second smoke",
+    "hardwareAnimationWindow": "PASS: cadence 1 counter 5027 to 5031, four enhanced updates; body and auxiliary animation frames 143360 to 151552, delta 8192, equal to two original updates at 4096 each; playerAnimationHookWord=0xEAFD1749 active"
+  },
+  "limitations": [
+    "The Vulkan renderer-frame helper remains timing-sensitive. Acceptance uses equal private save states plus native player position, speed, cadence and hook telemetry; no save-state bytes are published.",
+    "This closes player horizontal movement, vertical physics, timers and Player animation only. Particles, non-player actors, cutscenes, audio continuity, RetroAchievements Casual, broad gameplay behavior and the 60-minute stability gate remain open.",
+    "A save state was created before reinstall and slot 8 was refreshed after v6 activation; state bytes, path and device serial are not published.",
+    "The unsafe disable-without-relaunch path was deleted; cadence preference enable and disable always relaunch.",
+    "All six guards are one fail-closed region. Global Animation::Advance is no longer patched by v6.",
+    "No ROM, save state bytes, device serial or private capture is included."
+  ]
+}

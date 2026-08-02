@@ -154,7 +154,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         )
     }
 
-    private fun handleSetSm64dsCadenceProbe(context: Context, intent: Intent) {
+    private suspend fun handleSetSm64dsCadenceProbe(context: Context, intent: Intent) {
         val romKey = intent.firstStringExtra(EXTRA_ROM_KEY)
             ?: throw IllegalArgumentException("Missing rom_key extra")
         require(romKey == SM64DS_EU_ROM_KEY) { "Cadence probe requires the exact EU SM64DS identity" }
@@ -632,10 +632,18 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             ?: throw IllegalArgumentException("Unsupported system input=$rawInput")
         val durationMs = (intent.firstNullableIntExtra(EXTRA_DURATION_MS) ?: DEFAULT_INPUT_DURATION_MS)
             .coerceIn(1, 2_000)
+        val pauseAfter = intent.getBooleanExtra(EXTRA_PAUSE_AFTER, false)
         MelonEmulator.onInputDown(input)
         delay(durationMs.toLong())
+        if (pauseAfter) {
+            DebugCommandStateStore.setDebugPauseHeld(true)
+            MelonEmulator.pauseEmulation()
+        }
         MelonEmulator.onInputUp(input)
-        Log.w(TAG, "action=tap_input input=${input.name.lowercase(Locale.US)} durationMs=$durationMs")
+        Log.w(
+            TAG,
+            "action=tap_input input=${input.name.lowercase(Locale.US)} durationMs=$durationMs pauseAfter=${if (pauseAfter) 1 else 0}",
+        )
     }
 
     private suspend fun handleLaunchRom(context: Context, intent: Intent): Boolean {

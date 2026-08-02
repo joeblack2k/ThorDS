@@ -13,8 +13,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 ## Summary
 
 - Current workstream: M13 timing validation and SM64DS Smooth Orbit Camera v1
-- Current gate: F3 semantic 30-to-60 transition is proven; F4 correct-speed
-  timing remains red because the cadence-only probe produces 2x gameplay
+- Current gate: F4 player movement, vertical physics, timers and animation are
+  corrected; broader scene timing remains open
 - ~~Original/safe-mode software rendering as a play path~~ — explicitly out
   of scope for ThorDS Enhanced product validation. The product path is Vulkan.
 - Overall status: PARTIAL
@@ -58,7 +58,7 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 | M10 | PARTIAL | ad3a5179 | docs/evidence/m10/ | guarded native/JNI config, scheduler snapshots, persisted preference fail-closed check, incompatible-ratio savestate guard, 100% telemetry and stability are green; 64-bit scaled-cycle truncation fixed; equivalence, drift and formal over-100 runtime gates remain open |
 | M11 | PARTIAL | 760f3c2b | docs/evidence/m11/ | ROM-details resolved ThorDS profile status, per-ROM Original/Enhanced and RA controls, physical Hardcore recovery branches and staged-edit process recreation pass; ~~safe-mode acceptance~~ is out of scope; full physical details-flow acceptance remains open |
 | M12 | BLOCKED | docs: record M12 release preflight matrix | docs/evidence/m12/ | inventory only; release remains blocked by incomplete product and device gates |
-| M13 | PARTIAL | arm9 profile/state-load gate | docs/evidence/m13/ | F3 changes Stage/Scene behavior and render from about 30/s to 60/s; cadence-only gameplay is 2x speed, so F4 timing correction remains open |
+| M13 | PARTIAL | guarded player fixed-timestep pass | docs/evidence/m13/ | F3 changes Stage/Scene behavior and render from about 30/s to 60/s; F4 corrects bounded player movement, vertical physics, timers and animation, while non-player and scene-wide timing remains open |
 
 ## Feature status
 
@@ -67,7 +67,8 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 - RA Casual: PASS
 - RA Hardcore gate: PARTIAL
 - ARM9 OC: EXPERIMENTAL / 125% relaunch and compatible state load pass; timing validation remains open
-- 60fps: REQUIRED / F3 SEMANTIC CADENCE PASS / F4 CORRECT-SPEED TIMING FAIL
+- 60fps: REQUIRED / F3 SEMANTIC CADENCE PASS / F4 PLAYER
+  HORIZONTAL-VERTICAL-TIMER-ANIMATION PASS / BROADER TIMING PARTIAL
 - ~~Safe mode / software renderer gameplay~~: OUT OF SCOPE / Vulkan is the
   supported ThorDS Enhanced product renderer
 - SM64DS Smooth Orbit Camera v1: PARTIAL / frontend mapping, R3 sequence,
@@ -121,6 +122,25 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
   was disabled again after measurement. This does not close the semantic
   60fps product gate. Evidence:
   `docs/evidence/m13/f5-60fps-stability-window-camera-green.json`.
+- F4 now has the reviewed v6 guarded exact-EU timestep patch
+  `sm64ds.eu.60fps-dev-cadence.v6` for player movement, player timers and the
+  Player-specific animation driver at `0x020BEDD4` (continuation
+  `0x020BEDD8`). Six guards share one fail-closed region; independently
+  tampering any guard produced zero writes, malformed structures are rejected,
+  and valid writes include cadence 1. Same-checkpoint Thor comparisons measured
+  movement at 435.0 normal versus 457.5 enhanced units (5.17% difference),
+  timer drops of 61 versus 60, and identical 4096 animation advances where the
+  uncorrected path advanced 8192. Twin-state vertical checks matched the normal
+  rising endpoint exactly and the falling endpoint within 0.000977 world units
+  (0.0136% displacement difference). The final Vulkan sample recorded 60
+  unique updates and 60 emulator frames in 1.001396458s, with all five v6 hook
+  words active; the clean build executed 144/144 Gradle tasks and installed APK
+  SHA-256 is `9dccbdef33f6deac505fa1dfcd4f54e620adefe40f26255dabed90e4f448fde7`.
+  The installed Vulkan build is playable with fast-forward disabled. This is a
+  bounded player-timing pass, not full M13: particles, non-player actors,
+  cutscenes, audio continuity, RA Casual, broad gameplay behavior and 60-minute
+  stability remain open. Evidence:
+  `docs/evidence/m13/f4-fixed-timestep-player.json`.
 - The existing native one-second game-loop sampler is now exposed through the
   debug-only `DUMP_SM64DS_GAME_LOOP` action. Title-screen validation returned
   `valid=false`, correctly preventing a menu from becoming gameplay evidence.
@@ -132,11 +152,12 @@ ROM identity: ASMP / revision 0 / RA ba3c4052e00c5cc31df5d5534c39de1b
 
 ## Next concrete action
 
-Continue F4 on Vulkan by isolating and correcting the first ordinary-gameplay
-fixed-step movement/timing consumer, then compare the same private checkpoint
-at equal wall time. Keep the cadence-only probe default-off outside bounded
-measurements. ~~Do not spend product-gate time on Original/safe-mode software
-rendering.~~
+Continue F4 on Vulkan with the remaining correct-speed consumers: particles,
+non-player actor/cutscene timing and audio continuity. Use equal-state
+comparisons and the game-loop counter rather than renderer-frame count alone.
+Keep the 60fps code experimental and default-off until the complete M13 matrix,
+including RA Casual and 60-minute stability, is green. ~~Do not spend
+product-gate time on Original/safe-mode software rendering.~~
 M8 and M9 are complete for the current product gate; do not restart either
 validation workstream. Over-100% ARM9 behavior remains disabled until timing
 evidence proves it safe. Remaining independent gaps, including M6 physical

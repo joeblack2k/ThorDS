@@ -1144,14 +1144,56 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
     s16 cameraCurrentYaw = 0;
     s16 cameraBaseYaw = 0;
     s16 cameraYawOffset = 0;
+    u32 playerTimestepMovementHookWord = 0;
+    u32 playerTimestepSpeedHookWord = 0;
+    u32 playerTimestepTimerHookWord = 0;
+    u32 playerTimestepControlTimerHookWord = 0;
+    u32 playerAnimationHookWord = 0;
+    u8 playerIndex = 0;
+    u32 playerPointer = 0;
+    bool playerPositionValid = false;
+    double playerPosX = 0.0;
+    double playerPosY = 0.0;
+    double playerPosZ = 0.0;
+    double playerHorzSpeed = 0.0;
+    double playerVerticalAcceleration = 0.0;
+    double playerTerminalVelocity = 0.0;
+    double playerSpeedX = 0.0;
+    double playerSpeedY = 0.0;
+    double playerSpeedZ = 0.0;
+    s16 playerAngleY = 0;
+    s16 playerTargetAngleY = 0;
+    u16 playerStateTimer = 0;
+    u16 playerStateWaitTimer = 0;
+    u16 playerStateFlags = 0;
+    u8 playerStateStep = 0;
+    u8 playerBodyModelId = 0;
+    u32 playerBodyModelPointer = 0;
+    bool playerAnimationValid = false;
+    s32 playerBodyAnimationFrame = 0;
+    s32 playerBodyAnimationSpeed = 0;
+    s32 playerAuxAnimationFrame = 0;
+    s32 playerAuxAnimationSpeed = 0;
     if (nds != nullptr && nds->MainRAM != nullptr)
     {
         constexpr u32 kMainRamBase = 0x02000000;
         constexpr u32 kCameraHookAddress = 0x0200BB28;
         constexpr u32 kCameraLegacyHookAddress = 0x0200BCF0;
         constexpr u32 kCameraPointerAddress = 0x0209F318;
+        constexpr u32 kPlayerTimestepMovementHookAddress = 0x020BF3F4;
+        constexpr u32 kPlayerTimestepSpeedHookAddress = 0x020D4D88;
+        constexpr u32 kPlayerTimestepTimerHookAddress = 0x020E4F10;
+        constexpr u32 kPlayerTimestepControlTimerHookAddress = 0x020E4FDC;
+        constexpr u32 kPlayerAnimationHookAddress = 0x020BEDD4;
+        constexpr u32 kPlayerIndexAddress = 0x0209F250;
+        constexpr u32 kPlayerPointerTableAddress = 0x0209F394;
         cameraHookWord = nds->ARM9Read32(kCameraHookAddress);
         cameraLegacyHookWord = nds->ARM9Read32(kCameraLegacyHookAddress);
+        playerTimestepMovementHookWord = nds->ARM9Read32(kPlayerTimestepMovementHookAddress);
+        playerTimestepSpeedHookWord = nds->ARM9Read32(kPlayerTimestepSpeedHookAddress);
+        playerTimestepTimerHookWord = nds->ARM9Read32(kPlayerTimestepTimerHookAddress);
+        playerTimestepControlTimerHookWord = nds->ARM9Read32(kPlayerTimestepControlTimerHookAddress);
+        playerAnimationHookWord = nds->ARM9Read32(kPlayerAnimationHookAddress);
         const u32 pointerOffset = (kCameraPointerAddress - kMainRamBase) & nds->MainRAMMask;
         if (pointerOffset <= nds->MainRAMMask - 3)
         {
@@ -1187,6 +1229,96 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
                 );
             }
         }
+        const u32 playerIndexOffset = (kPlayerIndexAddress - kMainRamBase) & nds->MainRAMMask;
+        const u32 playerPointerTableOffset = (kPlayerPointerTableAddress - kMainRamBase) & nds->MainRAMMask;
+        if (playerIndexOffset <= nds->MainRAMMask
+            && playerPointerTableOffset <= nds->MainRAMMask - 3)
+        {
+            playerIndex = nds->MainRAM[playerIndexOffset];
+            if (playerIndex <= 3 && playerPointerTableOffset <= nds->MainRAMMask - (3 + playerIndex * 4))
+            {
+                const u8* playerPointerBytes = nds->MainRAM + playerPointerTableOffset + playerIndex * 4;
+                playerPointer = static_cast<u32>(playerPointerBytes[0])
+                    | (static_cast<u32>(playerPointerBytes[1]) << 8)
+                    | (static_cast<u32>(playerPointerBytes[2]) << 16)
+                    | (static_cast<u32>(playerPointerBytes[3]) << 24);
+                const u32 playerOffset = playerPointer - kMainRamBase;
+                if (playerPointer >= kMainRamBase
+                    && playerOffset <= nds->MainRAMMask - 0x6F9)
+                {
+                    const u8* playerBytes = nds->MainRAM + playerOffset;
+                    auto readS16 = [&](u32 offset) {
+                        return static_cast<s16>(
+                            static_cast<u16>(playerBytes[offset])
+                            | (static_cast<u16>(playerBytes[offset + 1]) << 8)
+                        );
+                    };
+                    auto readS32 = [&](u32 offset) {
+                        return static_cast<s32>(
+                            static_cast<u32>(playerBytes[offset])
+                            | (static_cast<u32>(playerBytes[offset + 1]) << 8)
+                            | (static_cast<u32>(playerBytes[offset + 2]) << 16)
+                            | (static_cast<u32>(playerBytes[offset + 3]) << 24)
+                        );
+                    };
+                    constexpr double kFixedPointScale = 4096.0;
+                    playerPositionValid = true;
+                    playerPosX = readS32(0x5C) / kFixedPointScale;
+                    playerPosY = readS32(0x60) / kFixedPointScale;
+                    playerPosZ = readS32(0x64) / kFixedPointScale;
+                    playerHorzSpeed = readS32(0x98) / kFixedPointScale;
+                    playerVerticalAcceleration = readS32(0x9C) / kFixedPointScale;
+                    playerTerminalVelocity = readS32(0xA0) / kFixedPointScale;
+                    playerSpeedX = readS32(0xA4) / kFixedPointScale;
+                    playerSpeedY = readS32(0xA8) / kFixedPointScale;
+                    playerSpeedZ = readS32(0xAC) / kFixedPointScale;
+                    playerAngleY = readS16(0x8E);
+                    playerTargetAngleY = readS16(0x94);
+                    playerStateTimer = static_cast<u16>(
+                        static_cast<u16>(playerBytes[0x6A4])
+                        | (static_cast<u16>(playerBytes[0x6A5]) << 8)
+                    );
+                    playerStateWaitTimer = static_cast<u16>(
+                        static_cast<u16>(playerBytes[0x6A6])
+                        | (static_cast<u16>(playerBytes[0x6A7]) << 8)
+                    );
+                    playerStateFlags = static_cast<u16>(
+                        static_cast<u16>(playerBytes[0x6CE])
+                        | (static_cast<u16>(playerBytes[0x6CF]) << 8)
+                    );
+                    playerStateStep = playerBytes[0x6E3];
+                    playerBodyModelId = static_cast<u8>(readS32(0x08));
+                    if (playerBytes[0x6F9] != 0)
+                        playerBodyModelId = 4;
+                    if (playerBodyModelId <= 4)
+                    {
+                        playerBodyModelPointer = static_cast<u32>(readS32(0xDC + playerBodyModelId * 4));
+                        const u32 bodyModelOffset = playerBodyModelPointer - kMainRamBase;
+                        const u32 auxAnimationOffset = playerOffset + 0x1DC + playerBodyModelId * 0x14;
+                        if (playerBodyModelPointer >= kMainRamBase
+                            && bodyModelOffset <= nds->MainRAMMask - 0x5F
+                            && auxAnimationOffset <= nds->MainRAMMask - 0x0F)
+                        {
+                            const u8* bodyModelBytes = nds->MainRAM + bodyModelOffset;
+                            const u8* auxAnimationBytes = nds->MainRAM + auxAnimationOffset;
+                            auto readAnimationS32 = [](const u8* bytes, u32 offset) {
+                                return static_cast<s32>(
+                                    static_cast<u32>(bytes[offset])
+                                    | (static_cast<u32>(bytes[offset + 1]) << 8)
+                                    | (static_cast<u32>(bytes[offset + 2]) << 16)
+                                    | (static_cast<u32>(bytes[offset + 3]) << 24)
+                                );
+                            };
+                            playerAnimationValid = true;
+                            playerBodyAnimationFrame = readAnimationS32(bodyModelBytes, 0x58);
+                            playerBodyAnimationSpeed = readAnimationS32(bodyModelBytes, 0x5C);
+                            playerAuxAnimationFrame = readAnimationS32(auxAnimationBytes, 0x08);
+                            playerAuxAnimationSpeed = readAnimationS32(auxAnimationBytes, 0x0C);
+                        }
+                    }
+                }
+            }
+        }
     }
     if (!sm64dsGameLoopCounterInitialized)
         return "{\"valid\":false,\"source\":\"sm64ds-eu-decomp-main-loop\",\"cameraBehaviorCalls\":"
@@ -1199,7 +1331,37 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
             + ",\"cameraProtocolReads\":" + std::to_string(nds == nullptr ? 0u : nds->GBACartSlot.GetCameraProtocolReadCount())
             + ",\"cameraCurrentYaw\":" + std::to_string(cameraCurrentYaw)
             + ",\"cameraBaseYaw\":" + std::to_string(cameraBaseYaw)
-            + ",\"cameraYawOffset\":" + std::to_string(cameraYawOffset) + "}";
+            + ",\"cameraYawOffset\":" + std::to_string(cameraYawOffset)
+            + ",\"playerTimestepMovementHookWord\":" + std::to_string(playerTimestepMovementHookWord)
+            + ",\"playerTimestepSpeedHookWord\":" + std::to_string(playerTimestepSpeedHookWord)
+            + ",\"playerTimestepTimerHookWord\":" + std::to_string(playerTimestepTimerHookWord)
+            + ",\"playerTimestepControlTimerHookWord\":" + std::to_string(playerTimestepControlTimerHookWord)
+            + ",\"playerAnimationHookWord\":" + std::to_string(playerAnimationHookWord)
+            + ",\"playerIndex\":" + std::to_string(playerIndex)
+            + ",\"playerPointer\":" + std::to_string(playerPointer)
+            + ",\"playerPositionValid\":" + std::string(playerPositionValid ? "true" : "false")
+            + ",\"playerPosX\":" + std::to_string(playerPosX)
+            + ",\"playerPosY\":" + std::to_string(playerPosY)
+            + ",\"playerPosZ\":" + std::to_string(playerPosZ)
+            + ",\"playerHorzSpeed\":" + std::to_string(playerHorzSpeed)
+            + ",\"playerVerticalAcceleration\":" + std::to_string(playerVerticalAcceleration)
+            + ",\"playerTerminalVelocity\":" + std::to_string(playerTerminalVelocity)
+            + ",\"playerSpeedX\":" + std::to_string(playerSpeedX)
+            + ",\"playerSpeedY\":" + std::to_string(playerSpeedY)
+            + ",\"playerSpeedZ\":" + std::to_string(playerSpeedZ)
+            + ",\"playerAngleY\":" + std::to_string(playerAngleY)
+            + ",\"playerTargetAngleY\":" + std::to_string(playerTargetAngleY)
+            + ",\"playerStateTimer\":" + std::to_string(playerStateTimer)
+            + ",\"playerStateWaitTimer\":" + std::to_string(playerStateWaitTimer)
+            + ",\"playerStateFlags\":" + std::to_string(playerStateFlags)
+            + ",\"playerStateStep\":" + std::to_string(playerStateStep)
+            + ",\"playerBodyModelId\":" + std::to_string(playerBodyModelId)
+            + ",\"playerBodyModelPointer\":" + std::to_string(playerBodyModelPointer)
+            + ",\"playerAnimationValid\":" + std::string(playerAnimationValid ? "true" : "false")
+            + ",\"playerBodyAnimationFrame\":" + std::to_string(playerBodyAnimationFrame)
+            + ",\"playerBodyAnimationSpeed\":" + std::to_string(playerBodyAnimationSpeed)
+            + ",\"playerAuxAnimationFrame\":" + std::to_string(playerAuxAnimationFrame)
+            + ",\"playerAuxAnimationSpeed\":" + std::to_string(playerAuxAnimationSpeed) + "}";
     return "{\"valid\":true,\"source\":\"sm64ds-eu-decomp-main-loop\",\"address\":\"0x020A0DB0\",\"windowWallNs\":"
         + std::to_string(sm64dsGameLoopLatestWallNs)
         + ",\"uniqueUpdates\":" + std::to_string(sm64dsGameLoopLatestUpdates)
@@ -1217,7 +1379,37 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"cameraProtocolReads\":" + std::to_string(nds->GBACartSlot.GetCameraProtocolReadCount())
         + ",\"cameraCurrentYaw\":" + std::to_string(cameraCurrentYaw)
         + ",\"cameraBaseYaw\":" + std::to_string(cameraBaseYaw)
-        + ",\"cameraYawOffset\":" + std::to_string(cameraYawOffset) + "}";
+        + ",\"cameraYawOffset\":" + std::to_string(cameraYawOffset)
+        + ",\"playerTimestepMovementHookWord\":" + std::to_string(playerTimestepMovementHookWord)
+        + ",\"playerTimestepSpeedHookWord\":" + std::to_string(playerTimestepSpeedHookWord)
+        + ",\"playerTimestepTimerHookWord\":" + std::to_string(playerTimestepTimerHookWord)
+        + ",\"playerTimestepControlTimerHookWord\":" + std::to_string(playerTimestepControlTimerHookWord)
+        + ",\"playerAnimationHookWord\":" + std::to_string(playerAnimationHookWord)
+        + ",\"playerIndex\":" + std::to_string(playerIndex)
+        + ",\"playerPointer\":" + std::to_string(playerPointer)
+        + ",\"playerPositionValid\":" + std::string(playerPositionValid ? "true" : "false")
+        + ",\"playerPosX\":" + std::to_string(playerPosX)
+        + ",\"playerPosY\":" + std::to_string(playerPosY)
+        + ",\"playerPosZ\":" + std::to_string(playerPosZ)
+        + ",\"playerHorzSpeed\":" + std::to_string(playerHorzSpeed)
+        + ",\"playerVerticalAcceleration\":" + std::to_string(playerVerticalAcceleration)
+        + ",\"playerTerminalVelocity\":" + std::to_string(playerTerminalVelocity)
+        + ",\"playerSpeedX\":" + std::to_string(playerSpeedX)
+        + ",\"playerSpeedY\":" + std::to_string(playerSpeedY)
+        + ",\"playerSpeedZ\":" + std::to_string(playerSpeedZ)
+        + ",\"playerAngleY\":" + std::to_string(playerAngleY)
+        + ",\"playerTargetAngleY\":" + std::to_string(playerTargetAngleY)
+        + ",\"playerStateTimer\":" + std::to_string(playerStateTimer)
+        + ",\"playerStateWaitTimer\":" + std::to_string(playerStateWaitTimer)
+        + ",\"playerStateFlags\":" + std::to_string(playerStateFlags)
+        + ",\"playerStateStep\":" + std::to_string(playerStateStep)
+        + ",\"playerBodyModelId\":" + std::to_string(playerBodyModelId)
+        + ",\"playerBodyModelPointer\":" + std::to_string(playerBodyModelPointer)
+        + ",\"playerAnimationValid\":" + std::string(playerAnimationValid ? "true" : "false")
+        + ",\"playerBodyAnimationFrame\":" + std::to_string(playerBodyAnimationFrame)
+        + ",\"playerBodyAnimationSpeed\":" + std::to_string(playerBodyAnimationSpeed)
+        + ",\"playerAuxAnimationFrame\":" + std::to_string(playerAuxAnimationFrame)
+        + ",\"playerAuxAnimationSpeed\":" + std::to_string(playerAuxAnimationSpeed) + "}";
 }
 
 void MelonInstance::setSm64dsSemanticMonitorEnabled(bool enabled)

@@ -8,6 +8,7 @@ from pathlib import Path
 
 HOOK = 0x02009E70
 PAYLOAD = 0x02075BB4
+MAX_PAYLOAD = 0x68
 EXPECTED_HOOK_WORD = 0xE92D4FF0
 ARM9_BASE = 0x02004000
 
@@ -55,6 +56,8 @@ def main() -> None:
         raise SystemExit("payload start is missing")
     if any(address % 4 for address in payload):
         raise SystemExit("unaligned payload write")
+    if max(payload) >= PAYLOAD + MAX_PAYLOAD:
+        raise SystemExit("payload exceeds the camera reservation")
 
     image = args.arm9_image.read_bytes()
     offset = HOOK - ARM9_BASE

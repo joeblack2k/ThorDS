@@ -2056,3 +2056,90 @@ Evidence:
   installed APK SHA-256 is
   `ba9bcfebffedc93d82cbbfbbfa3b8b5cf3bce86e9bfda75199d64137c1a328ea`.
 - Evidence: `docs/evidence/m13/f3-stage-dispatch-paired.json`.
+
+## 2026-08-01 - M13 F4 player correct-speed timestep
+
+- Reproduced the owner's 2x-gameplay report from one private Castle Garden
+  checkpoint. At cadence 1, two debug steps advanced the player animation by
+  8192 versus 4096 at normal cadence.
+- Added exact-original guarded patches for player movement, player timers and
+  `Animation::Advance`. The animation hook uses the proven main-loop parity
+  only when the game cadence value is 1; cadence 2 executes the original
+  function unchanged.
+- Rejected the first quarter-step movement result after the real game-loop
+  counter exposed a misleading renderer-frame comparison. The final x/z
+  half-step measured 457.5 units against the 435.0 normal baseline, a 5.17%
+  difference within the predeclared 10% acceptance bound.
+- Player timer drop measured 60 against the normal 61, and player animation
+  advance measured 4096 against the normal 4096. The previously observed 8192
+  animation advance is gone.
+- Added deterministic builder/verifier checks for all hook originals, both
+  zero-filled payload reservations, the movement half-step instructions,
+  animation skip-return and original continuations. Static patch tests,
+  GitHubProdRelease unit tests, GitHubProdDebug build and Thor install passed.
+- Installed APK SHA-256:
+  `da51076d4286efc6b5e3883f45c03cfee74125a45fba1ed9ebc76a08dfeea8a0`.
+  Fast-forward and semantic tracing were disabled after measurement; the
+  60fps profile was left enabled for owner play validation.
+- F4 remains partial for particles, non-player actors, cutscenes and audio.
+  RA Casual and the 60-minute stability gate also remain open.
+- Evidence: `docs/evidence/m13/f4-fixed-timestep-player.json`.
+
+## 2026-08-02 - M13 F4 vertical timestep closeout
+
+- Reused private gameplay save states to compare the exact same rising and
+  falling player states at normal cadence and with the guarded 60fps patch.
+  No ROM or save-state bytes were copied into the repository.
+- Corrected the vertical half-step after review found that the earlier patch
+  had not proven jump/fall parity. The final v5 payload halves vertical
+  acceleration and displacement, adds an acceleration-eighth position term,
+  and restores the full physical speed and acceleration after each update.
+- Rising endpoints match exactly: both paths reached Y `367.683838` with
+  vertical speed `20.395996`. Falling endpoints were Y `373.667969` normal
+  versus `373.666992` enhanced, a `0.000977` position difference and `0.0136%`
+  displacement difference.
+- The guarded payload now occupies the complete 248-byte reservation. Static
+  verification checks the two vertical correction instructions and every
+  relocated continuation branch. Patch SHA-256:
+  `9175547b75ca2cdc72aaa338e46f46c579a2cf7b956a32fa513bc19ce8a132d9`.
+- GitHubProdRelease unit tests, GitHubProdDebug build and Thor install passed.
+  Installed APK SHA-256:
+  `409dc12a42fdc34db9538719e146e3507b997e68ed3ede513d16a91a0422c0ad`.
+- F4 player horizontal movement, vertical physics, timers and animation are
+  green. Particles, non-player actors, cutscenes, audio, RA Casual and the
+  60-minute stability gate remain open.
+- Evidence: `docs/evidence/m13/f4-fixed-timestep-player.json`.
+
+## 2026-08-02 - M13 F4 v6 review correction and finalization
+
+- Reviewed and finalized runtime id `sm64ds.eu.60fps-dev-cadence.v6`.
+  Action Replay and profile code SHA-256 are both
+  `4155b9ef2c9de2688f05ab06a9845cd69a20a49f1c919db8b9ae9c113426deea`.
+  The player payload is 248 bytes and the animation payload is 48 bytes.
+- Corrected the animation description to the Player-specific animation driver
+  at `0x020BEDD4`, continuation `0x020BEDD8`. Global `Animation::Advance` is
+  no longer patched. Four player timestep hooks, the Player animation driver
+  and cadence original 2 are one fail-closed region; independently tampering
+  every guard produced zero writes in the AREngine-semantic regression model.
+  Malformed structures are rejected and every valid write includes cadence 1.
+- Final v6 hardware animation window: cadence 1 counter `5027` to `5031`,
+  four enhanced updates; body and auxiliary animation frames `143360` to
+  `151552`, delta `8192`, equal to two original updates at `4096` each.
+  `playerAnimationHookWord=0xEAFD1749` was observed active.
+- Final live Vulkan sample recorded 60 unique updates and 60 emulator frames
+  in `1.001396458s`, cadence 1, all five v6 hook words active, fast-forward
+  false and semantic monitor false. The five-second smoke had no crash, ANR or
+  fatal signal.
+- GitHubProdDebug clean build succeeded with `144/144` Gradle tasks executed;
+  the focused GitHubProdRelease unit-test target passed. APK
+  SHA-256 `9dccbdef33f6deac505fa1dfcd4f54e620adefe40f26255dabed90e4f448fde7`
+  and installation succeeded. A save state was created before reinstall and
+  slot 8 was refreshed after v6 activation; state bytes/path/device serial are
+  not published. Cadence enable and disable always relaunch; the unsafe
+  disable-without-relaunch path was deleted.
+- F4 player horizontal, vertical, timers and Player animation are PASS.
+  M13 remains PARTIAL: particles, non-player actors, cutscenes, audio
+  continuity, RA Casual, broad gameplay behavior and 60-minute stability
+  remain open. This v6 entry supersedes v5 hashes and hook claims for the
+  final build; the preceding v5 entries remain historical attempts.
+- Evidence: `docs/evidence/m13/f4-fixed-timestep-player.json`.
