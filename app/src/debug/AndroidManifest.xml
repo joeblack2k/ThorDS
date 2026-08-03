@@ -26,6 +26,7 @@
                 <action android:name="${applicationId}.LOAD_STATE" />
                 <action android:name="${applicationId}.RUN_ANALOG_SWEEP" />
                 <action android:name="${applicationId}.RUN_ANALOG_GAMEPLAY_TRIAL" />
+                <action android:name="${applicationId}.RUN_LIVE_CAMERA_TRIAL" />
                 <action android:name="${applicationId}.RUN_M7_PRESENTER_TRACE" />
                 <action android:name="${applicationId}.GRANT_M7_CASTLE_KEY" />
                 <action android:name="${applicationId}.RUN_M7_SURFACE_SEQUENCE" />

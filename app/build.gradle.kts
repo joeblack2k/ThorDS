@@ -429,7 +429,6 @@ val copyLibrashaderAbiArtifacts = librashaderAbiTargets.map { abiTarget ->
         workingDir = librashaderSourceDir.get().asFile
         commandLine(
             resolveBuildTool("cargo"),
-            "+stable",
             "build",
             "--package",
             "librashader-capi",

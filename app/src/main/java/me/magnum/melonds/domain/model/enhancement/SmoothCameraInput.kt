@@ -2,6 +2,7 @@ package me.magnum.melonds.domain.model.enhancement
 
 import kotlin.math.abs
 import kotlin.math.pow
+import kotlin.math.sign
 import kotlin.math.sqrt
 
 data class SmoothCameraInputConfig(
@@ -29,6 +30,15 @@ class SmoothCameraInput(
         val normalizedX = x / magnitude * rescaledMagnitude
         val exponent = config.responseExponent.coerceAtLeast(0.01f)
         return normalizedX.signPow(exponent).coerceIn(-1f, 1f)
+    }
+
+    fun pitch(rawY: Float): Float {
+        val value = rawY.coerceIn(-1f, 1f)
+        val deadzone = config.deadzone.coerceIn(0f, 0.99f)
+        if (abs(value) <= deadzone) return 0f
+        val rescaled = ((abs(value) - deadzone) / (1f - deadzone)).coerceIn(0f, 1f)
+        val exponent = config.responseExponent.coerceAtLeast(0.01f)
+        return rescaled.pow(exponent) * value.sign
     }
 
     private fun Float.signPow(exponent: Float): Float {

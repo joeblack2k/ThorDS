@@ -250,6 +250,8 @@ private:
     std::atomic<u16> slot2CameraYawUnitsPerTick = 0;
     std::atomic<u16> slot2CameraRecenterSequence = 0;
     std::atomic<u16> slot2CameraFlags = 0;
+    std::atomic<u16> slot2CameraRecenterAppliedSequence = 0;
+    std::atomic<u32> slot2CameraRecenterAppliedCount = 0;
     mutable std::mutex sm64dsGameLoopTelemetryMutex;
     bool sm64dsGameLoopCounterInitialized = false;
     u32 sm64dsGameLoopCounterLast = 0;

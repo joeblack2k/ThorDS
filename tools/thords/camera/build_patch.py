@@ -17,7 +17,15 @@ ARM9_BASE = 0x02004000
 HOOK = 0x02009E70
 PAYLOAD = 0x02075BB4
 EXPECTED_HOOK_WORD = 0xE92D4FF0
-MAX_PAYLOAD = 0x68
+MAX_PAYLOAD = 0xE0
+PITCH_BRIDGE_ADDRESS = 0x0200A7A8
+PITCH_BRIDGE_ORIGINAL_WORD = 0xE1C107BC
+PITCH_BRIDGE_TARGET = PAYLOAD + 0xA4
+TARGET_BRIDGE_PATCHES = (
+    (0x0200A790, 0x02880C01, 0xE2880C01),
+    (0x0200A79C, 0x01D028F4, 0xE1D028F4),
+    (0x0200A7A4, 0x00811002, 0xE0811002),
+)
 
 
 def text_from_elf(path: Path) -> bytes:
@@ -63,33 +71,52 @@ def main() -> None:
     args = parser.parse_args()
 
     image = args.arm9_image.read_bytes()
-    original = word_at(image, HOOK)
-    if original != EXPECTED_HOOK_WORD:
+    hook_original = word_at(image, HOOK)
+    if hook_original != EXPECTED_HOOK_WORD:
         raise SystemExit(
-            f"refusing patch: hook word is 0x{original:08X}, "
+            f"refusing patch: hook word is 0x{hook_original:08X}, "
             f"expected 0x{EXPECTED_HOOK_WORD:08X}"
+        )
+    for address, expected, _ in TARGET_BRIDGE_PATCHES:
+        bridge_original = word_at(image, address)
+        if bridge_original != expected:
+            raise SystemExit(
+                f"refusing patch: target bridge word at 0x{address:08X} is "
+                f"0x{bridge_original:08X}, expected 0x{expected:08X}"
+            )
+    if word_at(image, PITCH_BRIDGE_ADDRESS) != PITCH_BRIDGE_ORIGINAL_WORD:
+        raise SystemExit(
+            f"refusing patch: pitch bridge word is 0x{word_at(image, PITCH_BRIDGE_ADDRESS):08X}, "
+            f"expected 0x{PITCH_BRIDGE_ORIGINAL_WORD:08X}"
         )
     payload_offset = PAYLOAD - ARM9_BASE
     if payload_offset < 0 or payload_offset + MAX_PAYLOAD > len(image):
         raise SystemExit("refusing patch: payload region is outside ARM9 image")
-    if any(image[payload_offset : payload_offset + MAX_PAYLOAD]):
-        raise SystemExit("refusing patch: payload region is not unused zero-fill")
 
     payload = text_from_elf(args.object)
     if len(payload) > MAX_PAYLOAD:
         raise SystemExit(f"refusing patch: payload is {len(payload)} bytes, limit is {MAX_PAYLOAD}")
     if len(payload) % 4:
         raise SystemExit("refusing patch: payload is not word aligned")
+    if any(image[payload_offset : payload_offset + len(payload)]):
+        raise SystemExit("refusing patch: payload region is not unused zero-fill")
 
     words = [f"{PAYLOAD + offset:08X} {int.from_bytes(payload[offset:offset + 4], 'little'):08X}"
              for offset in range(0, len(payload), 4)]
     words.insert(0, f"{HOOK:08X} {arm_branch(HOOK, PAYLOAD):08X}")
+    words[1:1] = [
+        f"{address:08X} {replacement:08X}"
+        for address, _, replacement in TARGET_BRIDGE_PATCHES
+    ]
+    words[1:1] = [
+        f"{PITCH_BRIDGE_ADDRESS:08X} {arm_branch(PITCH_BRIDGE_ADDRESS, PITCH_BRIDGE_TARGET):08X}"
+    ]
     words.append("D0000000 00000000")
 
     digest = hashlib.sha256("\n".join(words).encode("ascii") + b"\n").hexdigest()
     args.output.write_text("\n".join(words) + "\n", encoding="ascii")
     print(f"payload_bytes={len(payload)}")
-    print(f"hook_original={original:08X}")
+    print(f"hook_original={hook_original:08X}")
     print(f"ar_sha256={digest}")
 
 

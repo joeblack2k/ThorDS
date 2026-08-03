@@ -68,4 +68,5 @@ class HybridScreenTouchscreenInputHandler(inputListener: IInputListener) : BaseI
         }
         return average / pointerCount
     }
+
 }

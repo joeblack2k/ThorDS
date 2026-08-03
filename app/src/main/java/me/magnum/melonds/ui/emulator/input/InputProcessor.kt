@@ -24,10 +24,11 @@ class InputProcessor(
     companion object {
         private const val TAG = "InputProcessor"
         private const val SLOT2_ANALOG_LOG_INTERVAL_MS = 1500L
+        private const val PROFILE_CAMERA_LOG_INTERVAL_MS = 250L
         private const val SLOT2_RAW_ANALOG_PRIORITY_MS = 150L
         private const val SMOOTH_CAMERA_YAW_UNITS_PER_TICK = 1001
         private const val SMOOTH_CAMERA_FLAG_ENABLED = 1
-        private const val SMOOTH_CAMERA_FLAG_RECENTER_SOUND = 1 shl 1
+        private const val MOTION_EVENT_LOG_INTERVAL_MS = 250L
         private const val SMOOTH_CAMERA_R3 = KeyEvent.KEYCODE_BUTTON_THUMBR
         private val slot2XAxisFallbackCodes = intArrayOf(
             MotionEvent.AXIS_X,
@@ -56,6 +57,8 @@ class InputProcessor(
     private var slot2DigitalDownPressed = false
     private val smoothCameraInput = SmoothCameraInput()
     private var smoothCameraRecenterSequence: Short = 0
+    private var lastProfileCameraLogAtMs = 0L
+    private var lastMotionEventLogAtMs = 0L
 
     init {
         val axis = controllerConfiguration.inputMapper.flatMap { inputConfig ->
@@ -77,13 +80,13 @@ class InputProcessor(
             }
             return true
         }
-        val input = controllerConfiguration.keyToInput(keyEvent.keyCode) ?: return false
         val fromController = keyEvent.isFromSource(InputDevice.SOURCE_CLASS_JOYSTICK)
             || keyEvent.isFromSource(InputDevice.SOURCE_JOYSTICK)
             || keyEvent.isFromSource(InputDevice.SOURCE_GAMEPAD)
             || keyEvent.isFromSource(InputDevice.SOURCE_DPAD)
             || keyEvent.device?.supportsSource(InputDevice.SOURCE_JOYSTICK) == true
             || keyEvent.device?.supportsSource(InputDevice.SOURCE_GAMEPAD) == true
+        val input = controllerConfiguration.keyToInput(keyEvent.keyCode) ?: return false
 
         when (keyEvent.action) {
             KeyEvent.ACTION_DOWN -> {
@@ -99,6 +102,14 @@ class InputProcessor(
     }
 
     override fun onMotionEvent(motionEvent: MotionEvent): Boolean {
+        val now = SystemClock.uptimeMillis()
+        if (now - lastMotionEventLogAtMs >= MOTION_EVENT_LOG_INTERVAL_MS) {
+            lastMotionEventLogAtMs = now
+            Log.w(
+                TAG,
+                "controllerMotion deviceId=${motionEvent.deviceId} source=0x${motionEvent.source.toString(16)} action=${motionEvent.actionMasked} z=${"%.3f".format(Locale.US, motionEvent.getAxisValue(MotionEvent.AXIS_Z))} rz=${"%.3f".format(Locale.US, motionEvent.getAxisValue(MotionEvent.AXIS_RZ))} rx=${"%.3f".format(Locale.US, motionEvent.getAxisValue(MotionEvent.AXIS_RX))} ry=${"%.3f".format(Locale.US, motionEvent.getAxisValue(MotionEvent.AXIS_RY))}",
+            )
+        }
         if (isControllerMotionEvent(motionEvent)) {
             val slot2Handled = processSlot2AnalogFromMotionEvent(motionEvent)
 
@@ -158,33 +169,46 @@ class InputProcessor(
     private fun updateProfileCamera(motionEvent: MotionEvent) {
         val preferredX = motionEvent.getAxisValue(MotionEvent.AXIS_Z)
         val preferredY = motionEvent.getAxisValue(MotionEvent.AXIS_RZ)
+        val alternateX = motionEvent.getAxisValue(MotionEvent.AXIS_RX)
+        val alternateY = motionEvent.getAxisValue(MotionEvent.AXIS_RY)
         // Android exposes the Thor's right stick as Z/RZ on some layouts and RX/RY on others.
         val rawX = if (preferredX.absoluteValue > 0.001f || preferredY.absoluteValue > 0.001f) {
             preferredX
         } else {
-            motionEvent.getAxisValue(MotionEvent.AXIS_RX)
+            alternateX
         }
         val rawY = if (preferredX.absoluteValue > 0.001f || preferredY.absoluteValue > 0.001f) {
             preferredY
         } else {
-            motionEvent.getAxisValue(MotionEvent.AXIS_RY)
+            alternateY
         }
         val yaw = smoothCameraInput.yaw(
             rawX = rawX.coerceIn(-1f, 1f),
             rawY = rawY.coerceIn(-1f, 1f),
         )
-        sendSmoothCameraState(yaw)
+        val pitch = smoothCameraInput.pitch(rawY.coerceIn(-1f, 1f))
+        val now = SystemClock.uptimeMillis()
+        if (maxOf(preferredX.absoluteValue, preferredY.absoluteValue, alternateX.absoluteValue, alternateY.absoluteValue) > 0.05f
+            && now - lastProfileCameraLogAtMs >= PROFILE_CAMERA_LOG_INTERVAL_MS
+        ) {
+            lastProfileCameraLogAtMs = now
+            Log.w(
+                TAG,
+                "profileCameraInput deviceId=${motionEvent.deviceId} source=0x${motionEvent.source.toString(16)} z=${"%.3f".format(Locale.US, preferredX)} rz=${"%.3f".format(Locale.US, preferredY)} rx=${"%.3f".format(Locale.US, alternateX)} ry=${"%.3f".format(Locale.US, alternateY)} yaw=${"%.3f".format(Locale.US, yaw)}",
+            )
+        }
+        sendSmoothCameraState(yaw, pitch)
     }
 
-    private fun sendSmoothCameraState(yawInput: Float = 0f) {
+    private fun sendSmoothCameraState(yawInput: Float = 0f, pitchInput: Float = 0f) {
         val q12 = (yawInput.coerceIn(-1f, 1f) * 4096f).toInt().coerceIn(-4096, 4096).toShort()
-        val flags = (SMOOTH_CAMERA_FLAG_ENABLED or SMOOTH_CAMERA_FLAG_RECENTER_SOUND).toShort()
+        val pitchQ12 = (pitchInput.coerceIn(-1f, 1f) * 4096f).toInt().coerceIn(-4096, 4096).toShort()
         slot2CameraState(
             q12,
-            0,
+            pitchQ12,
             SMOOTH_CAMERA_YAW_UNITS_PER_TICK.toShort(),
             smoothCameraRecenterSequence,
-            flags,
+            SMOOTH_CAMERA_FLAG_ENABLED.toShort(),
         )
     }
 

@@ -33,6 +33,16 @@ class SmoothCameraInputTest {
     }
 
     @Test
+    fun verticalDeflectionProducesSymmetricPitch() {
+        val down = input.pitch(-0.5f)
+        val up = input.pitch(0.5f)
+
+        assertTrue(down < 0f)
+        assertTrue(up > 0f)
+        assertEquals(abs(down), up, 0.0001f)
+    }
+
+    @Test
     fun invertXReversesOnlyYaw() {
         val normal = SmoothCameraInput(SmoothCameraInputConfig(invertX = false))
         val inverted = SmoothCameraInput(SmoothCameraInputConfig(invertX = true))
