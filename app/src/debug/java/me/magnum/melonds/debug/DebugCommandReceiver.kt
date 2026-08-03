@@ -538,11 +538,16 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             .coerceIn(100, 5_000)
         val before = RendererDebugBridge.captureCurrentFrame()
         val cameraStateBefore = MelonEmulator.getSlot2CameraStateTelemetry()
+        val gameLoopBefore = MelonEmulator.getSm64dsGameLoopTelemetry()
         val inputHandled = dispatchControllerMotion(cameraX = cameraX, cameraY = cameraY)
         delay(holdMs.toLong())
         val after = RendererDebugBridge.captureCurrentFrame()
         val cameraStateDuring = MelonEmulator.getSlot2CameraStateTelemetry()
-        dispatchControllerMotion()
+        val gameLoopDuring = MelonEmulator.getSm64dsGameLoopTelemetry()
+        val neutralHandled = dispatchControllerMotion()
+        delay(CAMERA_NEUTRAL_SETTLE_MS)
+        val cameraStateAfter = MelonEmulator.getSlot2CameraStateTelemetry()
+        val gameLoopAfter = MelonEmulator.getSm64dsGameLoopTelemetry()
 
         val expectedPixels = RendererDebugBridge.CAPTURE_WIDTH * RendererDebugBridge.CAPTURE_HEIGHT
         val frameShapeValid = before?.size == expectedPixels && after?.size == expectedPixels
@@ -557,19 +562,24 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             .put("cameraY", cameraY)
             .put("holdMs", holdMs)
             .put("inputHandled", inputHandled)
+            .put("neutralHandled", neutralHandled)
             .put("cameraStateBefore", cameraStateBefore)
             .put("cameraStateDuring", cameraStateDuring)
+            .put("cameraStateAfter", cameraStateAfter)
+            .put("gameLoopBefore", JSONObject(gameLoopBefore))
+            .put("gameLoopDuring", JSONObject(gameLoopDuring))
+            .put("gameLoopAfter", JSONObject(gameLoopAfter))
             .put("frameShapeValid", frameShapeValid)
             .put("changedPixels", changedPixels)
             .put("beforeFrameHash", before?.contentHashCode() ?: 0)
             .put("afterFrameHash", after?.contentHashCode() ?: 0)
-            .put("result", if (inputHandled && frameShapeValid) "PASS" else "PARTIAL")
+            .put("result", if (inputHandled && neutralHandled && frameShapeValid) "PASS" else "PARTIAL")
         File(context.cacheDir, LIVE_CAMERA_TRIAL_OUTPUT_FILE).writeText(output.toString(2))
         Log.w(
             TAG,
-            "action=run_live_camera_trial cameraX=$cameraX cameraY=$cameraY holdMs=$holdMs changedPixels=$changedPixels result=${if (inputHandled && frameShapeValid) "PASS" else "PARTIAL"}",
+            "action=run_live_camera_trial cameraX=$cameraX cameraY=$cameraY holdMs=$holdMs changedPixels=$changedPixels result=${if (inputHandled && neutralHandled && frameShapeValid) "PASS" else "PARTIAL"}",
         )
-        return inputHandled && frameShapeValid
+        return inputHandled && neutralHandled && frameShapeValid
     }
 
     private fun createControllerMotionEvent(
@@ -2081,6 +2091,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val DEFAULT_TOUCH_Y = 96
         private const val DEFAULT_TOUCH_DURATION_MS = 80
         private const val DEFAULT_INPUT_DURATION_MS = 80
+        private const val CAMERA_NEUTRAL_SETTLE_MS = 100L
         private const val DEFAULT_ANALOG_STEP_TIMEOUT_MS = 1_000
         private const val ANALOG_SWEEP_DIRECTIONS = 16
         private const val ANALOG_SWEEP_OUTPUT_FILE = "analog-end-to-end.json"
