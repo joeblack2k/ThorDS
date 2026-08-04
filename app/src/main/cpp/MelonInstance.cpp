@@ -1170,6 +1170,17 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
     u8 playerBodyModelId = 0;
     u32 playerBodyModelPointer = 0;
     bool playerAnimationValid = false;
+    u32 playerAnimationPointer = 0;
+    u32 playerAnimationFrameCountAndFlags = 0;
+    s32 playerAnimationCurrFrameQ12 = 0;
+    s32 playerAnimationSpeedQ12 = 0;
+    u32 playerAnimationBaseFrame = 0;
+    u32 playerAnimationNextFrame = 0;
+    u32 playerAnimationAlphaQ12 = 0;
+    u32 playerAnimationBaseTransformHash = 0;
+    u32 playerAnimationNextTransformHash = 0;
+    u32 playerAnimationOutputTransformHash = 0;
+    u32 playerInterpolationExecutionCount = 0;
     s32 playerBodyAnimationFrame = 0;
     s32 playerBodyAnimationSpeed = 0;
     s32 playerAuxAnimationFrame = 0;
@@ -1312,6 +1323,17 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
                             playerAnimationValid = true;
                             playerBodyAnimationFrame = readAnimationS32(bodyModelBytes, 0x58);
                             playerBodyAnimationSpeed = readAnimationS32(bodyModelBytes, 0x5C);
+                            playerAnimationPointer = playerBodyModelPointer + 0x50;
+                            playerAnimationFrameCountAndFlags = static_cast<u32>(bodyModelBytes[0x54])
+                                | (static_cast<u32>(bodyModelBytes[0x55]) << 8)
+                                | (static_cast<u32>(bodyModelBytes[0x56]) << 16)
+                                | (static_cast<u32>(bodyModelBytes[0x57]) << 24);
+                            playerAnimationCurrFrameQ12 = playerBodyAnimationFrame;
+                            playerAnimationSpeedQ12 = playerBodyAnimationSpeed;
+                            playerAnimationBaseFrame = static_cast<u32>(playerAnimationCurrFrameQ12 >> 12);
+                            playerAnimationNextFrame = playerAnimationBaseFrame
+                                + (playerAnimationSpeedQ12 < 0 ? 0u : 1u);
+                            playerAnimationAlphaQ12 = static_cast<u32>(playerAnimationCurrFrameQ12 & 0xFFF);
                             playerAuxAnimationFrame = readAnimationS32(auxAnimationBytes, 0x08);
                             playerAuxAnimationSpeed = readAnimationS32(auxAnimationBytes, 0x0C);
                         }
@@ -1358,6 +1380,17 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
             + ",\"playerBodyModelId\":" + std::to_string(playerBodyModelId)
             + ",\"playerBodyModelPointer\":" + std::to_string(playerBodyModelPointer)
             + ",\"playerAnimationValid\":" + std::string(playerAnimationValid ? "true" : "false")
+            + ",\"playerAnimationPointer\":" + std::to_string(playerAnimationPointer)
+            + ",\"playerAnimationFrameCountAndFlags\":" + std::to_string(playerAnimationFrameCountAndFlags)
+            + ",\"playerAnimationCurrFrameQ12\":" + std::to_string(playerAnimationCurrFrameQ12)
+            + ",\"playerAnimationSpeedQ12\":" + std::to_string(playerAnimationSpeedQ12)
+            + ",\"playerAnimationBaseFrame\":" + std::to_string(playerAnimationBaseFrame)
+            + ",\"playerAnimationNextFrame\":" + std::to_string(playerAnimationNextFrame)
+            + ",\"playerAnimationAlphaQ12\":" + std::to_string(playerAnimationAlphaQ12)
+            + ",\"playerAnimationBaseTransformHash\":" + std::to_string(playerAnimationBaseTransformHash)
+            + ",\"playerAnimationNextTransformHash\":" + std::to_string(playerAnimationNextTransformHash)
+            + ",\"playerAnimationOutputTransformHash\":" + std::to_string(playerAnimationOutputTransformHash)
+            + ",\"playerInterpolationExecutionCount\":" + std::to_string(playerInterpolationExecutionCount)
             + ",\"playerBodyAnimationFrame\":" + std::to_string(playerBodyAnimationFrame)
             + ",\"playerBodyAnimationSpeed\":" + std::to_string(playerBodyAnimationSpeed)
             + ",\"playerAuxAnimationFrame\":" + std::to_string(playerAuxAnimationFrame)
@@ -1406,6 +1439,17 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"playerBodyModelId\":" + std::to_string(playerBodyModelId)
         + ",\"playerBodyModelPointer\":" + std::to_string(playerBodyModelPointer)
         + ",\"playerAnimationValid\":" + std::string(playerAnimationValid ? "true" : "false")
+        + ",\"playerAnimationPointer\":" + std::to_string(playerAnimationPointer)
+        + ",\"playerAnimationFrameCountAndFlags\":" + std::to_string(playerAnimationFrameCountAndFlags)
+        + ",\"playerAnimationCurrFrameQ12\":" + std::to_string(playerAnimationCurrFrameQ12)
+        + ",\"playerAnimationSpeedQ12\":" + std::to_string(playerAnimationSpeedQ12)
+        + ",\"playerAnimationBaseFrame\":" + std::to_string(playerAnimationBaseFrame)
+        + ",\"playerAnimationNextFrame\":" + std::to_string(playerAnimationNextFrame)
+        + ",\"playerAnimationAlphaQ12\":" + std::to_string(playerAnimationAlphaQ12)
+        + ",\"playerAnimationBaseTransformHash\":" + std::to_string(playerAnimationBaseTransformHash)
+        + ",\"playerAnimationNextTransformHash\":" + std::to_string(playerAnimationNextTransformHash)
+        + ",\"playerAnimationOutputTransformHash\":" + std::to_string(playerAnimationOutputTransformHash)
+        + ",\"playerInterpolationExecutionCount\":" + std::to_string(playerInterpolationExecutionCount)
         + ",\"playerBodyAnimationFrame\":" + std::to_string(playerBodyAnimationFrame)
         + ",\"playerBodyAnimationSpeed\":" + std::to_string(playerBodyAnimationSpeed)
         + ",\"playerAuxAnimationFrame\":" + std::to_string(playerAuxAnimationFrame)
