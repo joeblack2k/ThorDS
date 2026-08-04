@@ -1345,8 +1345,9 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
                             {
                                 playerAnimationTransformPointer = transformPointer;
                                 const u8* transformBytes = nds->MainRAM + transformOffset;
+                                // Hash the player transform buffer, not only the root bone.
                                 u32 hash = 2166136261u;
-                                for (u32 i = 0; i < 0x30; ++i)
+                                for (u32 i = 0; i < 0x600; ++i)
                                 {
                                     hash ^= transformBytes[i];
                                     hash *= 16777619u;
