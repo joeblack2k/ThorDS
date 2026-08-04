@@ -42,10 +42,21 @@ pose interpolation.
 The next transform hash is zero because no second pose sample is implemented.
 The interpolation execution count is zero because the enhancement is disabled.
 
+A repeated live trace also showed:
+
+- `currFrameQ12` values with both zero and `0x800` fractions;
+- changing full player transform-buffer hashes;
+- output hash equal to the base hash on every sample;
+- interpolation execution count equal to zero on every sample.
+
+The hash covers the player transform buffer. The first root matrix alone was
+not sufficient because it can remain constant while the body animates.
+
 ## Acceptance
 
 F3 is not complete. The required scripted Yoshi backflip and the baseline
-`A,A,B,B` pose cadence are not yet saved. F4 is not started.
+`A,A,B,B` pose cadence are not yet saved. The repeated trace is not a
+backflip trace. F4 is not started.
 
 The corner counter remains a loop-frequency indicator. It is not rendered-FPS
 proof.
