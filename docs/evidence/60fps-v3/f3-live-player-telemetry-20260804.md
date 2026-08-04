@@ -52,6 +52,24 @@ A repeated live trace also showed:
 The hash covers the player transform buffer. The first root matrix alone was
 not sufficient because it can remain constant while the body animates.
 
+## Direct jump trace
+
+The autonomous test used one direct `B` press with no crouch combination.
+During the jump, the live dump reported:
+
+- `playerPosY=485.580566`
+- `playerSpeedY=13.091797`
+- `playerStateStep=1`
+- `playerAnimationCurrFrameQ12=98304`
+- `playerAnimationBaseFrame=24`
+- `playerAnimationNextFrame=25`
+- `playerAnimationBaseTransformHash=858156675`
+- `playerAnimationOutputTransformHash=858156675`
+
+The later samples showed the player returning to `playerPosY=254.010986`.
+This proves that a direct debug jump creates real player motion and reaches
+the existing pose telemetry. It does not prove interpolation.
+
 ## Acceptance
 
 F3 is not complete. The required scripted Yoshi backflip and the baseline
