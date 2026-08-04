@@ -251,6 +251,8 @@ private:
     std::atomic<u16> slot2CameraYawUnitsPerTick = 0;
     std::atomic<u16> slot2CameraRecenterSequence = 0;
     std::atomic<u16> slot2CameraFlags = 0;
+    std::atomic<u16> slot2CameraRecenterAppliedSequence = 0;
+    std::atomic<u32> slot2CameraRecenterAppliedCount = 0;
     std::atomic<u64> touchDownGeneration = 0;
     std::atomic<u64> touchReleaseGeneration = 0;
     std::atomic<u16> touchPendingX = 0;

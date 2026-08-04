@@ -11,7 +11,7 @@ import me.magnum.melonds.domain.model.Point
 
 class TouchscreenInputHandler(
     inputListener: IInputListener,
-    private val viewRectProvider: (() -> RectF)? = null,
+    private val viewRectProvider: (() -> RectF?)? = null,
 ) : BaseInputHandler(inputListener) {
     private val touchPoint: Point = Point()
 
