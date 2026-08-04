@@ -8,7 +8,8 @@ from pathlib import Path
 
 ARM9_BASE = 0x02004000
 OVERLAY_BASE = 0x020AD660
-PLAYER_PAYLOAD = 0x02075C1C
+PLAYER_PAYLOAD = 0x02004D00
+OLD_PLAYER_PAYLOAD = 0x02075C1C
 PLAYER_LIMIT = 0xF8
 WORLD_PAYLOAD = 0x02004B00
 WORLD_LIMIT = 0x200
@@ -58,6 +59,19 @@ def branch(source, target, link=False):
     if delta % 4 or not -(1 << 25) <= delta < (1 << 25): raise ValueError("branch out of range")
     return (0xEB000000 if link else 0xEA000000) | ((delta // 4) & 0xFFFFFF)
 
+def relocate_player_branches(data, payload):
+    data = bytearray(data)
+    for offset, target in (
+        (0x6C, 0x02010C30),
+        (0x8C, 0x020D4D8C),
+        (0xC0, 0x020E4F14),
+        (0xC4, 0x020E4FB8),
+        (0xEC, 0x020E4FE0),
+        (0xF0, 0x020E508C),
+    ):
+        data[offset:offset + 4] = branch(payload + offset, target).to_bytes(4, "little")
+    return bytes(data)
+
 def ar_guard(address, value):
     return f"5{address & 0x0FFFFFFF:07X} {value:08X}"
 
@@ -84,6 +98,8 @@ def main():
     if any(arm9[WORLD_PAYLOAD - ARM9_BASE:WORLD_PAYLOAD - ARM9_BASE + WORLD_LIMIT]): raise SystemExit("gap is not zero-filled")
     if any(arm9[PLAYER_PAYLOAD - ARM9_BASE:PLAYER_PAYLOAD - ARM9_BASE + PLAYER_LIMIT]): raise SystemExit("player reservation is not zero-filled")
     player, ps = elf_payload(a.object, ("f42_player_timestep_entry", "f42_player_speed_entry", "f42_player_timer_entry", "f42_player_control_timer_entry"))
+    old_player = player
+    player = relocate_player_branches(player, PLAYER_PAYLOAD)
     world, ws = elf_payload(a.world_object, ("f42_world_entry", "f42_world_entry_r4", "f42_world_add_vec", "f42_animation_speed", "f42_particle_entry"))
     old_animation, os = elf_payload(a.animation_object, ("f42_animation_entry",))
     if len(player) != PLAYER_LIMIT or ps["f42_player_timestep_entry"] != 0: raise SystemExit("player payload is not exact v7 size")
@@ -112,12 +128,12 @@ def main():
     current = dict(writes)
     current_common = [*[(x, current[x]) for x in PLAYER_HOOKS], (ANIMATION_HOOK, ANIMATION_EXPECTED), *[(x, current[x]) for x in WORLD_HOOKS], *[(PLAYER_PAYLOAD+i, current[PLAYER_PAYLOAD+i]) for i in range(0, len(player), 4)], *[(WORLD_PAYLOAD+i, current[WORLD_PAYLOAD+i]) for i in range(0, len(world), 4)]]
     for old_cadence in (1, 2):
-        old_player = [(PLAYER_HOOKS[0], branch(PLAYER_HOOKS[0], PLAYER_PAYLOAD, True)),
-                      (PLAYER_HOOKS[1], branch(PLAYER_HOOKS[1], PLAYER_PAYLOAD + ps["f42_player_speed_entry"])),
-                      (PLAYER_HOOKS[2], branch(PLAYER_HOOKS[2], PLAYER_PAYLOAD + ps["f42_player_timer_entry"])),
-                      (PLAYER_HOOKS[3], branch(PLAYER_HOOKS[3], PLAYER_PAYLOAD + ps["f42_player_control_timer_entry"]))]
+        old_player_hooks = [(PLAYER_HOOKS[0], branch(PLAYER_HOOKS[0], OLD_PLAYER_PAYLOAD, True)),
+                            (PLAYER_HOOKS[1], branch(PLAYER_HOOKS[1], OLD_PLAYER_PAYLOAD + ps["f42_player_speed_entry"])),
+                            (PLAYER_HOOKS[2], branch(PLAYER_HOOKS[2], OLD_PLAYER_PAYLOAD + ps["f42_player_timer_entry"])),
+                            (PLAYER_HOOKS[3], branch(PLAYER_HOOKS[3], OLD_PLAYER_PAYLOAD + ps["f42_player_control_timer_entry"]))]
         old_animation_write = (ANIMATION_HOOK, branch(ANIMATION_HOOK, WORLD_PAYLOAD))
-        old_guards = [*old_player, old_animation_write, *[(PLAYER_PAYLOAD+i, int.from_bytes(player[i:i+4], "little")) for i in range(0, len(player), 4)], *[(WORLD_PAYLOAD+i, int.from_bytes(old_animation[i:i+4], "little")) for i in range(0, len(old_animation), 4)], *zip(WORLD_HOOKS, WORLD_EXPECTED), (COIN_SPIN_HOOK, COIN_SPIN_EXPECTED), (CADENCE, old_cadence)]
+        old_guards = [*old_player_hooks, old_animation_write, *[(OLD_PLAYER_PAYLOAD+i, int.from_bytes(old_player[i:i+4], "little")) for i in range(0, len(old_player), 4)], *[(WORLD_PAYLOAD+i, int.from_bytes(old_animation[i:i+4], "little")) for i in range(0, len(old_animation), 4)], *zip(WORLD_HOOKS, WORLD_EXPECTED), (COIN_SPIN_HOOK, COIN_SPIN_EXPECTED), (CADENCE, old_cadence)]
         migration_writes = [(ANIMATION_HOOK, ANIMATION_EXPECTED), *world_writes, (COIN_SPIN_HOOK, COIN_SPIN_HALF), (CADENCE, 1), *[(WORLD_PAYLOAD+i, int.from_bytes(world[i:i+4], "little")) for i in range(0, len(world), 4)]]
         lines += [ar_guard(x, y) for x, y in old_guards] + [f"{x:08X} {y:08X}" for x, y in migration_writes] + ["D0000000 00000000", "D2000000 00000000"]
     v9_migration = [*current_common, (COIN_SPIN_HOOK, COIN_SPIN_EXPECTED)]

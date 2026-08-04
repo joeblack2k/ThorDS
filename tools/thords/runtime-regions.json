@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "regions": [
+    {
+      "owner": "camera",
+      "purpose": "smooth orbit and pitch",
+      "start": "02075BB4",
+      "endExclusive": "02075C90"
+    },
+    {
+      "owner": "60fps",
+      "purpose": "world timestep",
+      "start": "02004B00",
+      "endExclusive": "02004D00"
+    },
+    {
+      "owner": "60fps",
+      "purpose": "player timestep",
+      "start": "02004D00",
+      "endExclusive": "02004DF8"
+    },
+    {
+      "owner": "60fps",
+      "purpose": "pose interpolation/state",
+      "start": "02004DF8",
+      "endExclusive": "02005000"
+    }
+  ]
+}

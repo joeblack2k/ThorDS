@@ -8,7 +8,8 @@ from pathlib import Path
 
 ARM9_BASE = 0x02004000
 OVERLAY_BASE = 0x020AD660
-PLAYER_PAYLOAD = 0x02075C1C
+PLAYER_PAYLOAD = 0x02004D00
+OLD_PLAYER_PAYLOAD = 0x02075C1C
 PLAYER_BYTES = 0xF8
 WORLD_PAYLOAD = 0x02004B00
 WORLD_BYTES = 0x18C
@@ -198,9 +199,9 @@ def verify(path: Path, arm9_path: Path, overlay_path: Path):
     speed_target = branch_target(PLAYER_HOOKS[1], fresh_by[PLAYER_HOOKS[1]])
     if speed_target not in player_addresses:
         raise ValueError("player speed target outside payload")
-    if branch_target(PLAYER_HOOKS[2], fresh_by[PLAYER_HOOKS[2]]) != 0x02075CB8:
+    if branch_target(PLAYER_HOOKS[2], fresh_by[PLAYER_HOOKS[2]]) != PLAYER_PAYLOAD + 0x9C:
         raise ValueError("player timer target mismatch")
-    if branch_target(PLAYER_HOOKS[3], fresh_by[PLAYER_HOOKS[3]]) != 0x02075CE4:
+    if branch_target(PLAYER_HOOKS[3], fresh_by[PLAYER_HOOKS[3]]) != PLAYER_PAYLOAD + 0xC8:
         raise ValueError("player control timer target mismatch")
 
     world_branch_types = tuple(fresh_by[address] >> 24 for address in WORLD_HOOKS)
@@ -279,15 +280,19 @@ def verify(path: Path, arm9_path: Path, overlay_path: Path):
         if bad_word.to_bytes(4, "little") in world_raw:
             raise ValueError(f"forbidden world vector instruction 0x{bad_word:08X}")
 
+    old_player_addresses = list(range(OLD_PLAYER_PAYLOAD, OLD_PLAYER_PAYLOAD + PLAYER_BYTES, 4))
+    old_animation_guards_1, old_animation_writes_1 = migration_1
+    old_player_guard_values = dict(old_animation_guards_1)
+    if sorted(address for address in old_player_guard_values if OLD_PLAYER_PAYLOAD <= address < OLD_PLAYER_PAYLOAD + PLAYER_BYTES) != old_player_addresses:
+        raise ValueError("old player migration payload is not exact")
     old_player_values = {
-        address: fresh_by[address]
-        for address in (*PLAYER_HOOKS, *player_addresses)
+        address: old_player_guard_values[address]
+        for address in (*PLAYER_HOOKS, *old_player_addresses)
     }
     old_animation_hook = (
         0xEA000000
         | (((WORLD_PAYLOAD - ANIMATION_HOOK - 8) // 4) & 0xFFFFFF)
     )
-    old_animation_guards_1, old_animation_writes_1 = migration_1
     old_animation_guards_2, old_animation_writes_2 = migration_2
     if old_animation_writes_1 != old_animation_writes_2:
         raise ValueError("migration writes differ")
@@ -325,7 +330,7 @@ def verify(path: Path, arm9_path: Path, overlay_path: Path):
     migration_prefix = [
         *(guard(address, old_player_values[address]) for address in PLAYER_HOOKS),
         guard(ANIMATION_HOOK, old_animation_hook),
-        *(guard(address, old_player_values[address]) for address in player_addresses),
+        *(guard(address, old_player_values[address]) for address in old_player_addresses),
         *(guard(address, old_animation_values[address]) for address in old_animation_addresses),
         *(guard(address, value) for address, value in zip(WORLD_HOOKS, WORLD_ORIGINALS)),
         guard(COIN_SPIN_HOOK, COIN_SPIN_ORIGINAL),

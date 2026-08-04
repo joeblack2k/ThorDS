@@ -6,10 +6,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-HOOK = 0x02009E70
+HOOK = 0x0200BB28
 PAYLOAD = 0x02075BB4
 MAX_PAYLOAD = 0x68
-EXPECTED_HOOK_WORD = 0xE92D4FF0
+EXPECTED_HOOK_WORD = 0xE92D4070
 ARM9_BASE = 0x02004000
 
 
