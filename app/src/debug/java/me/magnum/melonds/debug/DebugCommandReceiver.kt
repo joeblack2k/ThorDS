@@ -688,6 +688,13 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
     private suspend fun handleLaunchRom(context: Context, intent: Intent): Boolean {
         val romUri = intent.data ?: intent.firstStringExtra(EXTRA_ROM_URI, EXTRA_URI, EXTRA_PATH)?.let { Uri.parse(it) }
             ?: throw IllegalArgumentException("Missing ROM URI. Provide intent data or rom_uri.")
+        if (
+            DebugCommandStateStore.isRunningRom() &&
+            DebugCommandStateStore.getLastRomUri(context) == romUri
+        ) {
+            Log.w(TAG, "action=launch_rom reused_current_rom uri=$romUri")
+            return true
+        }
         val launchUri = getLaunchUri(context, romUri)
         val waitReady = intent.firstBooleanExtra(EXTRA_WAIT_ROM_READY, EXTRA_WAIT_READY)
             ?: false
