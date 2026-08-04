@@ -640,9 +640,12 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             .coerceIn(1, 2_000)
         MelonEmulator.onInputDown(Input.TOUCHSCREEN)
         MelonEmulator.onScreenTouch(x, y)
-        delay(durationMs.toLong())
-        MelonEmulator.onInputUp(Input.TOUCHSCREEN)
-        MelonEmulator.onScreenRelease()
+        try {
+            delay(durationMs.toLong())
+        } finally {
+            MelonEmulator.onInputUp(Input.TOUCHSCREEN)
+            MelonEmulator.onScreenRelease()
+        }
         Log.w(TAG, "action=touch_screen x=$x y=$y durationMs=$durationMs")
     }
 
