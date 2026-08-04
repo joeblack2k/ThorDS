@@ -653,10 +653,10 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         try {
             MelonEmulator.onInputDown(Input.R)
             delay(1_000)
-            MelonEmulator.onInputDown(Input.A)
+            MelonEmulator.onInputDown(Input.B)
             delay(durationMs.toLong())
         } finally {
-            MelonEmulator.onInputUp(Input.A)
+            MelonEmulator.onInputUp(Input.B)
             MelonEmulator.onInputUp(Input.R)
             MelonEmulator.setSlot2AnalogInput(0f, 0f)
         }
