@@ -1509,7 +1509,9 @@ std::string MelonInstance::getSm64dsSemanticTelemetryJson() const
             result += ",";
         result += std::to_string(snapshot.counters[i]);
     }
-    return result + "]}";
+    const auto poseIndex = static_cast<std::size_t>(Sm64dsSemanticEvent::PlayerPoseInterpolation);
+    return result + "],\"playerPoseInterpolationExecutionCount\":"
+        + std::to_string(snapshot.counters[poseIndex]) + "}";
 }
 
 void MelonInstance::sampleSm64dsGameLoopCounter()
