@@ -1545,6 +1545,7 @@ void MelonInstance::sampleSm64dsGameLoopCounter()
     const u32 stageTimer = static_cast<u32>(stageTimerBytes[0])
         | (static_cast<u32>(stageTimerBytes[1]) << 8);
     const u64 nowNs = PerfNowNs();
+    const auto semantic = nds->GetSm64dsSemanticSnapshot();
 
     std::lock_guard lock(sm64dsGameLoopTelemetryMutex);
     if (!sm64dsGameLoopCounterInitialized)
@@ -1552,6 +1553,8 @@ void MelonInstance::sampleSm64dsGameLoopCounter()
         sm64dsGameLoopCounterInitialized = true;
         sm64dsGameLoopCounterLast = counter;
         sm64dsGameLoopWindowStartNs = nowNs;
+        sm64dsSemanticWindowStart = semantic.counters;
+        sm64dsSemanticWindowGeneration = semantic.generation;
         return;
     }
 
@@ -1561,7 +1564,15 @@ void MelonInstance::sampleSm64dsGameLoopCounter()
         sm64dsGameLoopWindowStartNs = nowNs;
         sm64dsGameLoopWindowFrames = 0;
         sm64dsGameLoopWindowUpdates = 0;
+        sm64dsSemanticWindowStart = semantic.counters;
+        sm64dsSemanticWindowGeneration = semantic.generation;
         return;
+    }
+
+    if (semantic.generation != sm64dsSemanticWindowGeneration)
+    {
+        sm64dsSemanticWindowStart = semantic.counters;
+        sm64dsSemanticWindowGeneration = semantic.generation;
     }
 
     const u32 delta = counter - sm64dsGameLoopCounterLast;
@@ -1588,6 +1599,27 @@ void MelonInstance::sampleSm64dsGameLoopCounter()
             sm64dsGameLoopLatestCadence,
             sm64dsGameLoopLatestStageTimer,
             nds->GetSm64dsCameraBehaviorCalls());
+        auto semanticDelta = [&](Sm64dsSemanticEvent event) {
+            const auto index = static_cast<std::size_t>(event);
+            return semantic.counters[index] - sm64dsSemanticWindowStart[index];
+        };
+        Platform::Log(
+            Platform::LogLevel::Debug,
+            "SM64DS semantic window generation=%llu enabled=%u mainLoop=%llu cadenceRender=%llu stageBehavior=%llu stageRender=%llu entryBehavior=%llu entryRender=%llu playerBehavior=%llu actorPos=%llu animationAdvance=%llu particleUpdate=%llu vblank=%llu",
+            static_cast<unsigned long long>(semantic.generation),
+            semantic.enabled ? 1u : 0u,
+            static_cast<unsigned long long>(semanticDelta(Sm64dsSemanticEvent::MainLoopSlot1)),
+            static_cast<unsigned long long>(semanticDelta(Sm64dsSemanticEvent::CadenceRender)),
+            static_cast<unsigned long long>(semanticDelta(Sm64dsSemanticEvent::StageBehavior)),
+            static_cast<unsigned long long>(semanticDelta(Sm64dsSemanticEvent::StageRender)),
+            static_cast<unsigned long long>(semanticDelta(Sm64dsSemanticEvent::EntryBehavior)),
+            static_cast<unsigned long long>(semanticDelta(Sm64dsSemanticEvent::EntryRender)),
+            static_cast<unsigned long long>(semanticDelta(Sm64dsSemanticEvent::PlayerBehavior)),
+            static_cast<unsigned long long>(semanticDelta(Sm64dsSemanticEvent::ActorUpdatePos)),
+            static_cast<unsigned long long>(semanticDelta(Sm64dsSemanticEvent::AnimationAdvance)),
+            static_cast<unsigned long long>(semanticDelta(Sm64dsSemanticEvent::ParticleUpdate)),
+            static_cast<unsigned long long>(semanticDelta(Sm64dsSemanticEvent::VBlankHandler)));
+        sm64dsSemanticWindowStart = semantic.counters;
         sm64dsGameLoopWindowStartNs = nowNs;
         sm64dsGameLoopWindowFrames = 0;
         sm64dsGameLoopWindowUpdates = 0;

@@ -2,6 +2,7 @@
 #define MELONINSTANCE_H
 
 #include <string>
+#include <array>
 #include <atomic>
 #include <mutex>
 #include "Args.h"
@@ -263,6 +264,8 @@ private:
     u32 sm64dsGameLoopLatestDelta = 0;
     u32 sm64dsGameLoopLatestCadence = 0;
     u32 sm64dsGameLoopLatestStageTimer = 0;
+    std::array<u64, static_cast<std::size_t>(Sm64dsSemanticEvent::Count)> sm64dsSemanticWindowStart {};
+    u64 sm64dsSemanticWindowGeneration = 0;
 
     std::shared_ptr<EmulatorConfiguration> currentConfiguration;
     FrameQueue frameQueue;
