@@ -1149,6 +1149,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
     u32 playerTimestepTimerHookWord = 0;
     u32 playerTimestepControlTimerHookWord = 0;
     u32 playerAnimationHookWord = 0;
+    u32 playerPoseInterpolationHookWord = 0;
     u32 liveInputMask = 0xffffffffu;
     u8 playerIndex = 0;
     u32 playerPointer = 0;
@@ -1208,6 +1209,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         playerTimestepTimerHookWord = nds->ARM9Read32(kPlayerTimestepTimerHookAddress);
         playerTimestepControlTimerHookWord = nds->ARM9Read32(kPlayerTimestepControlTimerHookAddress);
         playerAnimationHookWord = nds->ARM9Read32(kPlayerAnimationHookAddress);
+        playerPoseInterpolationHookWord = nds->ARM9Read32(0x0201686C);
         const u32 pointerOffset = (kCameraPointerAddress - kMainRamBase) & nds->MainRAMMask;
         if (pointerOffset <= nds->MainRAMMask - 3)
         {
@@ -1382,6 +1384,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
             + ",\"playerTimestepTimerHookWord\":" + std::to_string(playerTimestepTimerHookWord)
             + ",\"playerTimestepControlTimerHookWord\":" + std::to_string(playerTimestepControlTimerHookWord)
             + ",\"playerAnimationHookWord\":" + std::to_string(playerAnimationHookWord)
+            + ",\"playerPoseInterpolationHookWord\":" + std::to_string(playerPoseInterpolationHookWord)
             + ",\"liveInputMask\":" + std::to_string(liveInputMask)
             + ",\"playerIndex\":" + std::to_string(playerIndex)
             + ",\"playerPointer\":" + std::to_string(playerPointer)
@@ -1444,6 +1447,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"playerTimestepTimerHookWord\":" + std::to_string(playerTimestepTimerHookWord)
         + ",\"playerTimestepControlTimerHookWord\":" + std::to_string(playerTimestepControlTimerHookWord)
         + ",\"playerAnimationHookWord\":" + std::to_string(playerAnimationHookWord)
+        + ",\"playerPoseInterpolationHookWord\":" + std::to_string(playerPoseInterpolationHookWord)
         + ",\"playerIndex\":" + std::to_string(playerIndex)
         + ",\"playerPointer\":" + std::to_string(playerPointer)
         + ",\"playerPositionValid\":" + std::string(playerPositionValid ? "true" : "false")
