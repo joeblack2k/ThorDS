@@ -1,0 +1,210 @@
+[
+  {
+    "entry": "Player_AdvanceAnims",
+    "functions": [
+      {
+        "name": "Player_AdvanceAnims",
+        "relocations": [
+          {
+            "addend": -8,
+            "offset": 16,
+            "target": "_ZNK6Player14GetBodyModelIDEjb",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 40,
+            "target": "_ZN9Animation7AdvanceEv",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 52,
+            "target": "_ZN6Player6IsAnimEj",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 72,
+            "target": "_ZN6Player6IsAnimEj",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 92,
+            "target": "_ZN6Player6IsAnimEj",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 112,
+            "target": "_ZN6Player6IsAnimEj",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 132,
+            "target": "_ZN6Player6IsAnimEj",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 152,
+            "target": "_ZN6Player6IsAnimEj",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 172,
+            "target": "_ZN6Player6IsAnimEj",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 192,
+            "target": "_ZN6Player6IsAnimEj",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 240,
+            "target": "_ZN9Animation7AdvanceEv",
+            "type": 1
+          }
+        ],
+        "section": 7,
+        "size": 256
+      }
+    ],
+    "source": "Player_AdvanceAnims.c"
+  },
+  {
+    "entry": "_ZN9ModelAnim11UpdateVertsEv",
+    "functions": [
+      {
+        "name": "_Z20update_temporal_poseP9ModelAnim",
+        "relocations": [
+          {
+            "addend": -8,
+            "offset": 48,
+            "target": "_ZN15ModelComponents11UpdateBonesEP8BCA_Filei",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 56,
+            "target": "_ZN15ModelComponents21UpdateVertsUsingBonesEv",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 132,
+            "target": "_ZN15ModelComponents11UpdateBonesEP8BCA_Filei",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 140,
+            "target": "_ZN15ModelComponents21UpdateVertsUsingBonesEv",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 160,
+            "target": "_ZN15ModelComponents11UpdateBonesEP8BCA_Filei",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 180,
+            "target": "_ZN15ModelComponents11UpdateBonesEP8BCA_Filei",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 196,
+            "target": "func_0204531c",
+            "type": 1
+          }
+        ],
+        "section": 11,
+        "size": 212
+      },
+      {
+        "name": "_ZN9ModelAnim11UpdateVertsEv",
+        "relocations": [
+          {
+            "addend": -8,
+            "offset": 24,
+            "target": "_Z20update_temporal_poseP9ModelAnim",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 56,
+            "target": "_ZN15ModelComponents11UpdateBonesEP8BCA_Filei",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 64,
+            "target": "_ZN15ModelComponents21UpdateVertsUsingBonesEv",
+            "type": 1
+          }
+        ],
+        "section": 7,
+        "size": 80
+      }
+    ],
+    "source": "ModelAnim_UpdateVerts.cpp"
+  },
+  {
+    "entry": "_ZN14BlendModelAnim11UpdateVertsEv",
+    "functions": [
+      {
+        "name": "_ZN14BlendModelAnim11UpdateVertsEv",
+        "relocations": [
+          {
+            "addend": -8,
+            "offset": 140,
+            "target": "_ZN15ModelComponents11UpdateBonesEP8BCA_Filei",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 160,
+            "target": "_ZN15ModelComponents11UpdateBonesEP8BCA_Filei",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 176,
+            "target": "func_0204531c",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 208,
+            "target": "_ZN15ModelComponents11UpdateBonesEP8BCA_Filei",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 228,
+            "target": "func_0204531c",
+            "type": 1
+          },
+          {
+            "addend": -8,
+            "offset": 244,
+            "target": "_ZN15ModelComponents21UpdateVertsUsingBonesEv",
+            "type": 1
+          }
+        ],
+        "section": 7,
+        "size": 264
+      }
+    ],
+    "source": "BlendModelAnim_UpdateVerts.cpp"
+  }
+]
