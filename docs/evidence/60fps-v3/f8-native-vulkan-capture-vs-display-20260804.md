@@ -46,14 +46,32 @@ The native capture and physical display then agreed. The earlier white or
 corrupted frames were transient transition frames, not a stable loss of
 SurfaceView visibility or Vulkan output.
 
+## Secondary display wake evidence
+
+The APK built from commit `93ada7a6` was installed and launched on the AYN
+Thor. WindowManager reported the following for display 4:
+
+- `mHoldScreenWindow` was the ThorDS secondary `Presentation`;
+- `mLastWakeLockHoldingWindow` was the same ThorDS `Presentation`;
+- its window flags included `KEEP_SCREEN_ON`;
+- focus remained on the Thor secondary launcher.
+
+The last item is expected because the game presentation is deliberately
+non-focusable. Before this fix, display 4 had no ThorDS hold-screen window.
+This allowed the Thor secondary launcher screensaver to start while the game
+was still active.
+
 ## Conclusion
 
 This separates the failure boundary:
 
 - Vulkan native rendering and compositing produced valid pixels.
 - The physical displays produced valid output after the transition settled.
+- The secondary game presentation now keeps display 4 awake without taking
+  focus from the secondary launcher.
 - A transient transition capture is not a renderer or focus failure.
 - The result does not prove 60 FPS gameplay.
-- The dual-display SurfaceView or Thor display/capture path remains open.
+- The dual-display SurfaceView or Thor display/capture path is open only for
+  further 60 FPS validation, not because the app loses focus.
 
 No timing or pose code was changed for this result.
