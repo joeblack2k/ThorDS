@@ -26,7 +26,7 @@ class InputProcessor(
         private const val SLOT2_ANALOG_LOG_INTERVAL_MS = 1500L
         private const val PROFILE_CAMERA_LOG_INTERVAL_MS = 250L
         private const val SLOT2_RAW_ANALOG_PRIORITY_MS = 150L
-        private const val SMOOTH_CAMERA_YAW_UNITS_PER_TICK = 1001
+        private const val SMOOTH_CAMERA_YAW_UNITS_PER_TICK = 850
         private const val SMOOTH_CAMERA_FLAG_ENABLED = 1
         private const val MOTION_EVENT_LOG_INTERVAL_MS = 250L
         private const val SMOOTH_CAMERA_R3 = KeyEvent.KEYCODE_BUTTON_THUMBR

@@ -8,7 +8,7 @@ import kotlin.math.sqrt
 data class SmoothCameraInputConfig(
     val deadzone: Float = DEFAULT_DEADZONE,
     val responseExponent: Float = DEFAULT_RESPONSE_EXPONENT,
-    val invertX: Boolean = false,
+    val invertX: Boolean = true,
 ) {
     companion object {
         const val DEFAULT_DEADZONE = 0.12f

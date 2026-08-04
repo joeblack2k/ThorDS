@@ -6,7 +6,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SmoothCameraInputTest {
-    private val input = SmoothCameraInput()
+    private val input = SmoothCameraInput(SmoothCameraInputConfig(invertX = false))
 
     @Test
     fun deadzoneProducesNeutralYaw() {
@@ -48,5 +48,15 @@ class SmoothCameraInputTest {
         val inverted = SmoothCameraInput(SmoothCameraInputConfig(invertX = true))
 
         assertEquals(-normal.yaw(0.8f, 0f), inverted.yaw(0.8f, 0f), 0.0001f)
+        assertEquals(normal.pitch(0.8f), inverted.pitch(0.8f), 0.0001f)
+    }
+
+    @Test
+    fun defaultCameraInvertsHorizontalOnly() {
+        val defaultInput = SmoothCameraInput()
+        val normal = SmoothCameraInput(SmoothCameraInputConfig(invertX = false))
+
+        assertEquals(-normal.yaw(0.8f, 0f), defaultInput.yaw(0.8f, 0f), 0.0001f)
+        assertEquals(normal.pitch(0.8f), defaultInput.pitch(0.8f), 0.0001f)
     }
 }

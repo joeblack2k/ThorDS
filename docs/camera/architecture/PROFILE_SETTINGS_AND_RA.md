@@ -23,10 +23,10 @@ Default Enhanced settings:
 ```text
 Smooth Orbit Camera: On
 Sensitivity: 100%
-Maximum yaw speed: 165°/s
+Maximum yaw speed: 140°/s
 Deadzone: 12%
 Response curve: 1.50
-Invert horizontal: Off
+Invert horizontal: On
 R3 recenter sound: On
 D-pad fallback: On
 ```
