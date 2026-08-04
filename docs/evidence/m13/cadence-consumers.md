@@ -4,10 +4,6 @@ Symbol: `data_0208ee44`
 Source tree SHA-256: `d7157768930c35f83d064bcc2baf74057a759768832e833165cc4218787dd524`
 Findings: `194`
 
-This is a source inventory, not a complete semantic classification. The
-scanner reports candidate categories only. Fixed-step and unknown consumers
-remain open for F2 and keep the product gate red.
-
 | File | Line | Function | Kind | Category | Source |
 |---|---:|---|---|---|---|
 | `src/_ZN3HUD13UpdateVsTimerEv.cpp` | 8 | `` | read | message/HUD | `extern int data_0208ee44;` |

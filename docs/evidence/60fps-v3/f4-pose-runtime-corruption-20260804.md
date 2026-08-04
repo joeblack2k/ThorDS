@@ -1,7 +1,7 @@
-# F4 Pose Runtime Corruption
+# F4 Pose Runtime Check
 
 Date: 2026-08-04
-Status: FAIL
+Status: UNVERIFIED
 
 ## Device
 
@@ -31,12 +31,15 @@ cadenceValue=1
 playerPoseInterpolationExecutionCount=0
 ```
 
-Both displays then showed black output and corrupted noise. No player pose
-execution, fractional frame, or transform interpolation was proven.
+The captured black/noise image was the Thor screensaver. It was not an
+emulator or game corruption result. The device was not awake for a valid game
+display capture. No player pose execution, fractional frame, or transform
+interpolation was proven.
 
 The pose setting was disabled again. Normal Enhanced relaunched with three
 curated codes and no pose code.
 
 ## Acceptance
 
-F4 remains red. The pose enhancement must stay disabled and developer-only.
+F4 remains unverified. The pose enhancement must stay disabled and
+developer-only. A new awake-device capture is required.
