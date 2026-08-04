@@ -4,6 +4,7 @@
 
 The connected AYN Thor must show:
 
+- title screen state on both the upper and lower displays before input;
 - correct upper/lower display roles;
 - playable full-speed mode;
 - correct input;
