@@ -34,13 +34,25 @@ screens. The renderer log also reported non-zero geometry:
 The Android physical screen capture taken at the same stage was white or
 corrupted.
 
+## Follow-up
+
+After the transition settled, a second autonomous physical capture showed valid
+output on both displays:
+
+- upper display: SM64DS title screen;
+- lower display: Mario touch screen.
+
+The native capture and physical display then agreed. The earlier white or
+corrupted frames were transient transition frames, not a stable loss of
+SurfaceView visibility or Vulkan output.
+
 ## Conclusion
 
 This separates the failure boundary:
 
 - Vulkan native rendering and compositing produced valid pixels.
-- The white physical capture is downstream of native rendering.
-- The result does not prove that the user-visible Thor displays are correct.
+- The physical displays produced valid output after the transition settled.
+- A transient transition capture is not a renderer or focus failure.
 - The result does not prove 60 FPS gameplay.
 - The dual-display SurfaceView or Thor display/capture path remains open.
 
