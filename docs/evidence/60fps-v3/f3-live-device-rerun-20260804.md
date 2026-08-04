@@ -14,7 +14,7 @@ Status: PARTIAL
 
 The autonomous flow was completed without user input:
 
-1. The upper display showed the title screen.
+1. Both the upper and lower displays were inspected at the title screen.
 2. The lower display received the `Adventure` touch.
 3. The lower display showed the save menu.
 4. File A was selected on the lower display.
