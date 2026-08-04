@@ -125,7 +125,6 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
             preferences = preferences.copy(
                 selectedProfileId = requestedProfile,
                 enabledEnhancements = preferences.enabledEnhancements + mapOf(
-                    "60fps-dev-cadence" to enhancementsEnabled,
                     "true-widescreen" to (
                         enhancementsEnabled &&
                             (trueWidescreenRequested || developerWidescreenDiagnostic)
