@@ -217,6 +217,30 @@ class ProfileEngineTest {
     }
 
     @Test
+    fun cadenceProbeRequiresExplicitDeveloperPreference() {
+        val catalog = ProfileCatalog.parse(File("src/main/assets/enhancement-profiles.json").readText())
+        val planner = ProfileLaunchPlanner(catalog)
+        val identity = RomIdentity("ASMP", 0, "ba3c4052e00c5cc31df5d5534c39de1b")
+
+        val developer = planner.resolve(
+            identity = identity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            requestedRaMode = ProfileRaMode.CASUAL,
+            profilePreferences = ProfilePreferences(
+                selectedProfileId = "sm64ds.eu.thor-enhanced",
+                enabledEnhancements = mapOf("60fps-dev-cadence" to true),
+            ),
+        )
+
+        assertTrue(developer.plan.enhancements.any { it.id == "60fps-dev-cadence" && it.enabled })
+        assertTrue(
+            RuntimeActionReplayComposer.compose(developer.plan)
+                .any { it.name == "ThorDS: sm64ds.eu.60fps-dev-cadence.v10" },
+        )
+    }
+
+    @Test
     fun planHashIncludesRequestedModeAndIntegrity() {
         val resolver = ProfileResolver(ProfileCatalog.from(EnhancementCatalogDocument(1, listOf(original(), enhanced()))))
         val originalCasual = resolver.resolve(
