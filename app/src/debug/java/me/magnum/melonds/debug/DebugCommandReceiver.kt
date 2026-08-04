@@ -87,6 +87,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_SET_VULKAN_FALLBACKS_SUFFIX) -> { handleSetVulkanFallbacks(intent); true }
             context.debugCommandAction(ACTION_TOUCH_SCREEN_SUFFIX) -> { handleTouchScreen(intent); true }
             context.debugCommandAction(ACTION_TAP_INPUT_SUFFIX) -> { handleTapInput(intent); true }
+            context.debugCommandAction(ACTION_BACKFLIP_SUFFIX) -> { handleBackflip(intent); true }
             context.debugCommandAction(ACTION_LAUNCH_ROM_SUFFIX) -> handleLaunchRom(context, intent)
             context.debugCommandAction(ACTION_WAIT_ROM_READY_SUFFIX) -> handleWaitRomReady(intent)
             context.debugCommandAction(ACTION_SAVE_STATE_SUFFIX) -> handleSaveState(context, entryPoint, intent)
@@ -644,6 +645,20 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             TAG,
             "action=tap_input input=${input.name.lowercase(Locale.US)} durationMs=$durationMs pauseAfter=${if (pauseAfter) 1 else 0}",
         )
+    }
+
+    private suspend fun handleBackflip(intent: Intent) {
+        val durationMs = (intent.firstNullableIntExtra(EXTRA_DURATION_MS) ?: 1_500)
+            .coerceIn(250, 2_000)
+        MelonEmulator.setSlot2AnalogInput(0f, -1f)
+        MelonEmulator.onInputDown(Input.A)
+        try {
+            delay(durationMs.toLong())
+        } finally {
+            MelonEmulator.onInputUp(Input.A)
+            MelonEmulator.setSlot2AnalogInput(0f, 0f)
+        }
+        Log.w(TAG, "action=backflip durationMs=$durationMs")
     }
 
     private suspend fun handleLaunchRom(context: Context, intent: Intent): Boolean {
@@ -2082,6 +2097,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_SET_VULKAN_FALLBACKS_SUFFIX = "SET_VULKAN_FALLBACKS"
         private const val ACTION_TOUCH_SCREEN_SUFFIX = "TOUCH_SCREEN"
         private const val ACTION_TAP_INPUT_SUFFIX = "TAP_INPUT"
+        private const val ACTION_BACKFLIP_SUFFIX = "BACKFLIP"
         private const val ACTION_LAUNCH_ROM_SUFFIX = "LAUNCH_ROM"
         private const val EXTRA_WIDESCREEN_PROBE = "widescreen_probe"
         private const val EXTRA_VULKAN_ROTATE_180 = "vulkan_rotate_180"
