@@ -7,18 +7,16 @@ class EmulatorOverlayTracker(
     private val onOverlaysPresent: () -> Unit,
 ) {
 
-    private val activeOverlays = mutableListOf<EmulatorOverlay>()
+    private val activeOverlays = mutableSetOf<EmulatorOverlay>()
 
     fun addActiveOverlay(overlay: EmulatorOverlay) {
-        activeOverlays.add(overlay)
-        if (activeOverlays.size == 1) {
+        if (activeOverlays.add(overlay) && activeOverlays.size == 1) {
             onOverlaysPresent()
         }
     }
 
     fun removeActiveOverlay(overlay: EmulatorOverlay) {
-        activeOverlays.remove(overlay)
-        if (activeOverlays.isEmpty()) {
+        if (activeOverlays.remove(overlay) && activeOverlays.isEmpty()) {
             onOverlaysCleared()
         }
     }

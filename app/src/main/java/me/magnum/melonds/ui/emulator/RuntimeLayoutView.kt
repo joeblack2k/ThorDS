@@ -1,6 +1,7 @@
 package me.magnum.melonds.ui.emulator
 
 import android.content.Context
+import android.graphics.RectF
 import android.util.AttributeSet
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -35,6 +36,12 @@ class RuntimeLayoutView(context: Context, attrs: AttributeSet? = null) : LayoutV
     private var isSoftInputVisible = true
     private var areScreensSwapped = false
     private var connectedControllersState: ConnectedControllersState = ConnectedControllersState.NoControllers
+    private var touchViewportProvider: (() -> RectF?)? = null
+
+    fun setTouchViewportProvider(provider: (() -> RectF?)?) {
+        touchViewportProvider = provider
+        updateScreenInputs()
+    }
 
     fun setFrontendInputHandler(frontendInputHandler: FrontendInputHandler) {
         this.frontendInputHandler = frontendInputHandler
@@ -129,7 +136,9 @@ class RuntimeLayoutView(context: Context, attrs: AttributeSet? = null) : LayoutV
             LayoutComponent.BOTTOM_SCREEN to LayoutComponent.TOP_SCREEN
         }
         systemInputHandler?.let {
-            getLayoutComponentView(touchScreenComponent)?.view?.setOnTouchListener(TouchscreenInputHandler(it))
+            getLayoutComponentView(touchScreenComponent)?.view?.setOnTouchListener(
+                TouchscreenInputHandler(it, touchViewportProvider)
+            )
             getLayoutComponentView(LayoutComponent.HYBRID_SCREEN)?.view?.setOnTouchListener(HybridScreenTouchscreenInputHandler(it))
         }
         getLayoutComponentView(nonTouchScreenComponent)?.view?.setOnTouchListener(null)

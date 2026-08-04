@@ -1331,6 +1331,21 @@ class EmulatorActivity : AppCompatActivity() {
                     setLayoutComponentViewBuilderFactory(RuntimeLayoutComponentViewBuilderFactory())
                     setFrontendInputHandler(frontendInputHandler)
                     setSystemInputHandler(melonTouchHandler)
+                    setTouchViewportProvider {
+                        val component = if (areScreensSwapped()) {
+                            LayoutComponent.TOP_SCREEN
+                        } else {
+                            LayoutComponent.BOTTOM_SCREEN
+                        }
+                        getLayoutComponentView(component)?.getRect()?.let {
+                            android.graphics.RectF(
+                                0f,
+                                0f,
+                                it.width.toFloat(),
+                                it.height.toFloat(),
+                            )
+                        }
+                    }
                     viewModel.runtimeLayout.value?.let {
                         updateLayout(it)
                     }
