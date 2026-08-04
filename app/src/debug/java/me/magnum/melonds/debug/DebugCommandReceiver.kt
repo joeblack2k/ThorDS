@@ -71,6 +71,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_SET_JIT_SUFFIX) -> { handleSetJit(entryPoint, intent); true }
             context.debugCommandAction(ACTION_SET_ARM9_PERCENT_SUFFIX) -> { handleSetArm9Percent(context, intent); true }
             context.debugCommandAction(ACTION_SET_SM64DS_CADENCE_PROBE_SUFFIX) -> { handleSetSm64dsCadenceProbe(context, intent); true }
+            context.debugCommandAction(ACTION_SET_SM64DS_POSE_INTERPOLATION_SUFFIX) -> { handleSetSm64dsPoseInterpolation(context, intent); true }
             context.debugCommandAction(ACTION_DUMP_ARM9_TELEMETRY_SUFFIX) -> { handleDumpArm9Telemetry(); true }
             context.debugCommandAction(ACTION_DUMP_SM64DS_GAME_LOOP_SUFFIX) -> { handleDumpSm64dsGameLoopTelemetry(); true }
             context.debugCommandAction(ACTION_SET_SM64DS_SEMANTIC_MONITOR_SUFFIX) -> { handleSetSm64dsSemanticMonitor(intent); true }
@@ -171,6 +172,25 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         Log.w(
             TAG,
             "action=set_sm64ds_cadence_probe enabled=${if (enabled) 1 else 0} relaunched=${if (relaunched) 1 else 0}",
+        )
+    }
+
+    private fun handleSetSm64dsPoseInterpolation(context: Context, intent: Intent) {
+        val romKey = intent.firstStringExtra(EXTRA_ROM_KEY)
+            ?: throw IllegalArgumentException("Missing rom_key extra")
+        require(romKey == SM64DS_EU_ROM_KEY) { "Pose interpolation requires the exact EU SM64DS identity" }
+        val enabled = intent.firstBooleanExtra(EXTRA_ENABLED, EXTRA_VALUE)
+            ?: throw IllegalArgumentException("Missing enabled extra")
+        val repository = SharedPreferencesProfilePreferencesRepository(context)
+        val current = repository.read(romKey)
+        repository.write(
+            romKey,
+            current.copy(enabledEnhancements = current.enabledEnhancements + ("z-player-pose-interpolation" to enabled)),
+        )
+        val relaunched = DebugCommandStateStore.requestCurrentRomRelaunch()
+        Log.w(
+            TAG,
+            "action=set_sm64ds_pose_interpolation enabled=${if (enabled) 1 else 0} relaunched=${if (relaunched) 1 else 0}",
         )
     }
 
@@ -2085,6 +2105,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_SET_JIT_SUFFIX = "SET_JIT"
         private const val ACTION_SET_ARM9_PERCENT_SUFFIX = "SET_ARM9_PERCENT"
         private const val ACTION_SET_SM64DS_CADENCE_PROBE_SUFFIX = "SET_SM64DS_CADENCE_PROBE"
+        private const val ACTION_SET_SM64DS_POSE_INTERPOLATION_SUFFIX = "SET_SM64DS_POSE_INTERPOLATION"
         private const val ACTION_DUMP_ARM9_TELEMETRY_SUFFIX = "DUMP_ARM9_TELEMETRY"
         private const val ACTION_DUMP_SM64DS_GAME_LOOP_SUFFIX = "DUMP_SM64DS_GAME_LOOP"
         private const val ACTION_SET_SM64DS_SEMANTIC_MONITOR_SUFFIX = "SET_SM64DS_SEMANTIC_MONITOR"
