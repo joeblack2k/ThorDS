@@ -1149,6 +1149,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
     u32 playerTimestepTimerHookWord = 0;
     u32 playerTimestepControlTimerHookWord = 0;
     u32 playerAnimationHookWord = 0;
+    u32 liveInputMask = 0xffffffffu;
     u8 playerIndex = 0;
     u32 playerPointer = 0;
     bool playerPositionValid = false;
@@ -1188,6 +1189,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
     s32 playerAuxAnimationSpeed = 0;
     if (nds != nullptr && nds->MainRAM != nullptr)
     {
+        liveInputMask = inputMask;
         constexpr u32 kMainRamBase = 0x02000000;
         constexpr u32 kCameraHookAddress = 0x0200BB28;
         constexpr u32 kCameraLegacyHookAddress = 0x0200BCF0;
@@ -1380,6 +1382,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
             + ",\"playerTimestepTimerHookWord\":" + std::to_string(playerTimestepTimerHookWord)
             + ",\"playerTimestepControlTimerHookWord\":" + std::to_string(playerTimestepControlTimerHookWord)
             + ",\"playerAnimationHookWord\":" + std::to_string(playerAnimationHookWord)
+            + ",\"liveInputMask\":" + std::to_string(liveInputMask)
             + ",\"playerIndex\":" + std::to_string(playerIndex)
             + ",\"playerPointer\":" + std::to_string(playerPointer)
             + ",\"playerPositionValid\":" + std::string(playerPositionValid ? "true" : "false")
@@ -1424,6 +1427,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"counter\":" + std::to_string(sm64dsGameLoopLatestCounter)
         + ",\"lastDelta\":" + std::to_string(sm64dsGameLoopLatestDelta)
         + ",\"cadenceValue\":" + std::to_string(sm64dsGameLoopLatestCadence)
+        + ",\"liveInputMask\":" + std::to_string(inputMask)
         + ",\"stageTimer\":" + std::to_string(sm64dsGameLoopLatestStageTimer)
         + ",\"cameraBehaviorCalls\":" + std::to_string(nds->GetSm64dsCameraBehaviorCalls())
         + ",\"cameraPointer\":" + std::to_string(cameraPointer)
