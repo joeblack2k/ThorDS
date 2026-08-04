@@ -76,5 +76,19 @@ F3 uses the autonomous direct-jump trace as its player-motion test. A
 scripted Yoshi backflip and `A,A,B,B` cadence are outside the active acceptance
 scope. F4 is not started.
 
+## Pose payload control comparison
+
+The developer-only pose profile was enabled through the exact EU ROM key. The
+runtime hook word became `0xEAFFB961`, but the SM64DS game-loop telemetry then
+reported `uniqueUpdates=0`, `counter=2589`, and `lastDelta=0` while emulator
+frames continued. The player remained in the entry state.
+
+The same session was relaunched with the pose profile disabled. The game-loop
+telemetry then reported `uniqueUpdates=61`, `counter=420`, and `lastDelta=1`.
+The disabled comparison is the control pass.
+
+This is a payload regression. The developer pose profile remains disabled and
+is not accepted for F4.
+
 The corner counter remains a loop-frequency indicator. It is not rendered-FPS
 proof.
