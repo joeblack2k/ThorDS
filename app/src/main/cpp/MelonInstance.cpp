@@ -1177,6 +1177,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
     u32 playerAnimationBaseFrame = 0;
     u32 playerAnimationNextFrame = 0;
     u32 playerAnimationAlphaQ12 = 0;
+    u32 playerAnimationTransformPointer = 0;
     u32 playerAnimationBaseTransformHash = 0;
     u32 playerAnimationNextTransformHash = 0;
     u32 playerAnimationOutputTransformHash = 0;
@@ -1334,6 +1335,25 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
                             playerAnimationNextFrame = playerAnimationBaseFrame
                                 + (playerAnimationSpeedQ12 < 0 ? 0u : 1u);
                             playerAnimationAlphaQ12 = static_cast<u32>(playerAnimationCurrFrameQ12 & 0xFFF);
+                            const u32 transformPointer = static_cast<u32>(bodyModelBytes[0x14])
+                                | (static_cast<u32>(bodyModelBytes[0x15]) << 8)
+                                | (static_cast<u32>(bodyModelBytes[0x16]) << 16)
+                                | (static_cast<u32>(bodyModelBytes[0x17]) << 24);
+                            const u32 transformOffset = transformPointer - kMainRamBase;
+                            if (transformPointer >= kMainRamBase
+                                && transformOffset <= nds->MainRAMMask - 0x30)
+                            {
+                                playerAnimationTransformPointer = transformPointer;
+                                const u8* transformBytes = nds->MainRAM + transformOffset;
+                                u32 hash = 2166136261u;
+                                for (u32 i = 0; i < 0x30; ++i)
+                                {
+                                    hash ^= transformBytes[i];
+                                    hash *= 16777619u;
+                                }
+                                playerAnimationBaseTransformHash = hash;
+                                playerAnimationOutputTransformHash = hash;
+                            }
                             playerAuxAnimationFrame = readAnimationS32(auxAnimationBytes, 0x08);
                             playerAuxAnimationSpeed = readAnimationS32(auxAnimationBytes, 0x0C);
                         }
@@ -1387,6 +1407,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
             + ",\"playerAnimationBaseFrame\":" + std::to_string(playerAnimationBaseFrame)
             + ",\"playerAnimationNextFrame\":" + std::to_string(playerAnimationNextFrame)
             + ",\"playerAnimationAlphaQ12\":" + std::to_string(playerAnimationAlphaQ12)
+            + ",\"playerAnimationTransformPointer\":" + std::to_string(playerAnimationTransformPointer)
             + ",\"playerAnimationBaseTransformHash\":" + std::to_string(playerAnimationBaseTransformHash)
             + ",\"playerAnimationNextTransformHash\":" + std::to_string(playerAnimationNextTransformHash)
             + ",\"playerAnimationOutputTransformHash\":" + std::to_string(playerAnimationOutputTransformHash)
@@ -1446,6 +1467,7 @@ std::string MelonInstance::getSm64dsGameLoopTelemetryJson() const
         + ",\"playerAnimationBaseFrame\":" + std::to_string(playerAnimationBaseFrame)
         + ",\"playerAnimationNextFrame\":" + std::to_string(playerAnimationNextFrame)
         + ",\"playerAnimationAlphaQ12\":" + std::to_string(playerAnimationAlphaQ12)
+        + ",\"playerAnimationTransformPointer\":" + std::to_string(playerAnimationTransformPointer)
         + ",\"playerAnimationBaseTransformHash\":" + std::to_string(playerAnimationBaseTransformHash)
         + ",\"playerAnimationNextTransformHash\":" + std::to_string(playerAnimationNextTransformHash)
         + ",\"playerAnimationOutputTransformHash\":" + std::to_string(playerAnimationOutputTransformHash)
