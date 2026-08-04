@@ -78,6 +78,7 @@ class ProfileEngineTest {
         assertTrue(exact.useSlot2Analog)
         assertEquals(
             listOf(
+                "ThorDS: sm64ds.eu.60fps-dev-cadence.v10",
                 "ThorDS: sm64ds.eu.am64ds-analog.v1",
                 "ThorDS: sm64ds.eu.thor-smooth-camera.v1",
                 "User",
@@ -96,7 +97,14 @@ class ProfileEngineTest {
             requestedRaMode = ProfileRaMode.CASUAL,
         )
         assertFalse(protectedSlot.useSlot2Analog)
-        assertTrue(RuntimeActionReplayComposer.compose(protectedSlot.plan).isEmpty())
+        assertTrue(
+            RuntimeActionReplayComposer.compose(protectedSlot.plan)
+                .none { it.name == "ThorDS: sm64ds.eu.am64ds-analog.v1" },
+        )
+        assertTrue(
+            RuntimeActionReplayComposer.compose(protectedSlot.plan)
+                .any { it.name == "ThorDS: sm64ds.eu.60fps-dev-cadence.v10" },
+        )
 
         val safeMode = planner.resolve(
             identity,
@@ -152,7 +160,8 @@ class ProfileEngineTest {
         assertEquals(Arm9OverclockCapability.EXPERIMENTAL, casual.plan.arm9OverclockCapability)
         assertEquals(RetroAchievementsEffectiveMode.CASUAL, casual.retroAchievementsPolicy.effectiveMode)
         assertTrue(casual.plan.enhancements.any { it.id == "analog" && it.enabled })
-        assertTrue(casual.plan.enhancements.any { it.id == "60fps-dev-cadence" && !it.enabled })
+        assertTrue(casual.plan.enhancements.any { it.id == "60fps-dev-cadence" && it.enabled })
+        assertTrue(casual.plan.enhancements.any { it.id == "z-player-pose-interpolation" && !it.enabled })
         assertTrue(casual.retroAchievementsPolicy.runtimeFeaturePermissions.allowEnhancements)
 
         val off = planner.resolve(
