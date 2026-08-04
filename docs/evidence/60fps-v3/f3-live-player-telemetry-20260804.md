@@ -72,9 +72,9 @@ the existing pose telemetry. It does not prove interpolation.
 
 ## Acceptance
 
-F3 is not complete. The required scripted Yoshi backflip and the baseline
-`A,A,B,B` pose cadence are not yet saved. The repeated trace is not a
-backflip trace. F4 is not started.
+F3 uses the autonomous direct-jump trace as its player-motion test. A
+scripted Yoshi backflip and `A,A,B,B` cadence are outside the active acceptance
+scope. F4 is not started.
 
 The corner counter remains a loop-frequency indicator. It is not rendered-FPS
 proof.
