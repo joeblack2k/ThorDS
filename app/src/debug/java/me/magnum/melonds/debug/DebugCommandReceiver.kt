@@ -53,7 +53,10 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
                     handleIntent(context.applicationContext, intent)
                 }
                 pendingResult.setResultCode(if (success) RESULT_SUCCESS else RESULT_FAILURE)
-                pendingResult.setResultData("success=${if (success) 1 else 0}")
+                pendingResult.setResultData(
+                    DebugCommandResult.take()
+                        ?: "success=${if (success) 1 else 0}",
+                )
             } catch (error: Exception) {
                 Log.w(TAG, "Debug command failed: action=${intent.action}", error)
                 pendingResult.setResultCode(RESULT_FAILURE)
@@ -652,7 +655,9 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
     }
 
     private fun handleDumpTouchPipeline() {
-        Log.w(TAG, "action=dump_touch_pipeline json=${TouchPipelineTrace.dumpJson()}")
+        val json = TouchPipelineTrace.dumpJson()
+        DebugCommandResult.set(json)
+        Log.w(TAG, "action=dump_touch_pipeline json=$json")
     }
 
     private suspend fun handleTapInput(intent: Intent) {
@@ -2166,4 +2171,16 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
     private fun Context.debugCommandAction(suffix: String): String {
         return "$packageName.$suffix"
     }
+}
+
+private object DebugCommandResult {
+    private var result: String? = null
+
+    @Synchronized
+    fun set(value: String) {
+        result = value
+    }
+
+    @Synchronized
+    fun take(): String? = result.also { result = null }
 }
