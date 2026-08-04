@@ -19,6 +19,7 @@
                 <action android:name="${applicationId}.DUMP_ARM9_TELEMETRY" />
                 <action android:name="${applicationId}.SET_VULKAN_FALLBACKS" />
                 <action android:name="${applicationId}.TOUCH_SCREEN" />
+                <action android:name="${applicationId}.DUMP_TOUCH_PIPELINE" />
                 <action android:name="${applicationId}.TAP_INPUT" />
                 <action android:name="${applicationId}.LAUNCH_ROM" />
                 <action android:name="${applicationId}.WAIT_ROM_READY" />

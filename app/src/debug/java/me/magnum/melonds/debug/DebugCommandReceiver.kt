@@ -34,6 +34,7 @@ import me.magnum.melonds.impl.emulator.debug.RendererDebugBridge
 import me.magnum.melonds.impl.emulator.debug.RendererDebugCaptureResult
 import me.magnum.melonds.impl.emulator.debug.RendererParityComparator
 import me.magnum.melonds.ui.emulator.EmulatorActivity
+import me.magnum.melonds.ui.emulator.input.TouchPipelineTrace
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -87,6 +88,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             context.debugCommandAction(ACTION_RUN_LIVE_CAMERA_TRIAL_SUFFIX) -> handleRunLiveCameraTrial(context, intent)
             context.debugCommandAction(ACTION_SET_VULKAN_FALLBACKS_SUFFIX) -> { handleSetVulkanFallbacks(intent); true }
             context.debugCommandAction(ACTION_TOUCH_SCREEN_SUFFIX) -> { handleTouchScreen(intent); true }
+            context.debugCommandAction(ACTION_DUMP_TOUCH_PIPELINE_SUFFIX) -> { handleDumpTouchPipeline(); true }
             context.debugCommandAction(ACTION_TAP_INPUT_SUFFIX) -> { handleTapInput(intent); true }
             context.debugCommandAction(ACTION_BACKFLIP_SUFFIX) -> { handleBackflip(intent); true }
             context.debugCommandAction(ACTION_LAUNCH_ROM_SUFFIX) -> handleLaunchRom(context, intent)
@@ -647,6 +649,10 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
             MelonEmulator.onScreenRelease()
         }
         Log.w(TAG, "action=touch_screen x=$x y=$y durationMs=$durationMs")
+    }
+
+    private fun handleDumpTouchPipeline() {
+        Log.w(TAG, "action=dump_touch_pipeline json=${TouchPipelineTrace.dumpJson()}")
     }
 
     private suspend fun handleTapInput(intent: Intent) {
@@ -2131,6 +2137,7 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
         private const val ACTION_RUN_LIVE_CAMERA_TRIAL_SUFFIX = "RUN_LIVE_CAMERA_TRIAL"
         private const val ACTION_SET_VULKAN_FALLBACKS_SUFFIX = "SET_VULKAN_FALLBACKS"
         private const val ACTION_TOUCH_SCREEN_SUFFIX = "TOUCH_SCREEN"
+        private const val ACTION_DUMP_TOUCH_PIPELINE_SUFFIX = "DUMP_TOUCH_PIPELINE"
         private const val ACTION_TAP_INPUT_SUFFIX = "TAP_INPUT"
         private const val ACTION_BACKFLIP_SUFFIX = "BACKFLIP"
         private const val ACTION_LAUNCH_ROM_SUFFIX = "LAUNCH_ROM"

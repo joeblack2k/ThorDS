@@ -19,6 +19,9 @@ class MelonTouchHandler : IInputListener {
     override fun onKeyReleased(key: Input) {
         if (key != Input.HINGE) {
             MelonEmulator.onInputUp(key)
+            if (key == Input.TOUCHSCREEN) {
+                TouchPipelineTrace.record("input_release")
+            }
         }
     }
 
@@ -26,6 +29,7 @@ class MelonTouchHandler : IInputListener {
         if (Log.isLoggable(TAG, Log.DEBUG)) {
             Log.i(TAG, "mapped_ds_touch x=${point.x} y=${point.y}")
         }
+        TouchPipelineTrace.record("mapped_ds_touch", "dsX" to point.x, "dsY" to point.y, "jni" to "onScreenTouch")
         MelonEmulator.onScreenTouch(point.x, point.y)
     }
 
