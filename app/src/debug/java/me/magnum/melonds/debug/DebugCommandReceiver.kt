@@ -648,8 +648,8 @@ internal class DebugCommandReceiver : BroadcastReceiver() {
     }
 
     private suspend fun handleBackflip(intent: Intent) {
-        val durationMs = (intent.firstNullableIntExtra(EXTRA_DURATION_MS) ?: 1_500)
-            .coerceIn(250, 2_000)
+        val durationMs = (intent.firstNullableIntExtra(EXTRA_DURATION_MS) ?: 4_000)
+            .coerceIn(500, 10_000)
         MelonEmulator.setSlot2AnalogInput(0f, -1f)
         MelonEmulator.onInputDown(Input.A)
         try {
