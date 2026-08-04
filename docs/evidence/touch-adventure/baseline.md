@@ -69,3 +69,13 @@ Native CASE-D evidence on the same APK:
   down sample and a later core release; drag MOVE coordinates were coalesced
   through the pending latest-coordinate state.
 - No crash, ANR, or stuck-release log was observed during this probe.
+
+Autonomous repeatability:
+
+- Ten consecutive display-4 taps at the derived Adventure target `(620,890)`
+  produced 10 `mapped_ds_touch x=128 y=168` records, 10
+  `core_down_sampled` records, and 10 `core_up_applied` records.
+- The captured log contained no `FATAL EXCEPTION`, `ANR in`, or `am_anr`
+  entries.
+- This establishes 10/10 autonomous ADB input/core sampling, not 10/10
+  ordinary-finger activation.
