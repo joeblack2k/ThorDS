@@ -111,7 +111,7 @@ def main() -> int:
     if len(blobs["_ZN9ModelAnim11UpdateVertsEv"][0]) != 0x50:
         raise SystemExit("model size changed")
     lines = [f"5{address & 0x0FFFFFFF:07X} {expected:08X}" for address, expected, _ in HOOKS]
-    lines += [f"{address:08X} {branch(address, target, False):08X}" for address, _, target in HOOKS]
+    lines += [f"{address:08X} {branch(address, target, 0xEA000000):08X}" for address, _, target in HOOKS]
     lines += [f"{address:08X} {value:08X}" for address, value in writes]
     lines += ["D0000000 00000000", "D2000000 00000000"]
     args.output.write_text("\n".join(lines) + "\n", encoding="ascii")
