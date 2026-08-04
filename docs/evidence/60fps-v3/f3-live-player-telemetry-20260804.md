@@ -90,5 +90,10 @@ The disabled comparison is the control pass.
 This is a payload regression. The developer pose profile remains disabled and
 is not accepted for F4.
 
+The hand-maintained pose code was removed from the runtime profile. The
+developer-only profile entry remains metadata-only, with no curated runtime
+code. A future pose payload must come from checked-in source and assembly,
+the relocation-aware builder, and the independent verifier.
+
 The corner counter remains a loop-frequency indicator. It is not rendered-FPS
 proof.
