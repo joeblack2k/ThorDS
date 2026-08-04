@@ -57,3 +57,15 @@ Hardware evidence on AYN Thor `6b0af897`:
   swipe all reached the handler and recorded release or cancel stages.
 - This is ADB/input-pipeline evidence only. It does not claim ordinary physical
   finger success or semantic Adventure activation.
+
+Native CASE-D evidence on the same APK:
+
+- Before latching, an immediate display-4 tap logged `mapped_ds_touch` but no
+  `core_down_sampled` event.
+- After latching, the same immediate tap logged
+  `core_down_sampled generation=1 frame=96 releaseGeneration=1` followed by
+  `core_up_applied generation=1 frame=97 downFrame=96`.
+- A 50 ms pulse, 250 ms pulse, CANCEL sequence and drag all produced a core
+  down sample and a later core release; drag MOVE coordinates were coalesced
+  through the pending latest-coordinate state.
+- No crash, ANR, or stuck-release log was observed during this probe.
