@@ -11,6 +11,12 @@
       "owner": "60fps",
       "purpose": "world timestep",
       "start": "02004B00",
+      "endExclusive": "02004C8C"
+    },
+    {
+      "owner": "60fps",
+      "purpose": "pose interpolation helper code",
+      "start": "02004C8C",
       "endExclusive": "02004D00"
     },
     {
