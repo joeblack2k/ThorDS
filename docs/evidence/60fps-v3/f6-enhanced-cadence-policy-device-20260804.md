@@ -13,11 +13,12 @@ Status: PARTIAL
 The new debug APK was installed before the test. The autonomous two-screen
 flow reached Yoshi castle gameplay:
 
-1. upper title display;
-2. lower `Adventure` touch;
-3. lower File A selection;
-4. upper live gameplay;
-5. lower castle map.
+1. inspect the upper title display;
+2. inspect the lower title display;
+3. touch `Adventure` on the lower display;
+4. select File A on the lower display;
+5. inspect upper live gameplay;
+6. inspect the lower castle map.
 
 ## Semantic baseline
 

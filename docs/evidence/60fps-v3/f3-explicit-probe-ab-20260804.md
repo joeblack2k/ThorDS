@@ -8,7 +8,8 @@ Status: PARTIAL
 - ROM: exact EU ASMP revision 0
 - RA hash: `ba3c4052e00c5cc31df5d5534c39de1b`
 - Renderer: Vulkan
-- Flow: upper title, lower Adventure, lower File A, upper gameplay
+- Flow: inspect upper and lower title displays, touch lower `Adventure`,
+  select lower File A, then inspect upper gameplay
 
 The new APK was tested in two separate relaunches. Normal Enhanced was tested
 with the developer probe disabled. The second run enabled

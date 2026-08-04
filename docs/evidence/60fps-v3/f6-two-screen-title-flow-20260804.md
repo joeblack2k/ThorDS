@@ -13,14 +13,15 @@ Status: PASS for the display-flow witness only
 
 ## Title inspection
 
-The autonomous run inspected both physical displays before input:
+The autonomous run inspected both physical displays before any navigation input:
 
 1. The upper display showed the SM64DS title screen with `Touch To Start`.
 2. The lower display showed the SM64DS touch menu with `Adventure`.
 3. The lower display received the `Adventure` touch.
-4. The lower display received the `File A` touch.
-5. The live game scene started.
-6. A direct `B` input was sent for the player motion check.
+4. The lower display showed the save menu.
+5. The lower display received the `File A` touch.
+6. The live game scene started.
+7. A direct `B` input was sent for the player motion check.
 
 The title gate therefore checks both screens. It does not check only the upper
 display.
