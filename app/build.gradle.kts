@@ -288,6 +288,18 @@ fun resolveBuildTool(tool: String): String {
     return executable.absolutePath
 }
 
+fun resolveRustupTool(tool: String): String {
+    val output = ProcessBuilder(resolveBuildTool("rustup"), "which", tool)
+        .redirectErrorStream(true)
+        .start()
+        .inputStream
+        .bufferedReader()
+        .readText()
+        .trim()
+    check(output.isNotEmpty()) { "rustup could not resolve ${tool}" }
+    return output
+}
+
 fun runBuildCommand(command: List<String>, workingDir: File? = null) {
     val processBuilder = ProcessBuilder(command)
         .redirectErrorStream(true)
@@ -428,8 +440,10 @@ val copyLibrashaderAbiArtifacts = librashaderAbiTargets.map { abiTarget ->
 
         workingDir = librashaderSourceDir.get().asFile
         commandLine(
-            resolveBuildTool("cargo"),
-            "+stable",
+            resolveBuildTool("rustup"),
+            "run",
+            "stable",
+            "cargo",
             "build",
             "--package",
             "librashader-capi",
@@ -446,6 +460,7 @@ val copyLibrashaderAbiArtifacts = librashaderAbiTargets.map { abiTarget ->
         environment("AR_${abiTarget.rustTarget.replace("-", "_")}", llvmAr.absolutePath)
         environment("CARGO_TARGET_${targetEnvKey}_LINKER", clang.absolutePath)
         environment("CARGO_TARGET_${targetEnvKey}_RUSTFLAGS", "-C link-arg=-Wl,-soname,liblibrashader.so")
+        environment("RUSTC", resolveRustupTool("rustc"))
         environment("PATH", augmentedLibrashaderPath())
 
         doFirst {
