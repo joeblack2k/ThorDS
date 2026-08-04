@@ -514,16 +514,84 @@
       "relocationFile": "config/arm9/overlays/ov075/relocs.txt"
     }
   ],
-  "candidateInputSha256": "3ebdec0fcf1dd7d302e8807ee7d53488bbd9662286310212dc95ff4b0a4facd0",
+  "candidateInputSha256": "7f39163866e9993c067ab814939451cf0e5fbddca243f0dfb2c8fc79341dc8ae",
   "counts": {
     "cadenceRelocations": 57,
-    "candidateFindings": 1945,
-    "mappedSourceFiles": 327,
-    "sourceFiles": 327,
+    "candidateFindings": 1740,
+    "mappedSourceFiles": 301,
+    "sourceFiles": 301,
     "unresolvedCadenceRelocations": 0,
     "unresolvedSourceFiles": 0
   },
   "functions": [
+    {
+      "address": "0x020bedd4",
+      "candidateCount": 1,
+      "candidateKinds": [
+        "direct_pointer_member_mutation"
+      ],
+      "categories": [
+        "animation"
+      ],
+      "functionBytesSha256": "eca79e95f12c654b09b9dee9c3b8c147f45e4a26979c60f97e4fc4171a788c7f",
+      "image": "extracted/overlays/overlay_0002.bin",
+      "imageSha256": "d559d981ebb7cdb6b507512a9b86a64f79589c4ddb8d520571794c4e2ddd44e6",
+      "module": "ov002",
+      "size": 248,
+      "sourceFile": "mods/Player_AdvanceAnims.c",
+      "symbol": "Player_AdvanceAnims"
+    },
+    {
+      "address": "0x02016578",
+      "candidateCount": 2,
+      "candidateKinds": [
+        "direct_pointer_member_mutation"
+      ],
+      "categories": [
+        "animation"
+      ],
+      "functionBytesSha256": "777181d617dbab40a721100c704a630e6568dd8dc300faa36f736d83c324b303",
+      "image": "extracted/arm9_dec.bin",
+      "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
+      "module": "main",
+      "size": 76,
+      "sourceFile": "mods/_ZN14BlendModelAnim11UpdateVertsEv.cpp",
+      "symbol": "_ZN14BlendModelAnim11UpdateVertsEv"
+    },
+    {
+      "address": "0x0201686c",
+      "candidateCount": 2,
+      "candidateKinds": [
+        "direct_pointer_member_mutation"
+      ],
+      "categories": [
+        "animation"
+      ],
+      "functionBytesSha256": "9557d3c260e7242376ae5a386962bbe5e3a6c8e1242fdd0a65534388a6556fe5",
+      "image": "extracted/arm9_dec.bin",
+      "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
+      "module": "main",
+      "size": 48,
+      "sourceFile": "mods/_ZN9ModelAnim11UpdateVertsEv.cpp",
+      "symbol": "_ZN9ModelAnim11UpdateVertsEv"
+    },
+    {
+      "address": "0x02009e70",
+      "candidateCount": 1,
+      "candidateKinds": [
+        "direct_pointer_member_mutation"
+      ],
+      "categories": [
+        "camera_cutscene"
+      ],
+      "functionBytesSha256": "d9cfacc4a1b582f960afe01ff092b52188b6d1931a0d9cf4e915bf1661c1512b",
+      "image": "extracted/arm9_dec.bin",
+      "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
+      "module": "main",
+      "size": 4252,
+      "sourceFile": "mods/func_02009e70.cpp",
+      "symbol": "func_02009e70"
+    },
     {
       "address": "0x020c0134",
       "candidateCount": 6,
@@ -540,6 +608,23 @@
       "size": 304,
       "sourceFile": "src/Camera_UpdateMatrices.c",
       "symbol": "Camera_UpdateMatrices"
+    },
+    {
+      "address": "0x020bedd4",
+      "candidateCount": 1,
+      "candidateKinds": [
+        "direct_pointer_member_mutation"
+      ],
+      "categories": [
+        "animation"
+      ],
+      "functionBytesSha256": "eca79e95f12c654b09b9dee9c3b8c147f45e4a26979c60f97e4fc4171a788c7f",
+      "image": "extracted/overlays/overlay_0002.bin",
+      "imageSha256": "d559d981ebb7cdb6b507512a9b86a64f79589c4ddb8d520571794c4e2ddd44e6",
+      "module": "ov002",
+      "size": 248,
+      "sourceFile": "src/Player_AdvanceAnims.cpp",
+      "symbol": "Player_AdvanceAnims"
     },
     {
       "address": "0x020ab450",
@@ -899,6 +984,23 @@
       "symbol": "_ZN11RollingRock8BehaviorEv"
     },
     {
+      "address": "0x02015d38",
+      "candidateCount": 1,
+      "candidateKinds": [
+        "direct_pointer_member_mutation"
+      ],
+      "categories": [
+        "unclassified"
+      ],
+      "functionBytesSha256": "ed00d93dd224041b19103004049f4e791b03f3ba71556d6dc86a168f1f3da4d0",
+      "image": "extracted/arm9_dec.bin",
+      "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
+      "module": "main",
+      "size": 220,
+      "sourceFile": "src/_ZN11ShadowModel9RenderAllEv.cpp",
+      "symbol": "_ZN11ShadowModel9RenderAllEv"
+    },
+    {
       "address": "0x020b0a84",
       "candidateCount": 9,
       "candidateKinds": [
@@ -917,7 +1019,7 @@
     },
     {
       "address": "0x02014ff0",
-      "candidateCount": 2,
+      "candidateCount": 1,
       "candidateKinds": [
         "direct_pointer_member_mutation"
       ],
@@ -974,14 +1076,15 @@
         "direct_pointer_member_mutation"
       ],
       "categories": [
-        "unclassified"
+        "unclassified",
+        "world_physics"
       ],
       "functionBytesSha256": "d3226fd7e72b8a8f5401047cf10539d9168b478748028b28b6dd3eedfe9c2220",
       "image": "extracted/arm9_dec.bin",
       "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
       "module": "main",
       "size": 52,
-      "sourceFile": "src/_ZN12MeshCollider17UpdateFileOffsetsER8KCL_File.c",
+      "sourceFile": "src/_ZN12MeshCollider17UpdateFileOffsetsER8KCL_File.cpp",
       "symbol": "_ZN12MeshCollider17UpdateFileOffsetsER8KCL_File"
     },
     {
@@ -1293,9 +1396,10 @@
     },
     {
       "address": "0x0201647c",
-      "candidateCount": 1,
+      "candidateCount": 2,
       "candidateKinds": [
-        "direct_pointer_member_mutation"
+        "direct_pointer_member_mutation",
+        "timing_or_fixed_point_mutation"
       ],
       "categories": [
         "animation"
@@ -1305,7 +1409,7 @@
       "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
       "module": "main",
       "size": 52,
-      "sourceFile": "src/_ZN14BlendModelAnim7AdvanceEv.c",
+      "sourceFile": "src/_ZN14BlendModelAnim7AdvanceEv.cpp",
       "symbol": "_ZN14BlendModelAnim7AdvanceEv"
     },
     {
@@ -1585,7 +1689,7 @@
     },
     {
       "address": "0x02039348",
-      "candidateCount": 1,
+      "candidateCount": 3,
       "candidateKinds": [
         "direct_pointer_member_mutation"
       ],
@@ -1891,6 +1995,23 @@
       "size": 784,
       "sourceFile": "src/_ZN3Key8BehaviorEv.cpp",
       "symbol": "_ZN3Key8BehaviorEv"
+    },
+    {
+      "address": "0x02020994",
+      "candidateCount": 13,
+      "candidateKinds": [
+        "direct_pointer_member_mutation"
+      ],
+      "categories": [
+        "message_hud"
+      ],
+      "functionBytesSha256": "3705a91a3b9ea99c73ac4b23660117269e00c9ffe4c7676e0c0761c7f92d7708",
+      "image": "extracted/arm9_dec.bin",
+      "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
+      "module": "main",
+      "size": 1680,
+      "sourceFile": "src/_ZN3OAM6RenderEbP7OamAttriiii5Fix12IiES3_ii.cpp",
+      "symbol": "_ZN3OAM6RenderEbP7OamAttriiii5Fix12IiES3_ii"
     },
     {
       "address": "0x02021024",
@@ -2269,6 +2390,23 @@
       "size": 448,
       "sourceFile": "src/_ZN5Shark8BehaviorEv.cpp",
       "symbol": "_ZN5Shark8BehaviorEv"
+    },
+    {
+      "address": "0x0202cc0c",
+      "candidateCount": 2,
+      "candidateKinds": [
+        "cadence_symbol_ref"
+      ],
+      "categories": [
+        "unclassified"
+      ],
+      "functionBytesSha256": "e733b43a8cc182a67e2e9ff231e805f958bb3f1fb6a59c9198397d2bd9414bdc",
+      "image": "extracted/arm9_dec.bin",
+      "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
+      "module": "main",
+      "size": 2692,
+      "sourceFile": "src/_ZN5Stage13InitResourcesEv.cpp",
+      "symbol": "_ZN5Stage13InitResourcesEv"
     },
     {
       "address": "0x0201cb7c",
@@ -3157,6 +3295,28 @@
       "symbol": "_ZN6Player15St_Swallow_MainEv"
     },
     {
+      "address": "0x020d53ac",
+      "candidateCount": 17,
+      "candidateKinds": [
+        "direct_pointer_member_mutation",
+        "timing_or_fixed_point_mutation"
+      ],
+      "categories": [
+        "animation",
+        "audio_trigger",
+        "particle_effect",
+        "rotation",
+        "world_physics"
+      ],
+      "functionBytesSha256": "7dc9c81efa06f55861263b97116ac6b1e5c6aca3b1371c672aac824a2eec616e",
+      "image": "extracted/overlays/overlay_0002.bin",
+      "imageSha256": "d559d981ebb7cdb6b507512a9b86a64f79589c4ddb8d520571794c4e2ddd44e6",
+      "module": "ov002",
+      "size": 932,
+      "sourceFile": "src/_ZN6Player16St_BurnFire_MainEv.cpp",
+      "symbol": "_ZN6Player16St_BurnFire_MainEv"
+    },
+    {
       "address": "0x020d5038",
       "candidateCount": 13,
       "candidateKinds": [
@@ -3474,6 +3634,24 @@
       "symbol": "_ZN6Player19St_Electrocute_MainEv"
     },
     {
+      "address": "0x020dd9f8",
+      "candidateCount": 22,
+      "candidateKinds": [
+        "direct_pointer_member_mutation"
+      ],
+      "categories": [
+        "animation",
+        "world_physics"
+      ],
+      "functionBytesSha256": "3478431d8575af1b5bde668a86c7750bc424e1bd5d5cf82aab589e610457c35f",
+      "image": "extracted/overlays/overlay_0002.bin",
+      "imageSha256": "d559d981ebb7cdb6b507512a9b86a64f79589c4ddb8d520571794c4e2ddd44e6",
+      "module": "ov002",
+      "size": 1016,
+      "sourceFile": "src/_ZN6Player19St_GroundPound_MainEv.cpp",
+      "symbol": "_ZN6Player19St_GroundPound_MainEv"
+    },
+    {
       "address": "0x020ddfdc",
       "candidateCount": 14,
       "candidateKinds": [
@@ -3753,24 +3931,6 @@
       "size": 348,
       "sourceFile": "src/_ZN6ToxBox8BehaviorEv.cpp",
       "symbol": "_ZN6ToxBox8BehaviorEv"
-    },
-    {
-      "address": "0x0211b888",
-      "candidateCount": 3,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "particle_effect",
-        "world_physics"
-      ],
-      "functionBytesSha256": "baab073d665b254f6c9a4294c02c3f4490ac3a46db49461c01d1359ae09cc843",
-      "image": "extracted/overlays/overlay_0063.bin",
-      "imageSha256": "3d27c601946802e7faf909d3ed33c7d723d831098cf7c5dfac39e3a0185cbd0a",
-      "module": "ov063",
-      "size": 308,
-      "sourceFile": "src/_ZN7BooCage8BehaviorEv.cpp",
-      "symbol": "_ZN7BooCage8BehaviorEv"
     },
     {
       "address": "0x0211707c",
@@ -4675,25 +4835,8 @@
       "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
       "module": "main",
       "size": 52,
-      "sourceFile": "src/_ZN9Animation17UpdateFileOffsets_ZN9AnimationER8BCA_File.c",
-      "symbol": "_ZN9Animation17UpdateFileOffsets_ZN9AnimationER8BCA_File"
-    },
-    {
-      "address": "0x02015c3c",
-      "candidateCount": 3,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "animation"
-      ],
-      "functionBytesSha256": "263d613252c3a225313d6c09e80a02f5d0a5d177b3c97c4780e968421d73ef82",
-      "image": "extracted/arm9_dec.bin",
-      "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
-      "module": "main",
-      "size": 120,
-      "sourceFile": "src/_ZN9Animation7AdvanceEv.cpp",
-      "symbol": "_ZN9Animation7AdvanceEv"
+      "sourceFile": "src/_ZN9Animation17UpdateFileOffsetsER8BCA_File.cpp",
+      "symbol": "_ZN9Animation17UpdateFileOffsetsER8BCA_File"
     },
     {
       "address": "0x020b57a8",
@@ -4900,15 +5043,48 @@
       "symbol": "_ZN9Submarine8BehaviorEv"
     },
     {
-      "address": "0x02005418",
-      "candidateCount": 26,
+      "address": "0x0211b888",
+      "candidateCount": 3,
       "candidateKinds": [
-        "cadence_symbol_ref",
         "direct_pointer_member_mutation"
       ],
       "categories": [
-        "unclassified",
+        "particle_effect",
         "world_physics"
+      ],
+      "functionBytesSha256": "baab073d665b254f6c9a4294c02c3f4490ac3a46db49461c01d1359ae09cc843",
+      "image": "extracted/overlays/overlay_0063.bin",
+      "imageSha256": "3d27c601946802e7faf909d3ed33c7d723d831098cf7c5dfac39e3a0185cbd0a",
+      "module": "ov063",
+      "size": 308,
+      "sourceFile": "src/actors/BooCage/_ZN7BooCage8BehaviorEv.cpp",
+      "symbol": "_ZN7BooCage8BehaviorEv"
+    },
+    {
+      "address": "0x02017720",
+      "candidateCount": 1,
+      "candidateKinds": [
+        "timing_or_fixed_point_mutation"
+      ],
+      "categories": [
+        "unclassified"
+      ],
+      "functionBytesSha256": "f6a48a6de93f97e60205883f7551dcfc321b7f94c4fc74037474ca40f4412866",
+      "image": "extracted/arm9_dec.bin",
+      "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
+      "module": "main",
+      "size": 164,
+      "sourceFile": "src/engine/fader/_ZN15FaderBrightness11AdvanceFadeEv.cpp",
+      "symbol": "_ZN15FaderBrightness11AdvanceFadeEv"
+    },
+    {
+      "address": "0x02005418",
+      "candidateCount": 2,
+      "candidateKinds": [
+        "cadence_symbol_ref"
+      ],
+      "categories": [
+        "unclassified"
       ],
       "functionBytesSha256": "b72666314b277851eff0bc9ad1c9c1d74dba39a2e7ea130f407a637d087b2c1e",
       "image": "extracted/arm9_dec.bin",
@@ -4987,23 +5163,6 @@
       "symbol": "func_02020768"
     },
     {
-      "address": "0x0202f428",
-      "candidateCount": 12,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "unclassified"
-      ],
-      "functionBytesSha256": "d04320f8f83599aeef72dccbd099aad3f772795a12bd74a5a1539753a3674d3d",
-      "image": "extracted/arm9_dec.bin",
-      "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
-      "module": "main",
-      "size": 356,
-      "sourceFile": "src/func_0202f428.c",
-      "symbol": "func_0202f428"
-    },
-    {
       "address": "0x020326ac",
       "candidateCount": 5,
       "candidateKinds": [
@@ -5036,23 +5195,6 @@
       "size": 484,
       "sourceFile": "src/func_02034b40.c",
       "symbol": "func_02034b40"
-    },
-    {
-      "address": "0x02034da4",
-      "candidateCount": 10,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "4aec239d51cc953a8d299ab6e70d31044ae3391dbcd5032717e4c56654204067",
-      "image": "extracted/arm9_dec.bin",
-      "imageSha256": "03b2f30948f6e547a654d27c631439640c66d5075a61107d284a03f589ba0835",
-      "module": "main",
-      "size": 536,
-      "sourceFile": "src/func_02034da4.c",
-      "symbol": "func_02034da4"
     },
     {
       "address": "0x0203506c",
@@ -5089,58 +5231,6 @@
       "symbol": "func_ov001_020ab550"
     },
     {
-      "address": "0x020b6d84",
-      "candidateCount": 1,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "e1e1979fee893aa4849583911358494921db26fa88a98505b97c93d6bc3ed16f",
-      "image": "extracted/overlays/overlay_0002.bin",
-      "imageSha256": "d559d981ebb7cdb6b507512a9b86a64f79589c4ddb8d520571794c4e2ddd44e6",
-      "module": "ov002",
-      "size": 76,
-      "sourceFile": "src/func_ov002_020b6d84.c",
-      "symbol": "func_ov002_020b6d84"
-    },
-    {
-      "address": "0x020b8dd4",
-      "candidateCount": 22,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "audio_trigger",
-        "world_physics"
-      ],
-      "functionBytesSha256": "16a154bf40d21e68affac09763413e81417c22a9068dded19e8735adffec11cb",
-      "image": "extracted/overlays/overlay_0002.bin",
-      "imageSha256": "d559d981ebb7cdb6b507512a9b86a64f79589c4ddb8d520571794c4e2ddd44e6",
-      "module": "ov002",
-      "size": 524,
-      "sourceFile": "src/func_ov002_020b8dd4.c",
-      "symbol": "func_ov002_020b8dd4"
-    },
-    {
-      "address": "0x020f12c8",
-      "candidateCount": 6,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "f57ea779d4fb6a2ac645c729b2df7d68c1cbb0b1194b704cf57fe8037e2517d1",
-      "image": "extracted/overlays/overlay_0002.bin",
-      "imageSha256": "d559d981ebb7cdb6b507512a9b86a64f79589c4ddb8d520571794c4e2ddd44e6",
-      "module": "ov002",
-      "size": 416,
-      "sourceFile": "src/func_ov002_020f12c8.c",
-      "symbol": "func_ov002_020f12c8"
-    },
-    {
       "address": "0x020f7780",
       "candidateCount": 2,
       "candidateKinds": [
@@ -5156,40 +5246,6 @@
       "size": 576,
       "sourceFile": "src/func_ov002_020f7780.c",
       "symbol": "func_ov002_020f7780"
-    },
-    {
-      "address": "0x020f94fc",
-      "candidateCount": 2,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "audio_trigger"
-      ],
-      "functionBytesSha256": "1fb76dfca70331fcf63ca2443004ca3a55320951924049fb491cc4d9235d7efa",
-      "image": "extracted/overlays/overlay_0002.bin",
-      "imageSha256": "d559d981ebb7cdb6b507512a9b86a64f79589c4ddb8d520571794c4e2ddd44e6",
-      "module": "ov002",
-      "size": 228,
-      "sourceFile": "src/func_ov002_020f94fc.cpp",
-      "symbol": "func_ov002_020f94fc"
-    },
-    {
-      "address": "0x020ad814",
-      "candidateCount": 2,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "5931541a019913ff112c7a201e9380c636f973a0c5de07ce3a3f0a03fe41965b",
-      "image": "extracted/overlays/overlay_0003.bin",
-      "imageSha256": "9d4780b99cdef8a195658b883108082614b5e28383116d62700c0fd80c611f69",
-      "module": "ov003",
-      "size": 620,
-      "sourceFile": "src/func_ov003_020ad814.cpp",
-      "symbol": "func_ov003_020ad814"
     },
     {
       "address": "0x020ada9c",
@@ -5328,23 +5384,6 @@
       "symbol": "func_ov004_020b265c"
     },
     {
-      "address": "0x020c14a0",
-      "candidateCount": 10,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "9133f109f1dc523c8d16e7b42acffefea486bc0ae34282690781e91f91734cda",
-      "image": "extracted/overlays/overlay_0005.bin",
-      "imageSha256": "0c6dfc2c6437f9ca76075362126324c4a1be682ea9940c08492f2725a6b68039",
-      "module": "ov005",
-      "size": 436,
-      "sourceFile": "src/func_ov005_020c14a0.c",
-      "symbol": "func_ov005_020c14a0"
-    },
-    {
       "address": "0x020c1a20",
       "candidateCount": 2,
       "candidateKinds": [
@@ -5377,40 +5416,6 @@
       "size": 1440,
       "sourceFile": "src/func_ov006_020d5384.cpp",
       "symbol": "func_ov006_020d5384"
-    },
-    {
-      "address": "0x020d91b0",
-      "candidateCount": 1,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "95fa01f4fa958fe7a06c70f14135afcce7b0ba82dcb0bc56038be745917523e1",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 148,
-      "sourceFile": "src/func_ov006_020d91b0.cpp",
-      "symbol": "func_ov006_020d91b0"
-    },
-    {
-      "address": "0x020dabec",
-      "candidateCount": 1,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "6da6e24e76dac83c5933cea7bd7fc75f7e762cc88b249f67967b908e013ca43b",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 72,
-      "sourceFile": "src/func_ov006_020dabec.c",
-      "symbol": "func_ov006_020dabec"
     },
     {
       "address": "0x020de704",
@@ -5464,108 +5469,6 @@
       "symbol": "func_ov006_020e7124"
     },
     {
-      "address": "0x020ee034",
-      "candidateCount": 2,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "scene_overlay"
-      ],
-      "functionBytesSha256": "d4c0c7df01512bb4edfd2cee2cd9836313cf95db97cf8d5f318cdeaff7418922",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 584,
-      "sourceFile": "src/func_ov006_020ee034.c",
-      "symbol": "func_ov006_020ee034"
-    },
-    {
-      "address": "0x020ef148",
-      "candidateCount": 2,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "scene_overlay"
-      ],
-      "functionBytesSha256": "f7c1f7c51e88703ccef6ebd5487d241336babf8b6917ed8b73238feee6c683ac",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 368,
-      "sourceFile": "src/func_ov006_020ef148.c",
-      "symbol": "func_ov006_020ef148"
-    },
-    {
-      "address": "0x020ef3e0",
-      "candidateCount": 3,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "8bad1049cccb7fd68b855ee5f1968e6eb32094e86a98d334b86cf86bfc1de447",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 156,
-      "sourceFile": "src/func_ov006_020ef3e0.cpp",
-      "symbol": "func_ov006_020ef3e0"
-    },
-    {
-      "address": "0x020f869c",
-      "candidateCount": 2,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "2fb1dcf20d3b90059bee850d6de33e14712e2de60bd7e7315be855a88d17e4a0",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 928,
-      "sourceFile": "src/func_ov006_020f869c.c",
-      "symbol": "func_ov006_020f869c"
-    },
-    {
-      "address": "0x020fa13c",
-      "candidateCount": 2,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "20fb82d169c4fd6a7831a19150933ab3a08c512612721fa1ce65b524a717108c",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 660,
-      "sourceFile": "src/func_ov006_020fa13c.c",
-      "symbol": "func_ov006_020fa13c"
-    },
-    {
-      "address": "0x02109834",
-      "candidateCount": 7,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "scene_overlay"
-      ],
-      "functionBytesSha256": "ff633f231506c2dc1d86c42fb8a744f47f64981165e87aac3a719adf9b7a09f8",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 620,
-      "sourceFile": "src/func_ov006_02109834.c",
-      "symbol": "func_ov006_02109834"
-    },
-    {
       "address": "0x0210a708",
       "candidateCount": 2,
       "candidateKinds": [
@@ -5581,24 +5484,6 @@
       "size": 440,
       "sourceFile": "src/func_ov006_0210a708.c",
       "symbol": "func_ov006_0210a708"
-    },
-    {
-      "address": "0x0210b648",
-      "candidateCount": 4,
-      "candidateKinds": [
-        "direct_pointer_member_mutation",
-        "timing_or_fixed_point_mutation"
-      ],
-      "categories": [
-        "scene_overlay"
-      ],
-      "functionBytesSha256": "961135ead3378f3c6be4c5387a1dd73abb6d0f016e63c327eed77bbff31b7533",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 1640,
-      "sourceFile": "src/func_ov006_0210b648.c",
-      "symbol": "func_ov006_0210b648"
     },
     {
       "address": "0x0210bdb0",
@@ -5635,74 +5520,6 @@
       "symbol": "func_ov006_0210d1fc"
     },
     {
-      "address": "0x02118488",
-      "candidateCount": 4,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "bac0780db50e853867b6a441352c76e69b0f34057980614ff87a81a727a17562",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 1540,
-      "sourceFile": "src/func_ov006_02118488.c",
-      "symbol": "func_ov006_02118488"
-    },
-    {
-      "address": "0x0211c720",
-      "candidateCount": 16,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "audio_trigger"
-      ],
-      "functionBytesSha256": "84559fb326c198d06e4a7ff784b88ef8ff920a843a5997c8135dec61f7781c6b",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 612,
-      "sourceFile": "src/func_ov006_0211c720.c",
-      "symbol": "func_ov006_0211c720"
-    },
-    {
-      "address": "0x021212fc",
-      "candidateCount": 2,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "scene_overlay"
-      ],
-      "functionBytesSha256": "443c38ff7914f2efb114fa0b72cc8dd2487db7afab3de69f44d4b73207cec493",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 508,
-      "sourceFile": "src/func_ov006_021212fc.c",
-      "symbol": "func_ov006_021212fc"
-    },
-    {
-      "address": "0x021253bc",
-      "candidateCount": 1,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "scene_overlay"
-      ],
-      "functionBytesSha256": "b9f60534e6c483736c3c883c836bb076f3a37530204a21711f943b1a1850acf1",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 260,
-      "sourceFile": "src/func_ov006_021253bc.c",
-      "symbol": "func_ov006_021253bc"
-    },
-    {
       "address": "0x0212551c",
       "candidateCount": 2,
       "candidateKinds": [
@@ -5720,23 +5537,6 @@
       "symbol": "func_ov006_0212551c"
     },
     {
-      "address": "0x02127d10",
-      "candidateCount": 4,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "scene_overlay"
-      ],
-      "functionBytesSha256": "222a9da42ece053dc24ebcca745b6dac811cc02a69d2446af9dc9cfd8cd13b4b",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 1684,
-      "sourceFile": "src/func_ov006_02127d10.c",
-      "symbol": "func_ov006_02127d10"
-    },
-    {
       "address": "0x02129268",
       "candidateCount": 2,
       "candidateKinds": [
@@ -5752,40 +5552,6 @@
       "size": 836,
       "sourceFile": "src/func_ov006_02129268.c",
       "symbol": "func_ov006_02129268"
-    },
-    {
-      "address": "0x0212aacc",
-      "candidateCount": 2,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "scene_overlay"
-      ],
-      "functionBytesSha256": "e8002debad34bf7388f7d3d6c73d7f4e61544a4bbed6b42e681aa40fd62f6223",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 424,
-      "sourceFile": "src/func_ov006_0212aacc.c",
-      "symbol": "func_ov006_0212aacc"
-    },
-    {
-      "address": "0x0212ac74",
-      "candidateCount": 53,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "666eed4ec6d1a9e9dbb2fa803f85e981a83048955b5f5b3cf1e0af6c57049df8",
-      "image": "extracted/overlays/overlay_0006.bin",
-      "imageSha256": "9432d4ba3e7f4afe3b023a4a9eb407a17c529ff5a2b52aaec93cabf6e366eeec",
-      "module": "ov006",
-      "size": 2060,
-      "sourceFile": "src/func_ov006_0212ac74.c",
-      "symbol": "func_ov006_0212ac74"
     },
     {
       "address": "0x0212b480",
@@ -5820,212 +5586,6 @@
       "size": 320,
       "sourceFile": "src/func_ov007_020cc4c0.cpp",
       "symbol": "func_ov007_020cc4c0"
-    },
-    {
-      "address": "0x021112a8",
-      "candidateCount": 2,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "ae8e84c8b86e0fbe611ca6a3e4f6a7f9d80342d5f1b0cd89ba6e9c2f62952a6b",
-      "image": "extracted/overlays/overlay_0013.bin",
-      "imageSha256": "63cf49c94bf86661fa6f53ceb8c6b58e131f4128b203670e17fb2855a0bfa1d7",
-      "module": "ov013",
-      "size": 148,
-      "sourceFile": "src/func_ov013_021112a8.c",
-      "symbol": "func_ov013_021112a8"
-    },
-    {
-      "address": "0x02111ad0",
-      "candidateCount": 9,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "1ff0700e678a2ba20b19c1620818755321f41f4094351b32d20eddccbc0d94cc",
-      "image": "extracted/overlays/overlay_0022.bin",
-      "imageSha256": "fc8acb15240c20d4519bdd5a2d597760a5e58c501d7afb3635cef0d6a78b0004",
-      "module": "ov022",
-      "size": 268,
-      "sourceFile": "src/func_ov022_02111ad0.c",
-      "symbol": "func_ov022_02111ad0"
-    },
-    {
-      "address": "0x02111dfc",
-      "candidateCount": 2,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "e18b3e900ec79981d2128f07713e462af10ac4bff8ae5fd36b07b2ab1caf1bf0",
-      "image": "extracted/overlays/overlay_0022.bin",
-      "imageSha256": "fc8acb15240c20d4519bdd5a2d597760a5e58c501d7afb3635cef0d6a78b0004",
-      "module": "ov022",
-      "size": 164,
-      "sourceFile": "src/func_ov022_02111dfc.c",
-      "symbol": "func_ov022_02111dfc"
-    },
-    {
-      "address": "0x021113f0",
-      "candidateCount": 14,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "particle_effect",
-        "world_physics"
-      ],
-      "functionBytesSha256": "6c35f9fdb43b77db2dd3b3dce6ba0f9711e9f423ed9084b0737d7844eeb40a98",
-      "image": "extracted/overlays/overlay_0025.bin",
-      "imageSha256": "bc358af61d4d329af27b984388f82e50286e7c929623849a262b4fb6c74e4f3f",
-      "module": "ov025",
-      "size": 1004,
-      "sourceFile": "src/func_ov025_021113f0.c",
-      "symbol": "func_ov025_021113f0"
-    },
-    {
-      "address": "0x02111770",
-      "candidateCount": 4,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "95e8e1438afa1f6d9ee8d93bce304a5025f40f9890a286fa90bcb40d42373e5a",
-      "image": "extracted/overlays/overlay_0027.bin",
-      "imageSha256": "270c811140fb1b1432dce184f936e5d904588e52d690d14c7306b808519d0b5d",
-      "module": "ov027",
-      "size": 172,
-      "sourceFile": "src/func_ov027_02111770.c",
-      "symbol": "func_ov027_02111770"
-    },
-    {
-      "address": "0x02111bcc",
-      "candidateCount": 8,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "audio_trigger",
-        "world_physics"
-      ],
-      "functionBytesSha256": "ebb215d36be264f94ee8ba81763e37ba4bc7080a32332824cd664934fd25b3db",
-      "image": "extracted/overlays/overlay_0029.bin",
-      "imageSha256": "c882194cfe164e2f50391d1968062a6f5820c48a0ca649bbcc0b073f959c1890",
-      "module": "ov029",
-      "size": 416,
-      "sourceFile": "src/func_ov029_02111bcc.c",
-      "symbol": "func_ov029_02111bcc"
-    },
-    {
-      "address": "0x021112a8",
-      "candidateCount": 2,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "d161c435368000f1093141a2bd5de15e1492b424b526a392e71efba880f80298",
-      "image": "extracted/overlays/overlay_0043.bin",
-      "imageSha256": "a2531850b74a6710d129411ff50d48826c0354e057ab6567d563ca11dfb8827b",
-      "module": "ov043",
-      "size": 120,
-      "sourceFile": "src/func_ov043_021112a8.cpp",
-      "symbol": "func_ov043_021112a8"
-    },
-    {
-      "address": "0x0211129c",
-      "candidateCount": 17,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "93c48f3ff5a50768929650079c0928ed912f56b921ffcad21fab87924d0c2f65",
-      "image": "extracted/overlays/overlay_0045.bin",
-      "imageSha256": "6a74500eb9bc542b4b4768cc564a6ce7a13e45edb4ecc0994986c7afc5bfbc4b",
-      "module": "ov045",
-      "size": 336,
-      "sourceFile": "src/func_ov045_0211129c.c",
-      "symbol": "func_ov045_0211129c"
-    },
-    {
-      "address": "0x021112ac",
-      "candidateCount": 1,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "681db29dcb11af01842aa831c4b5e8eb966c132db8a8008ebb598113736cdb55",
-      "image": "extracted/overlays/overlay_0052.bin",
-      "imageSha256": "34a97db49fff5862015a1cbf9e10a2651bfeb02c28183136a2f7f043f1ea980f",
-      "module": "ov052",
-      "size": 156,
-      "sourceFile": "src/func_ov052_021112ac.c",
-      "symbol": "func_ov052_021112ac"
-    },
-    {
-      "address": "0x0211915c",
-      "candidateCount": 1,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "760c8ed40992749a9b2c827c8a8e05b6b7717c102aab5231a577039ba325495f",
-      "image": "extracted/overlays/overlay_0064.bin",
-      "imageSha256": "d35d509ad7ed39b42aefab17289ef50ef1b9271e553cdb75d5c6305459fde39f",
-      "module": "ov064",
-      "size": 76,
-      "sourceFile": "src/func_ov064_0211915c.c",
-      "symbol": "func_ov064_0211915c"
-    },
-    {
-      "address": "0x0211a1c8",
-      "candidateCount": 6,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "661b2e506ff7cb89d203942193888a20eb1a951af2c2034e031e66ee980c7d2c",
-      "image": "extracted/overlays/overlay_0065.bin",
-      "imageSha256": "5b8af49a33823f31b036e1dbd2c1584aa1864aeddc59e9f04e63262eb93af87e",
-      "module": "ov065",
-      "size": 400,
-      "sourceFile": "src/func_ov065_0211a1c8.c",
-      "symbol": "func_ov065_0211a1c8"
-    },
-    {
-      "address": "0x0211ae08",
-      "candidateCount": 11,
-      "candidateKinds": [
-        "direct_pointer_member_mutation"
-      ],
-      "categories": [
-        "world_physics"
-      ],
-      "functionBytesSha256": "2aea6ee65121aca7714053b1c09991b632691f7be45337cbb460dab3d6747619",
-      "image": "extracted/overlays/overlay_0065.bin",
-      "imageSha256": "5b8af49a33823f31b036e1dbd2c1584aa1864aeddc59e9f04e63262eb93af87e",
-      "module": "ov065",
-      "size": 972,
-      "sourceFile": "src/func_ov065_0211ae08.c",
-      "symbol": "func_ov065_0211ae08"
     },
     {
       "address": "0x02117b58",
@@ -6149,7 +5709,7 @@
   ],
   "purpose": "binary_function_range_mapping_not_instruction_semantics",
   "schemaVersion": 1,
-  "sourceTreeSha256": "1a9a06cd51443f7f28fda8c35edbc276fc8a6074aaf2e9b49c4340e14d490499",
+  "sourceTreeSha256": "d7157768930c35f83d064bcc2baf74057a759768832e833165cc4218787dd524",
   "unresolved": [],
   "unresolvedCadenceRelocations": []
 }

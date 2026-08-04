@@ -13,6 +13,7 @@ SYMBOL = re.compile(
     r"^(\S+)\s+kind:function\([^)]*size=(0x[0-9a-fA-F]+)\)"
     r"\s+addr:(0x[0-9a-fA-F]+)"
 )
+SOURCE_EXCLUDE_PREFIXES = ("port/",)
 TEXT_START = re.compile(r"^\s*\.text\s+start:(0x[0-9a-fA-F]+)")
 CADENCE_RELOC = re.compile(
     r"^from:(0x[0-9a-fA-F]+)\s+kind:(\S+)\s+"
@@ -132,6 +133,8 @@ def map_candidates(root: Path, candidate_path: Path) -> dict:
     candidates = json.loads(raw)
     grouped = defaultdict(list)
     for finding in candidates["findings"]:
+        if any(finding["file"].startswith(prefix) for prefix in SOURCE_EXCLUDE_PREFIXES):
+            continue
         grouped[finding["file"]].append(finding)
     wanted = {Path(source_path).stem for source_path in grouped}
     symbols = load_symbols(root, wanted)
