@@ -2154,6 +2154,35 @@ u32 MelonInstance::runFrame()
         vulkanSetupCpuWindow.Add(ndsRunStartNs - runFrameStartNs);
     }
 
+    const u64 touchDown = touchDownGeneration.load(std::memory_order_acquire);
+    const u64 touchRelease = touchReleaseGeneration.load(std::memory_order_acquire);
+    if (touchApplied && touchRelease >= touchLastAppliedGeneration && frame > touchAppliedFrame)
+    {
+        nds->ReleaseScreen();
+        touchApplied = false;
+        Platform::Log(
+            Platform::LogLevel::Info,
+            "TouchPipeline core_up_applied generation=%llu frame=%d downFrame=%d\n",
+            static_cast<unsigned long long>(touchLastAppliedGeneration),
+            frame,
+            touchAppliedFrame);
+    }
+    if (touchDown != touchLastAppliedGeneration)
+    {
+        const u16 x = touchPendingX.load(std::memory_order_relaxed);
+        const u16 y = touchPendingY.load(std::memory_order_relaxed);
+        nds->TouchScreen(x, y);
+        touchLastAppliedGeneration = touchDown;
+        touchAppliedFrame = frame;
+        touchApplied = true;
+        Platform::Log(
+            Platform::LogLevel::Info,
+            "TouchPipeline core_down_sampled generation=%llu frame=%d releaseGeneration=%llu\n",
+            static_cast<unsigned long long>(touchDown),
+            frame,
+            static_cast<unsigned long long>(touchRelease));
+    }
+
     u32 nLines = nds->RunFrame();
     sampleSm64dsGameLoopCounter();
     if (measuringVulkan)
@@ -2451,12 +2480,14 @@ void MelonInstance::stop()
 
 void MelonInstance::touchScreen(u16 x, u16 y)
 {
-    nds->TouchScreen(x, y);
+    touchPendingX.store(x, std::memory_order_relaxed);
+    touchPendingY.store(y, std::memory_order_relaxed);
+    touchDownGeneration.fetch_add(1, std::memory_order_release);
 }
 
 void MelonInstance::releaseScreen()
 {
-    nds->ReleaseScreen();
+    touchReleaseGeneration.store(touchDownGeneration.load(std::memory_order_acquire), std::memory_order_release);
 }
 
 void MelonInstance::pressKey(u32 key)

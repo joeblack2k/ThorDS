@@ -251,8 +251,13 @@ private:
     std::atomic<u16> slot2CameraYawUnitsPerTick = 0;
     std::atomic<u16> slot2CameraRecenterSequence = 0;
     std::atomic<u16> slot2CameraFlags = 0;
-    std::atomic<u16> slot2CameraRecenterAppliedSequence = 0;
-    std::atomic<u32> slot2CameraRecenterAppliedCount = 0;
+    std::atomic<u64> touchDownGeneration = 0;
+    std::atomic<u64> touchReleaseGeneration = 0;
+    std::atomic<u16> touchPendingX = 0;
+    std::atomic<u16> touchPendingY = 0;
+    u64 touchLastAppliedGeneration = 0;
+    int touchAppliedFrame = -1;
+    bool touchApplied = false;
     mutable std::mutex sm64dsGameLoopTelemetryMutex;
     bool sm64dsGameLoopCounterInitialized = false;
     u32 sm64dsGameLoopCounterLast = 0;
