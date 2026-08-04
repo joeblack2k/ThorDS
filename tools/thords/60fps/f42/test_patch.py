@@ -7,6 +7,7 @@ import importlib.util
 import json
 import subprocess
 import tempfile
+import argparse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -14,8 +15,7 @@ HERE = Path(__file__).parent
 BUILD = HERE / "build_patch.py"
 VERIFY = HERE / "verify_patch.py"
 MC = Path("/opt/homebrew/Cellar/llvm/22.1.8/bin/llvm-mc")
-ARM9 = ROOT / "tools/research/sm64ds-decomp/extracted/arm9_dec.bin"
-OVERLAY = ROOT / "tools/research/sm64ds-decomp/extracted/overlays/overlay_0002.bin"
+DEFAULT_DECOMP = ROOT.parent / "MelonDS" / "docs/sm64ds-decomp"
 
 
 def load_verifier():
@@ -75,6 +75,13 @@ def runtime_code(catalog):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--decomp-root", type=Path, default=DEFAULT_DECOMP)
+    args = parser.parse_args()
+    arm9 = args.decomp_root / "extracted/arm9_dec.bin"
+    overlay = args.decomp_root / "extracted/overlays/overlay_0002.bin"
+    if not arm9.is_file() or not overlay.is_file():
+        raise SystemExit("missing extracted EU binary; pass --decomp-root")
     assert MC.exists()
     verifier = load_verifier()
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -103,9 +110,9 @@ def main():
             "python3",
             str(BUILD),
             "--arm9-image",
-            str(ARM9),
+            str(arm9),
             "--overlay2-image",
-            str(OVERLAY),
+            str(overlay),
             "--object",
             str(objects["player"]),
             "--animation-object",
@@ -124,7 +131,7 @@ def main():
         assert "world_payload_bytes=396" in first
         assert hashlib.sha256(first_bytes).hexdigest() in first
 
-        verified = verifier.verify(output, ARM9, OVERLAY)
+        verified = verifier.verify(output, arm9, overlay)
         assert verified["player_payload_bytes"] == 248
         assert verified["world_payload_bytes"] == 396
         lines = output.read_text(encoding="ascii").splitlines()
@@ -161,7 +168,7 @@ def main():
             candidate = temp / "tampered.txt"
             candidate.write_text("\n".join(candidate_lines) + "\n", encoding="ascii")
             try:
-                verifier.verify(candidate, ARM9, OVERLAY)
+                verifier.verify(candidate, arm9, overlay)
             except (KeyError, ValueError):
                 return True
             return False
@@ -213,15 +220,15 @@ def main():
         assert rejected(malformed)
         assert rejected(lines[:-1])
 
-        overlay = OVERLAY.read_bytes()
+        overlay_bytes = overlay.read_bytes()
         correct_offset = 0x020BF3F4 - verifier.OVERLAY_BASE
         wrong_offset = 0x020BF3F4 - 0x020C0000
         assert int.from_bytes(
-            overlay[correct_offset:correct_offset + 4],
+            overlay_bytes[correct_offset:correct_offset + 4],
             "little",
         ) == 0xEBFD460D
         assert int.from_bytes(
-            overlay[wrong_offset:wrong_offset + 4],
+            overlay_bytes[wrong_offset:wrong_offset + 4],
             "little",
         ) != 0xEBFD460D
 
