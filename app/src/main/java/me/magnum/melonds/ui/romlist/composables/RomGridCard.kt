@@ -33,6 +33,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import me.magnum.melonds.domain.model.rom.Rom
 
+private const val THORDS_SM64DS_EU_HASH = "ba3c4052e00c5cc31df5d5534c39de1b"
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RomGridCard(
@@ -43,9 +45,15 @@ fun RomGridCard(
     onLongPress: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isThorEnhancedRom = rom.retroAchievementsHash == THORDS_SM64DS_EU_HASH
     Card(
         elevation = 3.dp,
         shape = RoundedCornerShape(12.dp),
+        border = if (isThorEnhancedRom) {
+            androidx.compose.foundation.BorderStroke(3.dp, Color(0xFFFFD700))
+        } else {
+            null
+        },
         modifier = modifier
             .fillMaxWidth()
             .combinedClickable(
