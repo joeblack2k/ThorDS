@@ -9,8 +9,7 @@
             android:summary="%s"
             app:iconSpaceReserved="false"
             android:entries="@array/video_renderer_options"
-            android:entryValues="@array/video_renderer_values"
-            android:defaultValue="software"/>
+            android:entryValues="@array/video_renderer_values"/>
 
     <SwitchPreference
             android:key="thords_true_widescreen"

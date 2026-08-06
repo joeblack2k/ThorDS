@@ -1,3 +1,7 @@
+**ThorDS Beta 2.6**
+* Preserve the AYN Thor Vulkan default when opening video settings
+* Prevent True Widescreen from silently falling back to 4:3 after the first launch
+
 **ThorDS Beta 2.5**
 * Mario 64 DS EU recognition no longer depends on a RetroAchievements hash
 * Enhanced mode is selected from the Mario 64 DS title and DS game identity
