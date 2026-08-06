@@ -1,4 +1,10 @@
-**Changelog:**
+**ThorDS Beta 2**
+* Enhanced ROM detection with a gold marker in the ROM browser
+* Enhanced/Normal launch choice for the exact Super Mario 64 DS EU profile
+* True Widescreen, analogue controls, right-stick camera input and RetroAchievements in Enhanced mode
+* AYN Thor Vulkan default and release workflow NDK setup
+
+**Upstream changelog:**
 Beta 1.10.0
 * Add OpenGL renderer, with resolution scaling up to 8x native
 * Add support for manual cheat input

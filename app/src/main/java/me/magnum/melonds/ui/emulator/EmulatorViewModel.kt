@@ -76,6 +76,7 @@ import me.magnum.melonds.domain.model.FpsCounterPosition
 import me.magnum.melonds.domain.model.RomInfo
 import me.magnum.melonds.domain.model.enhancement.RomIdentity
 import me.magnum.melonds.domain.model.enhancement.ProfileLaunchPlanner
+import me.magnum.melonds.domain.model.enhancement.ProfilePreferences
 import me.magnum.melonds.domain.model.enhancement.SharedPreferencesProfilePreferencesRepository
 import me.magnum.melonds.domain.model.enhancement.ProfileRaMode
 import me.magnum.melonds.domain.model.enhancement.WidescreenPresentationMode
@@ -682,9 +683,13 @@ class EmulatorViewModel @Inject constructor(
         return true
     }
 
+    private var pendingRomLaunchMode = LaunchArgs.RomLaunchMode.ORIGINAL
+
     fun onRomLaunchValidated(rom: Rom) {
+        val launchMode = (_emulatorState.value as? EmulatorState.ValidatingRom)?.launchMode
+            ?: pendingRomLaunchMode
         sessionCoroutineScope.launch {
-            launchRom(refreshRomForLaunch(rom))
+            launchRom(refreshRomForLaunch(rom), launchMode)
         }
     }
 
@@ -696,18 +701,22 @@ class EmulatorViewModel @Inject constructor(
 
     private fun launchEmulator(args: LaunchArgs) {
         when (args) {
-            is LaunchArgs.RomObject -> loadRom(args.rom)
-            is LaunchArgs.RomUri -> loadRom(args.uri)
-            is LaunchArgs.RomPath -> loadRom(args.path)
+            is LaunchArgs.RomObject -> loadRom(args.rom, args.mode)
+            is LaunchArgs.RomUri -> loadRom(args.uri, args.mode)
+            is LaunchArgs.RomPath -> loadRom(args.path, args.mode)
             is LaunchArgs.Firmware -> _emulatorState.value = EmulatorState.ValidatingFirmware(args.consoleType)
         }
     }
 
-    private fun loadRom(rom: Rom) {
+    private fun loadRom(rom: Rom, mode: LaunchArgs.RomLaunchMode = LaunchArgs.RomLaunchMode.ORIGINAL) {
+        pendingRomLaunchMode = mode
         viewModelScope.launch {
             resetEmulatorState(EmulatorState.LoadingRom())
             sessionCoroutineScope.launch {
-                _emulatorState.value = EmulatorState.ValidatingRom(refreshRomForLaunch(rom))
+                    _emulatorState.value = EmulatorState.ValidatingRom(
+                        refreshRomForLaunch(rom),
+                        mode,
+                    )
             }
         }
     }
@@ -716,13 +725,14 @@ class EmulatorViewModel @Inject constructor(
         return romsRepository.getRomAtUri(rom.uri) ?: rom
     }
 
-    private fun loadRom(romUri: Uri) {
+    private fun loadRom(romUri: Uri, mode: LaunchArgs.RomLaunchMode = LaunchArgs.RomLaunchMode.ORIGINAL) {
+        pendingRomLaunchMode = mode
         viewModelScope.launch {
             resetEmulatorState(EmulatorState.LoadingRom())
             sessionCoroutineScope.launch {
                 val rom = romsRepository.getRomAtUri(romUri)
                 if (rom != null) {
-                    _emulatorState.value = EmulatorState.ValidatingRom(rom)
+                    _emulatorState.value = EmulatorState.ValidatingRom(rom, mode)
                 } else {
                     _emulatorState.value = EmulatorState.RomNotFoundError(romUri.toString())
                 }
@@ -730,13 +740,14 @@ class EmulatorViewModel @Inject constructor(
         }
     }
 
-    private fun loadRom(romPath: String) {
+    private fun loadRom(romPath: String, mode: LaunchArgs.RomLaunchMode = LaunchArgs.RomLaunchMode.ORIGINAL) {
+        pendingRomLaunchMode = mode
         viewModelScope.launch {
             resetEmulatorState(EmulatorState.LoadingRom())
             sessionCoroutineScope.launch {
                 val rom = romsRepository.getRomAtPath(romPath)
                 if (rom != null) {
-                    _emulatorState.value = EmulatorState.ValidatingRom(rom)
+                    _emulatorState.value = EmulatorState.ValidatingRom(rom, mode)
                 } else {
                     _emulatorState.value = EmulatorState.RomNotFoundError(romPath)
                 }
@@ -744,7 +755,10 @@ class EmulatorViewModel @Inject constructor(
         }
     }
 
-    private suspend fun launchRom(rom: Rom) = coroutineScope {
+    private suspend fun launchRom(
+        rom: Rom,
+        mode: LaunchArgs.RomLaunchMode = LaunchArgs.RomLaunchMode.ORIGINAL,
+    ) = coroutineScope {
         try {
             _emulatorState.value = EmulatorState.LoadingRom()
             val isRetroAchievementsRequested = isRetroAchievementsEnabledForLaunch(rom)
@@ -765,11 +779,22 @@ class EmulatorViewModel @Inject constructor(
                     RomIdentity(it.gameCode, it.revision, rom.retroAchievementsHash).stableKey(),
                 )
             }
+            val selectedProfileId = when (mode) {
+                LaunchArgs.RomLaunchMode.ENHANCED -> "sm64ds.eu.thor-enhanced"
+                LaunchArgs.RomLaunchMode.ORIGINAL -> "original.sm64ds.eu"
+            }
+            val launchProfilePreferences = (
+                profilePreferences ?: ProfilePreferences(
+                    requestedRaMode = requestedRaMode,
+                    requestedArm9Percent = requestedArm9Percent,
+                )
+                ).copy(selectedProfileId = selectedProfileId)
             val plannedLaunch = profileLaunchPlanner.plan(
                 rom = rom,
                 romInfo = romInfo,
                 userCheats = userCheats,
-                enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
+                enhancementsEnabled = mode == LaunchArgs.RomLaunchMode.ENHANCED &&
+                    !settingsRepository.isThorDSSafeModeEnabled(),
                 trueWidescreenRequested = settingsRepository.isThorDSTrueWidescreenEnabled(),
                 trueWidescreenProductSupported = isTrueWidescreenProductSupported(),
                 developerWidescreenDiagnostic = developerWidescreenDiagnostic,
@@ -777,12 +802,12 @@ class EmulatorViewModel @Inject constructor(
                 requestedRaMode = requestedRaMode,
                 saveStateResumeEnabled = settingsRepository.isAutoLoadStateOnLaunchEnabled(),
                 requestedArm9Percent = requestedArm9Percent,
-                profilePreferences = profilePreferences,
+                profilePreferences = launchProfilePreferences,
             )
             val policy = plannedLaunch.retroAchievementsPolicy
             Log.i(
                 "ProfileLaunch",
-                "profile=${plannedLaunch.plan.profileId} integrity=${plannedLaunch.plan.profileIntegrity} requestedRa=${plannedLaunch.plan.requestedRaMode} effectiveRa=${policy.effectiveMode} requestedArm9=${plannedLaunch.plan.requestedArm9Percent} effectiveArm9=${plannedLaunch.plan.effectiveArm9Percent} arm9Capability=${plannedLaunch.plan.arm9OverclockCapability} requestedWidescreen=${plannedLaunch.requestedWidescreenMode} effectiveWidescreen=${plannedLaunch.effectiveWidescreenMode} planSha256=${plannedLaunch.plan.planHash} curatedCodes=${plannedLaunch.plan.curatedRuntimeCodes.size} curatedCodeIds=${plannedLaunch.plan.curatedRuntimeCodes.joinToString(",") { it.id }} slot2Analog=${if (plannedLaunch.rom.config.gbaSlotConfig is RomGbaSlotConfig.AnalogInput) 1 else 0} camera=${if (plannedLaunch.plan.enhancements.any { it.id == "right-stick-camera" && it.enabled }) 1 else 0}",
+                "profile=${plannedLaunch.plan.profileId} integrity=${plannedLaunch.plan.profileIntegrity} requestedRa=${plannedLaunch.plan.requestedRaMode} effectiveRa=${policy.effectiveMode} requestedArm9=${plannedLaunch.plan.requestedArm9Percent} effectiveArm9=${plannedLaunch.plan.effectiveArm9Percent} arm9Capability=${plannedLaunch.plan.arm9OverclockCapability} requestedWidescreen=${plannedLaunch.requestedWidescreenMode} effectiveWidescreen=${plannedLaunch.effectiveWidescreenMode} planSha256=${plannedLaunch.plan.planHash} curatedCodes=${plannedLaunch.plan.curatedRuntimeCodes.size} slot2Analog=${if (plannedLaunch.rom.config.gbaSlotConfig is RomGbaSlotConfig.AnalogInput) 1 else 0} camera=${if (plannedLaunch.plan.enhancements.any { it.id == "right-stick-camera" && it.enabled }) 1 else 0}",
             )
             if (policy.effectiveMode == RetroAchievementsEffectiveMode.BLOCKED) {
                 Log.w(

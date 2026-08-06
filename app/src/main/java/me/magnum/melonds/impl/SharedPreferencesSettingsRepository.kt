@@ -27,6 +27,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
+import me.magnum.melonds.common.ThorDeviceCapabilities
 import me.magnum.melonds.common.retroarch.RetroArchShaderPreset
 import me.magnum.melonds.common.ThorDeviceDefaults
 import me.magnum.melonds.common.uridelegates.UriHandler
@@ -566,7 +567,14 @@ class SharedPreferencesSettingsRepository(
     }
 
     override fun getCurrentVideoRenderer(): VideoRenderer {
-        val videoRendererPreference = preferences.getString("video_renderer", "software")!!
+        val defaultRenderer = if (
+            ThorDeviceCapabilities.isThor(Build.MANUFACTURER, Build.MODEL)
+        ) {
+            "vulkan"
+        } else {
+            "software"
+        }
+        val videoRendererPreference = preferences.getString("video_renderer", defaultRenderer)!!
         val renderer = sanitizeVideoRenderer(
             runCatching { VideoRenderer.valueOf(videoRendererPreference.uppercase()) }
                 .getOrDefault(VideoRenderer.SOFTWARE),

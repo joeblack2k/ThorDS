@@ -43,6 +43,8 @@ import me.magnum.melonds.domain.model.rom.Rom
 import me.magnum.melonds.ui.common.rom.EmulatorLaunchValidatorDelegate
 import me.magnum.melonds.ui.dsiwaremanager.DSiWareManagerActivity
 import me.magnum.melonds.ui.emulator.EmulatorActivity
+import me.magnum.melonds.ui.emulator.model.LaunchArgs
+import me.magnum.melonds.ui.romlist.composables.isEnhancedRom
 import me.magnum.melonds.ui.settings.SettingsActivity
 import javax.inject.Inject
 
@@ -94,8 +96,23 @@ class RomListActivity : AppCompatActivity() {
 
         emulatorLauncherValidatorDelegate = EmulatorLaunchValidatorDelegate(this, object : EmulatorLaunchValidatorDelegate.Callback {
             override fun onRomValidated(rom: Rom) {
-                val intent = EmulatorActivity.getRomEmulatorActivityIntent(this@RomListActivity, rom)
-                startActivity(intent)
+                if (!isEnhancedRom(rom.retroAchievementsHash)) {
+                    launchRom(rom, LaunchArgs.RomLaunchMode.ORIGINAL)
+                    return
+                }
+
+                AlertDialog.Builder(this@RomListActivity)
+                    .setTitle(R.string.enhanced_launch_title)
+                    .setMessage(R.string.enhanced_launch_message)
+                    .setPositiveButton(R.string.play_enhanced) { _, _ ->
+                        launchRom(rom, LaunchArgs.RomLaunchMode.ENHANCED)
+                    }
+                    .setNeutralButton(R.string.play_original) { _, _ ->
+                        launchRom(rom, LaunchArgs.RomLaunchMode.ORIGINAL)
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setOnCancelListener { }
+                    .show()
             }
 
             override fun onFirmwareValidated(consoleType: ConsoleType) {
@@ -161,6 +178,11 @@ class RomListActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun launchRom(rom: Rom, mode: LaunchArgs.RomLaunchMode) {
+        viewModel.setRomLastPlayedNow(rom)
+        startActivity(EmulatorActivity.getRomEmulatorActivityIntent(this, rom, mode))
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {

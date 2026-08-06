@@ -6,7 +6,10 @@ import me.magnum.melonds.domain.model.rom.Rom
 
 sealed class EmulatorState {
     data object Uninitialized : EmulatorState()
-    data class ValidatingRom(val rom: Rom) : EmulatorState()
+    data class ValidatingRom(
+        val rom: Rom,
+        val launchMode: LaunchArgs.RomLaunchMode = LaunchArgs.RomLaunchMode.ORIGINAL,
+    ) : EmulatorState()
     data class LoadingRom(
         val vulkanCompileProgress: VulkanCompileProgress? = null,
         val retroAchievementsLoadStage: RetroAchievementsLoadStage? = null,

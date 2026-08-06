@@ -9,6 +9,7 @@ import android.hardware.display.DisplayManager
 import android.hardware.input.InputManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.os.Handler
 import android.text.InputType
 import android.util.TypedValue
@@ -157,6 +158,7 @@ import kotlin.math.max
 class EmulatorActivity : AppCompatActivity() {
     companion object {
         const val KEY_ROM = "rom"
+        const val KEY_ROM_LAUNCH_MODE = "rom_launch_mode"
         const val KEY_PATH = "PATH"
         const val KEY_URI = "uri"
         const val KEY_BOOT_FIRMWARE_CONSOLE = "boot_firmware_console"
@@ -168,9 +170,14 @@ class EmulatorActivity : AppCompatActivity() {
         private const val STARTUP_PRESENTATION_REFRESH_INTERVAL_MS = 100L
         private const val LEDGER_EXPIRATION_DAY_MS = 24L * 60L * 60L * 1000L
 
-        fun getRomEmulatorActivityIntent(context: Context, rom: Rom): Intent {
+        fun getRomEmulatorActivityIntent(
+            context: Context,
+            rom: Rom,
+            mode: LaunchArgs.RomLaunchMode = LaunchArgs.RomLaunchMode.ORIGINAL,
+        ): Intent {
             return Intent(context, EmulatorActivity::class.java).apply {
                 putExtra(KEY_ROM, RomParcelable(rom))
+                putExtra(KEY_ROM_LAUNCH_MODE, mode.name)
             }
         }
 
@@ -197,6 +204,9 @@ class EmulatorActivity : AppCompatActivity() {
             val existingExtras = extras[DEFAULT_ARGS_KEY]?.let(::Bundle) ?: Bundle()
             intent.data?.let { dataUri ->
                 existingExtras.putString(KEY_URI, dataUri.toString())
+            }
+            intent.getStringExtra(KEY_ROM_LAUNCH_MODE)?.let { mode ->
+                existingExtras.putString(KEY_ROM_LAUNCH_MODE, mode)
             }
             existingExtras.putBoolean(KEY_DEVELOPER_WIDESCREEN_PROBE, developerWidescreenDiagnostic)
             extras[DEFAULT_ARGS_KEY] = existingExtras
@@ -1303,6 +1313,10 @@ class EmulatorActivity : AppCompatActivity() {
         val secondaryDisplay = secondaryDisplaySelector.getSecondaryDisplay(this)
             .takeIf { externalDisplayMode == ExternalDisplayMode.MELON_DUAL_DS }
 
+        Log.i(
+            "ThorDisplay",
+            "mode=$externalDisplayMode current=${currentDisplay.displayId} secondary=${secondaryDisplay?.displayId ?: -1}",
+        )
         val displays = deviceLayoutDisplayMapper.mapDisplaysToLayoutDisplays(currentDisplay, secondaryDisplay)
         viewModel.setConnectedDisplays(displays)
 
@@ -1331,21 +1345,6 @@ class EmulatorActivity : AppCompatActivity() {
                     setLayoutComponentViewBuilderFactory(RuntimeLayoutComponentViewBuilderFactory())
                     setFrontendInputHandler(frontendInputHandler)
                     setSystemInputHandler(melonTouchHandler)
-                    setTouchViewportProvider {
-                        val component = if (areScreensSwapped()) {
-                            LayoutComponent.TOP_SCREEN
-                        } else {
-                            LayoutComponent.BOTTOM_SCREEN
-                        }
-                        getLayoutComponentView(component)?.getRect()?.let {
-                            android.graphics.RectF(
-                                0f,
-                                0f,
-                                it.width.toFloat(),
-                                it.height.toFloat(),
-                            )
-                        }
-                    }
                     viewModel.runtimeLayout.value?.let {
                         updateLayout(it)
                     }
