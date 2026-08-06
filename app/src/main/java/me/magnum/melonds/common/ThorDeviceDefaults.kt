@@ -21,7 +21,11 @@ object ThorDeviceDefaults {
             sharedPreferences.contains(SOFT_INPUT_BEHAVIOUR_KEY),
         )
         val applyTrueWidescreen = !sharedPreferences.contains(TRUE_WIDESCREEN_KEY)
-        if (!applySoftInput && !applyTrueWidescreen) {
+        val repairThorWidescreenRenderer =
+            ThorDeviceCapabilities.isThor(manufacturer, model) &&
+                sharedPreferences.getBoolean(TRUE_WIDESCREEN_KEY, false) &&
+                sharedPreferences.getString("video_renderer", null) == "software"
+        if (!applySoftInput && !applyTrueWidescreen && !repairThorWidescreenRenderer) {
             return
         }
 
@@ -31,6 +35,9 @@ object ThorDeviceDefaults {
             }
             if (applyTrueWidescreen) {
                 putBoolean(TRUE_WIDESCREEN_KEY, defaultTrueWidescreenEnabled(manufacturer, model))
+            }
+            if (repairThorWidescreenRenderer) {
+                putString("video_renderer", "vulkan")
             }
         }
     }

@@ -1,3 +1,6 @@
+**ThorDS Beta 2.7**
+* Repair existing Thor installs that retained Software renderer while True Widescreen was enabled
+
 **ThorDS Beta 2.6**
 * Preserve the AYN Thor Vulkan default when opening video settings
 * Prevent True Widescreen from silently falling back to 4:3 after the first launch
