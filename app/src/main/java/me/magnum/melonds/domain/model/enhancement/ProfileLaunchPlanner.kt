@@ -91,11 +91,11 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
             requestedArm9Percent = requestedArm9Percent,
         )
         val requestedProfile = if (enhancementsEnabled) {
-            identity?.let { catalog.exactProfiles(it).firstOrNull { profile ->
+            identity?.let { catalog.gameProfiles(it).firstOrNull { profile ->
                 profile.id == (preferences.selectedProfileId ?: "sm64ds.eu.thor-enhanced")
             } }?.id
         } else {
-            identity?.let { catalog.exactProfiles(it).firstOrNull { profile -> profile.id == "original.sm64ds.eu" } }?.id
+            identity?.let { catalog.gameProfiles(it).firstOrNull { profile -> profile.id == "original.sm64ds.eu" } }?.id
         }
         val capabilities = buildSet {
             add(EnhancementCapability.NDS_EMULATION)

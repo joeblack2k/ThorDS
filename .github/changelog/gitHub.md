@@ -1,3 +1,8 @@
+**ThorDS Beta 2.5**
+* Mario 64 DS EU recognition no longer depends on a RetroAchievements hash
+* Enhanced mode is selected from the Mario 64 DS title and DS game identity
+* RetroAchievements remains independent from Enhanced feature activation
+
 **ThorDS Beta 2**
 * Enhanced ROM detection with a gold marker in the ROM browser
 * Enhanced/Normal launch choice for the exact Super Mario 64 DS EU profile

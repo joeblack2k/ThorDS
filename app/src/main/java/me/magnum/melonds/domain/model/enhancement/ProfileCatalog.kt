@@ -30,6 +30,13 @@ class ProfileCatalog private constructor(
         return profiles.filter { matchesExactly(it, identity) }
     }
 
+    fun gameProfiles(identity: RomIdentity): List<EnhancementProfile> {
+        return profiles.filter { profile ->
+            val game = profile.game ?: return@filter false
+            game.gameCode == identity.gameCode && game.revision == identity.revision
+        }
+    }
+
     companion object {
         private val json = Json { ignoreUnknownKeys = true }
 

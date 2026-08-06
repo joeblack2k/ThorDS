@@ -23,9 +23,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-private const val SM64DS_EU_RA_HASH = "ba3c4052e00c5cc31df5d5534c39de1b"
-
-fun isEnhancedRom(raHash: String): Boolean = raHash.equals(SM64DS_EU_RA_HASH, ignoreCase = true)
+fun isEnhancedRom(romName: String, fileName: String): Boolean {
+    val identity = "$romName $fileName".uppercase()
+    return "MARIO 64 DS" in identity &&
+        "USA" !in identity &&
+        "JAP" !in identity &&
+        "JPN" !in identity &&
+        "KOR" !in identity
+}
 
 @Composable
 fun Modifier.enhancedBorder(enabled: Boolean): Modifier {

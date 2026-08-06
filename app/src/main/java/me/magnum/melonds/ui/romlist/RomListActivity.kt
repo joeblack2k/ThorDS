@@ -96,7 +96,7 @@ class RomListActivity : AppCompatActivity() {
 
         emulatorLauncherValidatorDelegate = EmulatorLaunchValidatorDelegate(this, object : EmulatorLaunchValidatorDelegate.Callback {
             override fun onRomValidated(rom: Rom) {
-                if (!isEnhancedRom(rom.retroAchievementsHash)) {
+                if (!isEnhancedRom(rom.name, rom.fileName)) {
                     launchRom(rom, LaunchArgs.RomLaunchMode.ORIGINAL)
                     return
                 }
