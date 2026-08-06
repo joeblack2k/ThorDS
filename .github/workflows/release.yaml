@@ -9,6 +9,7 @@ on:
 
 jobs:
   github-release:
+    if: ${{ !contains(github.ref_name, '-beta.') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -80,6 +81,7 @@ jobs:
             app/build/outputs/native-debug-symbols/gitHubProdRelease/native-debug-symbols.zip
 
   playstore-release:
+    if: ${{ !contains(github.ref_name, '-beta.') }}
     runs-on: ubuntu-latest
 
     steps:

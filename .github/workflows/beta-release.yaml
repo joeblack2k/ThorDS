@@ -1,0 +1,61 @@
+name: ThorDS Beta Release
+
+on:
+  push:
+    tags:
+      - 'v*-beta.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing beta tag to publish
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  beta-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: zulu
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Android NDK
+        run: |
+          sdkmanager "ndk;28.0.13004108"
+          echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/28.0.13004108" >> "$GITHUB_ENV"
+
+      - name: Build installable beta tester APK
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :app:regenerateVulkanSpirv :app:assembleGitHubProdDebug
+
+      - name: Publish beta release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          prerelease: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ inputs.tag || github.ref_name }}
+          name: ThorDS Beta 2
+          bodyFile: ./.github/changelog/gitHub.md
+          artifacts: app/build/outputs/apk/gitHubProd/debug/app-gitHub-prod-debug.apk
+          artifactContentType: application/vnd.android.package-archive
+
+      - name: Upload beta APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: thords-beta-apk
+          path: app/build/outputs/apk/gitHubProd/debug/app-gitHub-prod-debug.apk
