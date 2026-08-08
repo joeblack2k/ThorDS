@@ -1159,13 +1159,13 @@ bool VulkanSurfacePresenter::presentFrame(Frame* frame, VulkanOutput& output, co
             && inputs.topStructuredAboveVisiblePixels
                 <= kSmallStructuredOverlayVisiblePixelLimit
             && !inputs.capture3dSourceValid;
-        if (!widescreenRequested)
+        if (!widescreenRequested || !rawWidescreenWorldSafe)
         {
             surfaceState.widescreenWorldSafe = false;
             surfaceState.widescreenSafeFrameStreak = 0;
             surfaceState.widescreenSessionLocked = false;
         }
-        else if (!surfaceState.widescreenSessionLocked && rawWidescreenWorldSafe)
+        else if (!surfaceState.widescreenSessionLocked)
         {
             constexpr u32 kWidescreenEnterSafeFrames = 2;
             surfaceState.widescreenSafeFrameStreak = std::min(
@@ -3666,10 +3666,7 @@ bool VulkanSurfacePresenter::updateVertexBuffer(
         );
         for (const DrawCall& drawCall : drawCalls)
         {
-            // Composite DS output and packed plane-1 use native surface
-            // orientation; only the high-res world quad needs primary rotation.
-            if (drawCall.drawMode == kDrawModeCompositeFrame
-                || drawCall.drawMode == kDrawModeWidescreenUiOverlay)
+            if (drawCall.drawMode != kDrawModeWidescreenWorld3d)
                 continue;
 
             const size_t firstVertex = drawCall.firstVertex;

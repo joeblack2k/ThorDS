@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="thords_sm64ds_aspect_entries">
+        <item>4:3</item>
+        <item>16:9</item>
+    </string-array>
+    <string-array name="thords_sm64ds_aspect_values">
+        <item>4:3</item>
+        <item>16:9</item>
+    </string-array>
+    <string-array name="thords_sm64ds_fps_entries">
+        <item>30 FPS</item>
+        <item>60 FPS</item>
+    </string-array>
+    <string-array name="thords_sm64ds_fps_values">
+        <item>30</item>
+        <item>60</item>
+    </string-array>
     <string-array name="ra_offline_backend_options">
         <item>@string/ra_offline_backend_built_in</item>
         <item>@string/ra_offline_backend_proxy</item>

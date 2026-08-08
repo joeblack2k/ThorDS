@@ -26,12 +26,21 @@ class WidescreenProductContractTest {
         assertTrue(classifier.contains("surfaceState.widescreenWorldSafe = false"))
         assertTrue(classifier.contains("surfaceState.widescreenSessionLocked"))
         assertTrue(classifier.contains("if (surfaceState.widescreenWorldSafe)"))
+        val failClosedReset = classifier
+            .substringAfter("if (!widescreenRequested || !rawWidescreenWorldSafe)")
+            .substringBefore("else if (!surfaceState.widescreenSessionLocked)")
+        assertTrue(failClosedReset.contains("surfaceState.widescreenWorldSafe = false"))
+        assertTrue(failClosedReset.contains("surfaceState.widescreenSafeFrameStreak = 0"))
+        assertTrue(failClosedReset.contains("surfaceState.widescreenSessionLocked = false"))
 
         val thorTransform = presenter
             .substringAfter("if (config.rotatePrimaryVulkan180)")
             .substringBefore("if (surfaceState.mappedVertexMemory == nullptr)")
         assertTrue(thorTransform.contains("vertex.y = -vertex.y"))
         assertFalse(thorTransform.contains("vertex.x = -vertex.x"))
+        assertTrue(thorTransform.contains("if (drawCall.drawMode != kDrawModeWidescreenWorld3d)"))
+        assertFalse(thorTransform.contains("kDrawModeCompositeFrame"))
+        assertFalse(thorTransform.contains("kDrawModeWidescreenUiOverlay"))
 
         val activity = File("src/main/java/me/magnum/melonds/ui/emulator/EmulatorActivity.kt").readText()
         assertTrue(activity.contains("viewModel.widescreenPresentationMode.value"))

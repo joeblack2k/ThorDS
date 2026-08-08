@@ -7,6 +7,8 @@ object ThorDeviceCapabilities {
         return manufacturer.equals("AYN", ignoreCase = true) && model.equals("AYN Thor", ignoreCase = true)
     }
 
+    fun usesFixedLandscape(manufacturer: String, model: String): Boolean = isThor(manufacturer, model)
+
     fun supportsTrueWidescreen(
         manufacturer: String,
         model: String,

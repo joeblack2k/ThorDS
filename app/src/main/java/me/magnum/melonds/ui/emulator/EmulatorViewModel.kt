@@ -79,6 +79,11 @@ import me.magnum.melonds.domain.model.enhancement.ProfileLaunchPlanner
 import me.magnum.melonds.domain.model.enhancement.ProfilePreferences
 import me.magnum.melonds.domain.model.enhancement.SharedPreferencesProfilePreferencesRepository
 import me.magnum.melonds.domain.model.enhancement.ProfileRaMode
+import me.magnum.melonds.domain.model.enhancement.ResolvedSessionPlan
+import me.magnum.melonds.domain.model.enhancement.RuntimeActionReplayComposer
+import me.magnum.melonds.domain.model.enhancement.defaultSm64dsEnhancedProfilePreferences
+import me.magnum.melonds.domain.model.enhancement.sm64dsExactIdentity
+import me.magnum.melonds.domain.model.enhancement.withSm64dsLaunchSafety
 import me.magnum.melonds.domain.model.enhancement.WidescreenPresentationMode
 import me.magnum.melonds.domain.model.RuntimeBackground
 import me.magnum.melonds.domain.model.Rect
@@ -270,6 +275,7 @@ class EmulatorViewModel @Inject constructor(
     private val sessionCoroutineScope = EmulatorSessionCoroutineScope()
     private val profileLaunchPlanner by lazy { ProfileLaunchPlanner(EmbeddedProfileCatalog(context).catalog) }
     private val profilePreferencesRepository by lazy { SharedPreferencesProfilePreferencesRepository(context) }
+    private var activeSessionPlan: ResolvedSessionPlan? = null
     private val developerWidescreenDiagnostic =
         savedStateHandle.get<Boolean>(EmulatorActivity.KEY_DEVELOPER_WIDESCREEN_PROBE) == true
     private var raBootstrapJob: Job? = null
@@ -761,6 +767,7 @@ class EmulatorViewModel @Inject constructor(
     ) = coroutineScope {
         try {
             _emulatorState.value = EmulatorState.LoadingRom()
+            activeSessionPlan = null
             val isRetroAchievementsRequested = isRetroAchievementsEnabledForLaunch(rom)
             val requestedRaMode = when {
                 !isRetroAchievementsRequested -> ProfileRaMode.OFF
@@ -768,17 +775,22 @@ class EmulatorViewModel @Inject constructor(
                 else -> ProfileRaMode.CASUAL
             }
             val romInfo = getRomInfo(rom)
+            val identity = romInfo?.let { RomIdentity(it.gameCode, it.revision, rom.retroAchievementsHash) }
             val userCheats = romInfo?.let { getRomEnabledCheats(it) } ?: emptyList()
-            val requestedArm9Percent = romInfo?.let {
-                profilePreferencesRepository.read(
-                    RomIdentity(it.gameCode, it.revision, rom.retroAchievementsHash).stableKey(),
-                ).requestedArm9Percent
-            } ?: 100
-            val profilePreferences = romInfo?.let {
-                profilePreferencesRepository.read(
-                    RomIdentity(it.gameCode, it.revision, rom.retroAchievementsHash).stableKey(),
-                )
+            val profilePreferences = identity?.let {
+                val key = it.stableKey()
+                if (profilePreferencesRepository.contains(key)) {
+                    profilePreferencesRepository.read(key)
+                } else if (it == sm64dsExactIdentity) {
+                    defaultSm64dsEnhancedProfilePreferences(requestedRaMode)
+                } else {
+                    ProfilePreferences(
+                        requestedRaMode = requestedRaMode,
+                        requestedArm9Percent = 100,
+                    )
+                }
             }
+            val requestedArm9Percent = profilePreferences?.requestedArm9Percent ?: 100
             val selectedProfileId = when (mode) {
                 LaunchArgs.RomLaunchMode.ENHANCED -> "sm64ds.eu.thor-enhanced"
                 LaunchArgs.RomLaunchMode.ORIGINAL -> "original.sm64ds.eu"
@@ -789,6 +801,7 @@ class EmulatorViewModel @Inject constructor(
                     requestedArm9Percent = requestedArm9Percent,
                 )
                 ).copy(selectedProfileId = selectedProfileId)
+                .withSm64dsLaunchSafety(identity)
             val plannedLaunch = profileLaunchPlanner.plan(
                 rom = rom,
                 romInfo = romInfo,
@@ -904,6 +917,7 @@ class EmulatorViewModel @Inject constructor(
                 is RomLaunchResult.LaunchFailedSramProblem,
                 is RomLaunchResult.LaunchFailed -> {
                     disableRetroAchievementsRuntime(reason = "rom_load_failed")
+                    activeSessionPlan = null
                     _emulatorState.value = EmulatorState.RomLoadError
                 }
                 is RomLaunchResult.LaunchSuccessful -> {
@@ -911,6 +925,7 @@ class EmulatorViewModel @Inject constructor(
                         _toastEvent.tryEmit(ToastEvent.GbaLoadFailed)
                     }
                     _emulatorState.value = EmulatorState.RunningRom(plannedLaunch.rom)
+                    activeSessionPlan = plannedLaunch.plan
                     maybeAutoLoadStateOnLaunch(plannedLaunch.rom)
                     DebugCommandStateStore.onRunningRomReady(plannedLaunch.rom.uri, plannedLaunch.rom.name)
                     startTrackingFps()
@@ -923,6 +938,7 @@ class EmulatorViewModel @Inject constructor(
             }
             Log.e("EmulatorViewModel", "Failed to launch ROM '${rom.name}'", exception)
             disableRetroAchievementsRuntime(reason = "rom_launch_exception")
+            activeSessionPlan = null
             _emulatorState.value = EmulatorState.RomLoadError
         }
     }
@@ -1675,26 +1691,12 @@ class EmulatorViewModel @Inject constructor(
 
     fun onCheatsChanged() {
         val rom = (_emulatorState.value as? EmulatorState.RunningRom)?.rom ?: return
+        val plan = activeSessionPlan ?: return
 
         getRomInfo(rom)?.let {
             sessionCoroutineScope.launch {
                 val userCheats = getRomEnabledCheats(it)
-                val plannedLaunch = profileLaunchPlanner.plan(
-                    rom = rom,
-                    romInfo = it,
-                    userCheats = userCheats,
-                    enhancementsEnabled = !settingsRepository.isThorDSSafeModeEnabled(),
-                    trueWidescreenRequested = settingsRepository.isThorDSTrueWidescreenEnabled(),
-                    trueWidescreenProductSupported = isTrueWidescreenProductSupported(),
-                    developerWidescreenDiagnostic = developerWidescreenDiagnostic,
-                    developerWidescreenDiagnosticSupported = isDeveloperWidescreenDiagnosticSupported(),
-                    requestedRaMode = when {
-                        !emulatorSession.isRetroAchievementsEnabledForSession() -> ProfileRaMode.OFF
-                        emulatorSession.isRetroAchievementsHardcoreModeEnabled -> ProfileRaMode.HARDCORE
-                        else -> ProfileRaMode.CASUAL
-                    },
-                )
-                emulatorManager.updateCheats(plannedLaunch.cheats)
+                emulatorManager.updateCheats(RuntimeActionReplayComposer.compose(plan.copy(userCheats = userCheats)))
             }
         }
     }

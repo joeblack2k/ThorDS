@@ -241,6 +241,111 @@ class ProfileEngineTest {
     }
 
     @Test
+    fun persistedLegacySm64dsPoseInterpolationIsQuarantinedAtLaunch() {
+        val catalog = ProfileCatalog.parse(File("src/main/assets/enhancement-profiles.json").readText())
+        val planner = ProfileLaunchPlanner(catalog)
+        val defaults = defaultSm64dsEnhancedProfilePreferences()
+        val persisted = ProfilePreferencesCodec.decode(
+            ProfilePreferencesCodec.encode(
+                defaults.copy(
+                    enabledEnhancements = defaults.enabledEnhancements + mapOf(
+                        "future-key" to true,
+                        "true-widescreen" to false,
+                        "analog" to false,
+                        "right-stick-camera" to true,
+                        "z-player-pose-interpolation" to true,
+                    ),
+                    requestedRaMode = ProfileRaMode.OFF,
+                    requestedArm9Percent = 125,
+                ),
+            ),
+        )
+        val launchPreferences = persisted
+            .copy(selectedProfileId = "sm64ds.eu.thor-enhanced")
+            .withSm64dsLaunchSafety(sm64dsExactIdentity)
+        val resolved = planner.resolve(
+            identity = sm64dsExactIdentity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            trueWidescreenRequested = true,
+            trueWidescreenProductSupported = true,
+            requestedRaMode = ProfileRaMode.CASUAL,
+            profilePreferences = launchPreferences,
+        )
+        val launchCheats = RuntimeActionReplayComposer.compose(resolved.plan)
+
+        assertTrue(persisted.enabledEnhancements.getValue("z-player-pose-interpolation"))
+        assertTrue(launchPreferences.enabledEnhancements.getValue("future-key"))
+        assertFalse(launchPreferences.enabledEnhancements.getValue("true-widescreen"))
+        assertFalse(launchPreferences.enabledEnhancements.getValue("analog"))
+        assertTrue(launchPreferences.enabledEnhancements.getValue("right-stick-camera"))
+        assertEquals(ProfileRaMode.OFF, launchPreferences.requestedRaMode)
+        assertEquals(125, launchPreferences.requestedArm9Percent)
+        assertTrue(launchPreferences.enabledEnhancements.getValue("60fps-dev-cadence"))
+        assertFalse(launchPreferences.enabledEnhancements.getValue("z-player-pose-interpolation"))
+        assertEquals(WidescreenPresentationMode.NATIVE_4_3, resolved.effectiveWidescreenMode)
+        assertTrue(resolved.plan.enhancements.any { it.id == "60fps-dev-cadence" && it.enabled })
+        assertTrue(resolved.plan.enhancements.any { it.id == "z-player-pose-interpolation" && !it.enabled })
+        assertTrue(launchCheats.any { it.name == "ThorDS: sm64ds.eu.60fps-dev-cadence.v10" })
+        assertFalse(launchCheats.any { it.name == "ThorDS: sm64ds.eu.player-pose-interpolation.f1" })
+    }
+
+    @Test
+    fun sm64dsLaunchSafetyLeavesOtherRomPreferencesUntouched() {
+        val legacy = ProfilePreferences(
+            enabledEnhancements = mapOf(
+                "future-key" to true,
+                "z-player-pose-interpolation" to true,
+            ),
+        )
+
+        assertEquals(legacy, legacy.withSm64dsLaunchSafety(sm64dsExactIdentity.copy(revision = 1)))
+    }
+
+    @Test
+    fun cameraFollowsAnalogAndOriginalOrMismatchedLaunchesFailClosed() {
+        val catalog = ProfileCatalog.parse(File("src/main/assets/enhancement-profiles.json").readText())
+        val planner = ProfileLaunchPlanner(catalog)
+        val disabledAnalog = defaultSm64dsEnhancedProfilePreferences().copy(
+            enabledEnhancements = defaultSm64dsEnhancedProfilePreferences().enabledEnhancements + mapOf(
+                "analog" to false,
+                "right-stick-camera" to true,
+            ),
+        )
+        val noAnalog = planner.resolve(
+            identity = sm64dsExactIdentity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            requestedRaMode = ProfileRaMode.CASUAL,
+            profilePreferences = disabledAnalog,
+        )
+        assertFalse(noAnalog.useSlot2Analog)
+        assertTrue(noAnalog.plan.enhancements.any { it.id == "right-stick-camera" && !it.enabled })
+
+        val original = planner.resolve(
+            identity = sm64dsExactIdentity,
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            enhancementsEnabled = false,
+            requestedRaMode = ProfileRaMode.CASUAL,
+            profilePreferences = defaultSm64dsEnhancedProfilePreferences(),
+        )
+        assertEquals(ProfileIntegrity.ORIGINAL, original.plan.profileIntegrity)
+        assertEquals(100, original.plan.effectiveArm9Percent)
+        assertTrue(RuntimeActionReplayComposer.compose(original.plan).isEmpty())
+
+        val mismatch = planner.resolve(
+            identity = sm64dsExactIdentity.copy(retroAchievementsHash = "f".repeat(32)),
+            currentSlot = RomGbaSlotConfig.None,
+            userCheats = emptyList(),
+            requestedRaMode = ProfileRaMode.CASUAL,
+            profilePreferences = defaultSm64dsEnhancedProfilePreferences(),
+        )
+        assertEquals(ProfileMatch.MATCH_GAME_UNKNOWN_HASH, mismatch.plan.match)
+        assertTrue(RuntimeActionReplayComposer.compose(mismatch.plan).isEmpty())
+    }
+
+    @Test
     fun planHashIncludesRequestedModeAndIntegrity() {
         val resolver = ProfileResolver(ProfileCatalog.from(EnhancementCatalogDocument(1, listOf(original(), enhanced()))))
         val originalCasual = resolver.resolve(

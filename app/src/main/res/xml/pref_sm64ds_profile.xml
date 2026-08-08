@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ListPreference
+            android:key="sm64ds_aspect"
+            android:title="@string/thords_sm64ds_aspect"
+            android:summary="%s"
+            android:entries="@array/thords_sm64ds_aspect_entries"
+            android:entryValues="@array/thords_sm64ds_aspect_values"
+            android:persistent="false"
+            app:iconSpaceReserved="false" />
+
+    <ListPreference
+            android:key="sm64ds_fps"
+            android:title="@string/thords_sm64ds_fps"
+            android:summary="%s"
+            android:entries="@array/thords_sm64ds_fps_entries"
+            android:entryValues="@array/thords_sm64ds_fps_values"
+            android:persistent="false"
+            app:iconSpaceReserved="false" />
+
+    <SwitchPreference
+            android:key="sm64ds_analog"
+            android:title="@string/thords_sm64ds_analog"
+            android:persistent="false"
+            app:iconSpaceReserved="false" />
+
+    <SwitchPreference
+            android:key="sm64ds_camera"
+            android:title="@string/thords_sm64ds_camera"
+            android:dependency="sm64ds_analog"
+            android:persistent="false"
+            app:iconSpaceReserved="false" />
+
+    <SeekBarPreference
+            android:key="sm64ds_arm9"
+            android:title="@string/thords_sm64ds_arm9"
+            app:min="0"
+            android:max="3"
+            android:defaultValue="2"
+            android:persistent="false"
+            app:showSeekBarValue="false"
+            app:iconSpaceReserved="false" />
+
+    <Preference
+            android:key="sm64ds_save"
+            android:title="@string/thords_sm64ds_save"
+            app:iconSpaceReserved="false" />
+</PreferenceScreen>

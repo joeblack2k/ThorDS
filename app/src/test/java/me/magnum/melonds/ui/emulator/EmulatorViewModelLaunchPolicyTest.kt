@@ -30,4 +30,17 @@ class EmulatorViewModelLaunchPolicyTest {
         assertFalse("failure path must not downgrade to a fallback launch decision", failurePath.contains("RetroAchievementsLaunchDecision("))
         assertTrue("bootstrap must remain after the fail-closed return", bootstrapStart > failureEnd)
     }
+
+    @Test
+    fun cheatChangesReuseTheLatchedSessionPlan() {
+        val source = File("src/main/java/me/magnum/melonds/ui/emulator/EmulatorViewModel.kt").readText()
+        val onCheatsChanged = source
+            .substringAfter("fun onCheatsChanged()")
+            .substringBefore("fun onRunningRomVideoFilteringSelected")
+
+        assertTrue(onCheatsChanged.contains("val plan = activeSessionPlan ?: return"))
+        assertTrue(onCheatsChanged.contains("plan.copy(userCheats = userCheats)"))
+        assertTrue(onCheatsChanged.contains("RuntimeActionReplayComposer.compose"))
+        assertFalse(onCheatsChanged.contains("profileLaunchPlanner.plan("))
+    }
 }

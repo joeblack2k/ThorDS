@@ -18,6 +18,8 @@ import me.magnum.melonds.domain.model.enhancement.SharedPreferencesProfilePrefer
 import me.magnum.melonds.domain.model.enhancement.WidescreenPresentationMode
 import me.magnum.melonds.domain.model.enhancement.ProfileIntegrity
 import me.magnum.melonds.domain.model.enhancement.ProfileRaMode
+import me.magnum.melonds.domain.model.enhancement.defaultSm64dsEnhancedProfilePreferences
+import me.magnum.melonds.domain.model.enhancement.sm64dsExactIdentity
 import me.magnum.melonds.impl.enhancement.EmbeddedProfileCatalog
 import me.magnum.melonds.domain.model.VideoFiltering
 import me.magnum.melonds.domain.model.VideoRenderer
@@ -34,6 +36,7 @@ import me.magnum.melonds.ui.romdetails.model.RomConfigUpdateEvent
 import me.magnum.melonds.ui.romdetails.model.RomGbaSlotConfigUiModel
 import me.magnum.melonds.ui.romdetails.model.ThorProfileUiModel
 import me.magnum.melonds.ui.romlist.RomIcon
+import me.magnum.melonds.ui.emulator.model.LaunchArgs
 import javax.inject.Inject
 
 @HiltViewModel
@@ -201,7 +204,6 @@ class RomDetailsViewModel @Inject constructor(
             is RomConfigUpdateEvent.ThorProfileModeUpdate -> updateThorProfilePreferences {
                 it.copy(
                     selectedProfileId = if (event.enhanced) "sm64ds.eu.thor-enhanced" else "original.sm64ds.eu",
-                    enabledEnhancements = mapOf("true-widescreen" to event.enhanced),
                 )
             }
             is RomConfigUpdateEvent.ThorProfileRaModeUpdate ->
@@ -233,6 +235,16 @@ class RomDetailsViewModel @Inject constructor(
         }
     }
 
+    fun thorLaunchMode(): LaunchArgs.RomLaunchMode {
+        val identity = thorIdentity ?: return LaunchArgs.RomLaunchMode.ORIGINAL
+        val preferences = profilePreferencesFor(identity)
+        return if (preferences.selectedProfileId == "sm64ds.eu.thor-enhanced") {
+            LaunchArgs.RomLaunchMode.ENHANCED
+        } else {
+            LaunchArgs.RomLaunchMode.ORIGINAL
+        }
+    }
+
     private suspend fun resolveThorProfile() {
         val rom = _rom.value
         val info = romFileProcessorFactory.getFileRomProcessorForDocument(rom.uri)?.getRomInfo(rom)
@@ -242,8 +254,7 @@ class RomDetailsViewModel @Inject constructor(
             _thorProfile.value = null
             return
         }
-        val preferences = pendingThorProfilePreferences
-            ?: profilePreferencesRepository.read(identity.stableKey())
+        val preferences = profilePreferencesFor(identity)
         val resolved = profileLaunchPlanner.resolve(
             identity = identity,
             currentSlot = rom.config.gbaSlotConfig,
@@ -274,11 +285,21 @@ class RomDetailsViewModel @Inject constructor(
         update: (me.magnum.melonds.domain.model.enhancement.ProfilePreferences) -> me.magnum.melonds.domain.model.enhancement.ProfilePreferences,
     ) {
         val identity = thorIdentity ?: return
-        val key = identity.stableKey()
         pendingThorProfilePreferences = update(
-            pendingThorProfilePreferences ?: profilePreferencesRepository.read(key),
+            pendingThorProfilePreferences ?: profilePreferencesFor(identity),
         )
         viewModelScope.launch { resolveThorProfile() }
+    }
+
+    private fun profilePreferencesFor(identity: RomIdentity): me.magnum.melonds.domain.model.enhancement.ProfilePreferences {
+        val key = identity.stableKey()
+        return pendingThorProfilePreferences ?: if (profilePreferencesRepository.contains(key)) {
+            profilePreferencesRepository.read(key)
+        } else if (identity == sm64dsExactIdentity) {
+            defaultSm64dsEnhancedProfilePreferences()
+        } else {
+            me.magnum.melonds.domain.model.enhancement.ProfilePreferences()
+        }
     }
 
     suspend fun getRomIcon(rom: Rom): RomIcon {

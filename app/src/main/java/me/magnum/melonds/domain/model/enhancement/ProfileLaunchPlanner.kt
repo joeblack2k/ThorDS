@@ -86,10 +86,19 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
         requestedArm9Percent: Int = Arm9OverclockPolicy.DEFAULT_PERCENT,
         profilePreferences: ProfilePreferences? = null,
     ): LaunchProfileResolution {
-        val preferences = profilePreferences ?: ProfilePreferences(
+        val suppliedPreferences = profilePreferences ?: ProfilePreferences(
             requestedRaMode = requestedRaMode,
             requestedArm9Percent = requestedArm9Percent,
         )
+        val preferences = if ("true-widescreen" in suppliedPreferences.enabledEnhancements) {
+            suppliedPreferences
+        } else {
+            suppliedPreferences.copy(
+                enabledEnhancements = suppliedPreferences.enabledEnhancements + mapOf(
+                    "true-widescreen" to (trueWidescreenRequested || developerWidescreenDiagnostic),
+                ),
+            )
+        }
         val requestedProfile = if (enhancementsEnabled) {
             identity?.let { catalog.gameProfiles(it).firstOrNull { profile ->
                 profile.id == (preferences.selectedProfileId ?: "sm64ds.eu.thor-enhanced")
@@ -124,12 +133,6 @@ class ProfileLaunchPlanner(private val catalog: ProfileCatalog) {
             ),
             preferences = preferences.copy(
                 selectedProfileId = requestedProfile,
-                enabledEnhancements = preferences.enabledEnhancements + mapOf(
-                    "true-widescreen" to (
-                        enhancementsEnabled &&
-                            (trueWidescreenRequested || developerWidescreenDiagnostic)
-                        ),
-                ),
                 requestedRaMode = preferences.requestedRaMode,
                 requestedArm9Percent = preferences.requestedArm9Percent,
             ),

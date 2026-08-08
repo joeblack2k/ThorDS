@@ -56,6 +56,12 @@
             android:fragment="me.magnum.melonds.ui.settings.fragments.CheatsPreferencesFragment" />
 
     <Preference
+            android:title="@string/thords_profiles"
+            android:summary="@string/thords_profiles_summary"
+            app:icon="@drawable/ic_settings"
+            android:fragment="me.magnum.melonds.ui.settings.fragments.ProfilesPreferencesFragment" />
+
+    <Preference
             android:title="@string/thords_about"
             android:summary="@string/thords_about_product"
             app:icon="@drawable/ic_settings"

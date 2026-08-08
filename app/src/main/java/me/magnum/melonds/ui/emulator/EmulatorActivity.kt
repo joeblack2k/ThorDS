@@ -2,6 +2,7 @@ package me.magnum.melonds.ui.emulator
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import android.graphics.Typeface
@@ -1472,7 +1473,11 @@ class EmulatorActivity : AppCompatActivity() {
 
     private fun setupSoftInput(layoutConfiguration: RuntimeInputLayoutConfiguration?) {
         if (layoutConfiguration != null) {
-            setLayoutOrientation(layoutConfiguration.layoutOrientation)
+            if (ThorDeviceCapabilities.usesFixedLandscape(Build.MANUFACTURER, Build.MODEL)) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                setLayoutOrientation(layoutConfiguration.layoutOrientation)
+            }
             with(binding.viewLayoutControls) {
                 instantiateLayout(layoutConfiguration, LayoutTarget.MAIN_SCREEN)
                 setLayoutComponentToggleState(LayoutComponent.BUTTON_FAST_FORWARD_TOGGLE, frontendInputHandler.fastForwardEnabled)
